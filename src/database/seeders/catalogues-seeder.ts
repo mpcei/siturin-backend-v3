@@ -162,8 +162,8 @@ export class CataloguesSeeder {
       {
         code: '2',
         description: 'tipo de identificacion',
-        name: 'Pasaporte',
-        sort: 1,
+        name: 'RUC',
+        sort: 2,
         state: CatalogueStateEnum.enabled,
         type: CatalogueTypeEnum.users_identification_type,
       },

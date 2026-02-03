@@ -1,5 +1,8 @@
 export enum RoleEnum {
   ADMIN = 'admin',
-  OWNER = 'owner',
-  CUSTOMER = 'customer',
+  EXTERNAL = 'external',
+  TECHNICIAN = 'technician ',
+  SPECIALIST = 'specialist',
+  DAC = 'dac',
+  GAD = 'gad',
 }

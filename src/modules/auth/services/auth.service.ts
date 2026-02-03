@@ -66,17 +66,17 @@ export class AuthService {
       throw new NotFoundException('Usuario no encontrado para cambio de contraseña');
     }
 
-    if (await this.checkPassword(payload.password, user, false)) {
-      throw new BadRequestException({
-        error: 'La nueva contraseña no puede ser igual a la actual',
-        message: `Por seguridad, debes elegir una contraseña distinta a la que usas actualmente`,
-      });
-    }
-
     if (payload.password !== payload.passwordConfirm) {
       throw new BadRequestException({
         error: 'Las contraseñas no coinciden',
         message: 'Por favor, asegúrate de escribir la misma contraseña en ambos campos',
+      });
+    }
+
+    if (await this.checkPassword(payload.password, user, false)) {
+      throw new BadRequestException({
+        error: 'La nueva contraseña no puede ser igual a la actual',
+        message: `Por seguridad, debes elegir una contraseña distinta a la que usas actualmente`,
       });
     }
 
@@ -170,7 +170,7 @@ export class AuthService {
   }
 
   async signUpExternal(payload: SignUpExternalDto): Promise<UserEntity> {
-    const role = await this.roleRepository.findOneBy({ code: RoleEnum.CUSTOMER });
+    const role = await this.roleRepository.findOneBy({ code: RoleEnum.EXTERNAL });
 
     if (payload.password !== payload.passwordConfirm) {
       throw new BadRequestException({

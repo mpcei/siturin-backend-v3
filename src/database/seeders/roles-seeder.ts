@@ -21,14 +21,29 @@ export class RolesSeeder {
         icon: FontAwesome.USER_GEAR_SOLID,
       },
       {
-        code: RoleEnum.OWNER,
-        name: 'Propietario',
-        icon: FontAwesome.BLACK_TIE_BRAND,
+        code: RoleEnum.EXTERNAL,
+        name: 'Usuario Externo',
+        icon: FontAwesome.USER_SOLID,
       },
       {
-        code: RoleEnum.CUSTOMER,
-        name: 'Cliente',
-        icon: FontAwesome.USER_SOLID,
+        code: RoleEnum.TECHNICIAN,
+        name: 'Técnico Zonal',
+        icon: FontAwesome.CHALKBOARD_USER_SOLID,
+      },
+      {
+        code: RoleEnum.SPECIALIST,
+        name: 'Técnio Especialista',
+        icon: FontAwesome.USER_LOCK_SOLID,
+      },
+      {
+        code: RoleEnum.DAC,
+        name: 'DAC',
+        icon: FontAwesome.USER_SHIELD_SOLID,
+      },
+      {
+        code: RoleEnum.GAD,
+        name: 'GAD',
+        icon: FontAwesome.CLIPBOARD_USER_SOLID,
       },
     );
 

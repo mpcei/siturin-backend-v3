@@ -43,16 +43,16 @@ export class UsersSeeder {
     const users = this.userRepository.create({
       birthdate: faker.date.birthdate(),
       cellPhone: '0987654321',
-      identification: 'admin',
+      identification: '1234567890',
       email: 'admin@admin.com',
       lastname: 'Perez',
       name: 'Admin',
-      password: 'admin',
+      password: 'Siturin.2026',
       passwordChanged: false,
       emailVerifiedAt: new Date(),
       personalEmail: faker.internet.email(),
       roles: roles,
-      username: 'admin',
+      username: 'admin@admin.com',
     });
 
     await this.userRepository.save(users);
