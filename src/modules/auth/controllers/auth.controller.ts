@@ -18,6 +18,7 @@ import { AuthService } from '@auth/services/auth.service';
 import { AuthGuard } from '@nestjs/passport';
 import { CreateSecurityQuestionDto } from '@auth/dto/security-questions/create-security-question.dto';
 import { EmailResetSecurityQuestionDto } from '@auth/dto/security-questions/email-reset-security-question.dto';
+import { PasswordResetDto } from '@auth/dto/auth/password-reset.dto';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -145,12 +146,9 @@ export class AuthController {
   }
 
   @PublicRoute()
-  @Patch('passwords/:username/reset')
-  async resetPassword(
-    @Body('password') password: string,
-    @Param('username') username: string,
-  ): Promise<ResponseHttpInterface> {
-    const serviceResponse = await this.authService.resetPassword(username, password);
+  @Patch('passwords/reset')
+  async resetPassword(@Body() payload: PasswordResetDto): Promise<ResponseHttpInterface> {
+    const serviceResponse = await this.authService.resetPassword(payload);
 
     return {
       data: serviceResponse,

@@ -33,6 +33,7 @@ import { SecurityQuestionEntity } from '@auth/entities/security-question.entity'
 import { CreateSecurityQuestionDto } from '@auth/dto/security-questions/create-security-question.dto';
 import { EmailResetSecurityQuestionDto } from '@auth/dto/security-questions/email-reset-security-question.dto';
 import { createHash, randomUUID } from 'node:crypto';
+import { PasswordResetDto } from '@auth/dto/auth/password-reset.dto';
 
 @Injectable()
 export class AuthService {
@@ -171,6 +172,12 @@ export class AuthService {
   async signUpExternal(payload: SignUpExternalDto): Promise<UserEntity> {
     const role = await this.roleRepository.findOneBy({ code: RoleEnum.CUSTOMER });
 
+    if (payload.password !== payload.passwordConfirm) {
+      throw new BadRequestException({
+        error: 'Las contraseñas no coinciden',
+        message: 'Por favor, asegúrate de escribir la misma contraseña en ambos campos',
+      });
+    }
     const securityQuestions = payload.securityQuestions.map((q) =>
       this.securityQuestionRepository.create({
         code: q.code,
@@ -398,9 +405,9 @@ export class AuthService {
     return true;
   }
 
-  async resetPassword(username: string, password: string): Promise<boolean> {
+  async resetPassword(payload: PasswordResetDto): Promise<boolean> {
     const user = await this.repository.findOne({
-      where: { username },
+      where: { identification: payload.identification },
     });
 
     if (!user) {
@@ -410,9 +417,16 @@ export class AuthService {
       });
     }
 
+    if (payload.password !== payload.passwordConfirm) {
+      throw new BadRequestException({
+        error: 'Las contraseñas no coinciden',
+        message: 'Por favor, asegúrate de escribir la misma contraseña en ambos campos',
+      });
+    }
+
     this.repository.merge(user, {
       maxAttempts: this.configService.maxAttempts,
-      password,
+      password: payload.password,
       passwordChanged: true,
     });
 

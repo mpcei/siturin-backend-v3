@@ -2,7 +2,12 @@ import { IsNotEmpty, IsString } from 'class-validator';
 import { FieldLabel, isStringValidationOptions } from '@utils/dto-validation';
 import { MatchPasswords } from '@utils/dto-validation/custom-validation';
 
-export class PasswordChangedDto {
+export class PasswordResetDto {
+  @FieldLabel('Identificación')
+  @IsNotEmpty()
+  @IsString(isStringValidationOptions())
+  identification: string;
+
   @FieldLabel('Contraseña')
   @IsNotEmpty()
   @IsString(isStringValidationOptions())

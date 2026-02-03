@@ -6,6 +6,7 @@ import {
   isStringValidationOptions,
 } from '@utils/dto-validation';
 import { SecurityQuestionDto } from '@auth/dto/security-questions/security-question.dto';
+import { MatchPasswords } from '@utils/dto-validation/custom-validation';
 
 export class SignUpExternalDto {
   @IsString(isStringValidationOptions())
@@ -27,6 +28,11 @@ export class SignUpExternalDto {
   @IsString(isStringValidationOptions())
   @IsNotEmpty(isNotEmptyValidationOptions())
   password: string;
+
+  @IsString(isStringValidationOptions())
+  @MatchPasswords('password', { message: 'Las contraseñas no coinciden' })
+  @IsNotEmpty(isNotEmptyValidationOptions())
+  passwordConfirm: string;
 
   @IsBoolean(isBooleanValidationOptions())
   @IsNotEmpty(isNotEmptyValidationOptions())
