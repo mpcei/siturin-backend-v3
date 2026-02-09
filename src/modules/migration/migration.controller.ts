@@ -23,6 +23,18 @@ export class MigrationController {
   }
 
   @PublicRoute()
+  @Patch('catalogues')
+  async updateCatalogues(): Promise<ResponseHttpInterface> {
+    const responseService = await this.migrationService.updateTypeCatalogues();
+
+    return {
+      data: responseService.data,
+      message: 'updated',
+      title: 'catalogues',
+    };
+  }
+
+  @PublicRoute()
   @Post('zones')
   @HttpCode(HttpStatus.CREATED)
   async migrateZones(): Promise<ResponseHttpInterface> {

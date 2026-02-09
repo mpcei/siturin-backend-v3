@@ -203,6 +203,8 @@ export class MigrationService {
   }
 
   async migrateCatalogues() {
+    await this.cleanCatalogues();
+
     const data = await this.getData('siturin.catalogos');
 
     for (const item of data) {
@@ -219,6 +221,7 @@ export class MigrationService {
       entity.name = item.nombre;
       entity.type = item.tipo;
       entity.acronym = item.acronimo;
+      entity.required = false;
 
       await this.catalogueRepository.save(entity);
     }
@@ -239,7 +242,30 @@ export class MigrationService {
 
     await this.updateTypeCatalogues();
 
+    await this.migratePersoneriaJuridicas();
+    await this.migrateCatastroEstados();
+
     return { data: null };
+  }
+
+  async cleanCatalogues() {
+    await this.dataSource.query(`
+      UPDATE siturin.normativas
+      SET tipo_id = NULL
+    `);
+
+    await this.dataSource.query(`
+      DELETE FROM siturin.catalogos
+      WHERE tipo IN (
+        'ruc_clases_contribuyentes',
+        'ruc_estados',
+        'ruc_subtipos_contribuyentes',
+        'ruc_tipos',
+        'sexos'
+      )
+    `);
+
+    return { ok: true };
   }
 
   async migrateZones() {
@@ -1708,6 +1734,132 @@ export class MigrationService {
     return { data: null };
   }
 
+  async updateTypeCatalogues() {
+    const catalogueTypes = [
+      { type: 'transports_airline_type', tipo: 'aerolinea_tipos' },
+      { type: 'inspections_state', tipo: 'inspeccion_estados' },
+      { type: 'processes_state', tipo: 'tramite_estados' },
+      { type: 'dpa_types', tipo: 'dpa_tipos' },
+      { type: 'activities_geographic_area', tipo: 'zonas_geograficas' },
+      { type: 'ctc_activities', tipo: 'actividades_turisticas' },
+      {
+        type: 'tourist_transport_companies_type',
+        tipo: 'transporte_tipo_vehiculos',
+      },
+      {
+        type: 'adventure_tourism_modalities',
+        tipo: 'modalidades_turismo_aventura',
+      },
+      {
+        type: 'adventure_tourism_modality_items',
+        tipo: 'modalidades_turismo_aventura_item',
+      },
+      {
+        type: 'process_agency_permanent_physical_space',
+        tipo: 'operacion_intermediacion_espacio_fisico_permanente',
+      },
+      { type: 'processes_establishment_type', tipo: 'tramite_tipos_locales' },
+      {
+        type: 'internal_inactivation_causes',
+        tipo: 'causales_inactivacion_interno',
+      },
+      {
+        type: 'external_inactivation_causes',
+        tipo: 'causales_inactivacion',
+      },
+      { type: 'inactivation_cause_type', tipo: 'tipos_causa_inactivacion' },
+      {
+        type: 'complementary_services_model',
+        tipo: 'servicio_complementario_clasificaciones',
+      },
+      { type: 'breach_causes', tipo: 'causales_incumplimiento' },
+      {
+        type: 'activities_type_establishments',
+        tipo: 'tramite_tipos_establecimientos',
+      },
+      { type: 'rucs_types', tipo: 'ruc_tipos_contribuyentes' },
+      { type: 'rucs_state', tipo: 'ruc_estados_contribuyentes' },
+      { type: 'processes_type', tipo: 'tramite_tipos' },
+      { type: 'establishments_state', tipo: 'establecimiento_estados' },
+      { type: 'transports_type', tipo: 'transporte_tipos' },
+      { type: 'transports_establishment_type', tipo: 'transporte_tipo_locales' },
+      { type: 'rooms_room_type', tipo: '' },
+      { type: 'dpa_zone', tipo: '' },
+      { type: 'internal_zonal_users_zone', tipo: '' },
+      { type: 'complementary_services_entity', tipo: '' },
+      { type: 'process_food_drinks_establishment_type', tipo: '' },
+      { type: 'transport_vehicle_types', tipo: '' },
+      { type: 'process_transport_airline_type', tipo: '' },
+      { type: 'service_types_continent', tipo: 'tramite_tipos_servicios_continente' },
+      { type: 'kitchen_types_continent', tipo: 'tramite_tipos_cocinas_continente' },
+      { type: 'service_types_galapagos', tipo: 'tramite_tipos_servicios_galapagos' },
+      { type: 'kitchen_types_galapagos', tipo: 'tramite_tipos_cocinas_galapagos' },
+    ];
+
+    const catalogues = await this.catalogueRepository.find({ where: { required: false } });
+
+    for (const item of catalogues) {
+      const exist = catalogueTypes.find((catalogueType) => catalogueType.tipo === item.type);
+
+      console.log(item.type, '->', exist);
+
+      if (exist) {
+        item.type = exist.type;
+        item.required = true;
+        await this.catalogueRepository.save(item);
+      }
+    }
+
+    return { data: null };
+  }
+
+  private async migratePersoneriaJuridicas() {
+    const data = await this.getData('siturin.personeria_juridicas');
+
+    for (const item of data) {
+      const entity = this.catalogueRepository.create();
+      entity.createdAt = item.created_at || new Date();
+      entity.updatedAt = item.updated_at || new Date();
+      entity.deletedAt = item.deleted_at;
+      entity.enabled = item.es_visible;
+
+      entity.idTemp = item.id;
+      entity.code = item.codigo;
+      entity.name = item.nombre;
+      entity.type = 'processes_legal_entity';
+      entity.acronym = item.codigo;
+      entity.required = true;
+
+      await this.catalogueRepository.save(entity);
+    }
+
+    return { data: null };
+  }
+
+  private async migrateCatastroEstados() {
+    const data = await this.getData('siturin.catastro_estados');
+
+    for (const item of data) {
+      const entity = this.catalogueRepository.create();
+      entity.createdAt = item.created_at || new Date();
+      entity.updatedAt = item.updated_at || new Date();
+      entity.deletedAt = item.deleted_at;
+      entity.enabled = item.es_visible;
+
+      entity.idTemp = item.id;
+      entity.code = item.codigo;
+      entity.name = item.nombre;
+      entity.description = item.descripcion;
+      entity.type = 'cadastre_states_state';
+      entity.acronym = item.codigo;
+      entity.required = true;
+
+      await this.catalogueRepository.save(entity);
+    }
+
+    return { data: null };
+  }
+
   private async updateSectionsValidationType() {
     const sections = await this.regulationSectionRepository.find({
       relations: { items: true },
@@ -1818,75 +1970,6 @@ export class MigrationService {
       } else {
         console.log(`No translation found for code: ${currentCode}`);
       }
-    }
-
-    return { data: null };
-  }
-
-  private async updateTypeCatalogues() {
-    const catalogueTypes = [
-      { type: 'inspections_state', tipo: 'inspeccion_estados' },
-      { type: 'processes_state', tipo: 'tramite_estados' },
-      { type: 'cadastres_state', tipo: '' },
-      { type: 'dpa_zone', tipo: '' },
-      { type: 'activities_geographic_area', tipo: 'zonas_geograficas' },
-      { type: 'internal_zonal_users_zone', tipo: '' },
-      { type: 'processes_legal_entity', tipo: '' },
-      { type: 'ctc_activities', tipo: 'actividades_turisticas' },
-      {
-        type: 'tourist_transport_companies_type',
-        tipo: 'transporte_tipo_vehiculos',
-      },
-      { type: 'cadastre_states_state', tipo: '' },
-      {
-        type: 'adventure_tourism_modalities',
-        tipo: 'modalidades_turismo_aventura',
-      },
-      { type: 'adventure_tourism_modalities_air', tipo: '' },
-      { type: 'adventure_tourism_modalities_land', tipo: '' },
-      { type: 'adventure_tourism_modalities_water', tipo: '' },
-      {
-        type: 'process_agency_permanent_physical_space',
-        tipo: 'operacion_intermediacion_espacio_fisico_permanente',
-      },
-      { type: 'processes_local_type', tipo: 'tramite_tipos_locales' },
-      {
-        type: 'internal_inactivation_causes',
-        tipo: 'causales_inactivacion_interno',
-      },
-      { type: 'inactivation_cause_type', tipo: 'tipos_causa_inactivacion' },
-      {
-        type: 'complementary_services_model',
-        tipo: 'servicio_complementario_clasificaciones',
-      },
-      { type: 'rooms_room_type', tipo: '' },
-      { type: 'breach_causes', tipo: 'causales_incumplimiento' },
-      { type: 'complementary_services_entity', tipo: '' },
-      {
-        type: 'activities_types_kitchens_continent',
-        tipo: 'tramite_tipos_cocinas_continente',
-      },
-      {
-        type: 'activities_type_establishments',
-        tipo: 'tramite_tipos_establecimientos',
-      },
-      {
-        type: 'activities_types_services_continent',
-        tipo: 'tramite_tipos_servicios_continente',
-      },
-      { type: 'kitchen_types_continent', tipo: '' },
-      { type: 'ruc_types', tipo: 'ruc_tipos_contribuyentes' },
-      { type: 'process_food_drinks_establishment_type', tipo: '' },
-      { type: 'service_types_continent', tipo: '' },
-      { type: 'transport_vehicle_types', tipo: '' },
-      { type: 'process_transport_airline_type', tipo: '' },
-    ];
-
-    for (const catalogueType of catalogueTypes) {
-      await this.catalogueRepository.update(
-        { type: catalogueType.type },
-        { type: catalogueType.tipo },
-      );
     }
 
     return { data: null };

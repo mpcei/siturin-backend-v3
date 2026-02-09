@@ -1,10 +1,10 @@
 import {
-  Entity,
-  PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
-  UpdateDateColumn,
+  Entity,
   OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { RegulationItemEntity } from './regulation-item.entity';
 
@@ -60,7 +60,7 @@ export class RegulationSectionEntity {
   })
   sort: number;
 
-  @Column({ name: 'model_id', type: 'varchar', comment: '' })
+  @Column({ name: 'model_id', type: 'varchar', nullable: true, comment: '' })
   modelId: string;
 
   @Column({
