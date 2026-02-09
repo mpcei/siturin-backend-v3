@@ -4,7 +4,7 @@ import {
   CatalogueActivitiesCodeEnum,
   CatalogueCadastresStateEnum,
   CatalogueProcessesStateEnum,
-  CatalogueTypeEnum,
+  CoreCatalogueTypeEnum,
 } from '@modules/core/utils/enums';
 
 import { ConfigEnum } from '@utils/enums';
@@ -114,7 +114,7 @@ export class ProcessAgencyService {
 
     const state = await catalogueRepository.findOneBy({
       code: CatalogueProcessesStateEnum.pending_1,
-      type: CatalogueTypeEnum.processes_state,
+      type: CoreCatalogueTypeEnum.processes_state,
     });
 
     if (state) process.stateId = state.id;
@@ -306,7 +306,7 @@ export class ProcessAgencyService {
     const state = await catalogueRepository.findOne({
       where: {
         code: CatalogueCadastresStateEnum.pending,
-        type: CatalogueTypeEnum.cadastres_state,
+        type: CoreCatalogueTypeEnum.cadastres_state,
       },
     });
 

@@ -3,7 +3,7 @@ import { DataSource, EntityManager } from 'typeorm';
 import {
   CatalogueActivitiesCodeEnum,
   CatalogueCadastresStateEnum,
-  CatalogueTypeEnum,
+  CoreCatalogueTypeEnum,
 } from '@modules/core/utils/enums';
 
 import { ConfigEnum } from '@utils/enums';
@@ -221,7 +221,7 @@ export class ProcessTransportService {
     const state = await catalogueRepository.findOne({
       where: {
         code: CatalogueCadastresStateEnum.pending,
-        type: CatalogueTypeEnum.cadastres_state,
+        type: CoreCatalogueTypeEnum.cadastres_state,
       },
     });
 

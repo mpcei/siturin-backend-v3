@@ -5,11 +5,16 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { RucEntity } from '@modules/core/entities/ruc.entity';
 import { CatalogueEntity } from '@modules/common/catalogue/catalogue.entity';
+import { DpaEntity } from '@modules/common/dpa/dpa.entity';
+import { ProcessEntity } from '@modules/core/entities/process.entity';
+import { EstablishmentAddressEntity } from '@modules/core/entities/establishment-address.entity';
 
 @Entity('establishments', { schema: 'core' })
 export class EstablishmentEntity {
@@ -49,6 +54,14 @@ export class EstablishmentEntity {
   enabled: boolean;
 
   /** Inverse Relationship **/
+  @OneToOne(() => ProcessEntity, (entity) => entity.establishment)
+  process: ProcessEntity;
+
+  @OneToMany(() => ProcessEntity, (entity) => entity.establishment)
+  processes: ProcessEntity[];
+
+  @OneToOne(() => EstablishmentAddressEntity, (entity) => entity.establishment)
+  establishmentAddress: EstablishmentAddressEntity;
 
   /** Foreign Keys **/
   @ManyToOne(() => RucEntity, { nullable: true })
@@ -72,6 +85,39 @@ export class EstablishmentEntity {
     comment: '',
   })
   stateId: string;
+
+  @ManyToOne(() => DpaEntity, { nullable: true })
+  @JoinColumn({ name: 'province_id' })
+  province: DpaEntity;
+  @Column({
+    type: 'uuid',
+    name: 'province_id',
+    nullable: true,
+    comment: '',
+  })
+  provinceId: string;
+
+  @ManyToOne(() => DpaEntity, { nullable: true })
+  @JoinColumn({ name: 'canton_id' })
+  canton: DpaEntity;
+  @Column({
+    type: 'uuid',
+    name: 'canton_id',
+    nullable: true,
+    comment: '',
+  })
+  cantonId: string;
+
+  @ManyToOne(() => DpaEntity, { nullable: true })
+  @JoinColumn({ name: 'parish_id' })
+  parish: DpaEntity;
+  @Column({
+    type: 'uuid',
+    name: 'parish_id',
+    nullable: true,
+    comment: '',
+  })
+  parishId: string;
 
   /** Columns **/
   @Column({
@@ -100,8 +146,57 @@ export class EstablishmentEntity {
   webPage: string;
 
   @Column({
+    name: 'main_street',
+    type: 'text',
+    nullable: true,
+    comment: '',
+  })
+  mainStreet: string;
+
+  @Column({
+    name: 'number_street',
+    type: 'text',
+    nullable: true,
+    comment: '',
+  })
+  numberStreet: string;
+
+  @Column({
+    name: 'secondary_street',
+    type: 'text',
+    nullable: true,
+    comment: 'Nombre',
+  })
+  secondaryStreet: string;
+
+  @Column({
+    name: 'reference_street',
+    type: 'text',
+    nullable: true,
+    comment: '',
+  })
+  referenceStreet: string;
+
+  @Column({
+    name: 'latitude',
+    type: 'float',
+    nullable: true,
+    comment: '',
+  })
+  latitude: number;
+
+  @Column({
+    name: 'longitude',
+    type: 'float',
+    nullable: true,
+    comment: '',
+  })
+  longitude: number;
+
+  @Column({
     name: 'id_temp',
     type: 'bigint',
+    nullable: true,
     comment: 'Codigo de la tabla migrada',
   })
   idTemp: number;

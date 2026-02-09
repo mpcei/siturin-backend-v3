@@ -14,10 +14,11 @@ import { ProcessCtcService } from '@modules/core/roles/external/services/process
 import { ProcessEventService } from '@modules/core/roles/external/services/process-event.service';
 import { ProcessFoodDrinkService } from '@modules/core/roles/external/services/process-food-drink.service';
 import { ProcessTransportService } from '@modules/core/roles/external/services/process-transport.service';
+import { HttpModule } from '@nestjs/axios';
 
 @Global()
 @Module({
-  imports: [CatalogueModule, FileModule, MailModule, SharedCoreModule, ReportsModule],
+  imports: [HttpModule, CatalogueModule, FileModule, MailModule, SharedCoreModule, ReportsModule],
   controllers,
   providers: [
     ...coreProviders,

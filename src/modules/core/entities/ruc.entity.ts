@@ -5,12 +5,14 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { CatalogueEntity } from '@modules/common/catalogue/catalogue.entity';
 import { PaymentEntity } from '@modules/core/entities/payment.entity';
+import { EstablishmentEntity } from '@modules/core/entities/establishment.entity';
 
 @Entity('rucs', { schema: 'core' })
 export class RucEntity {
@@ -52,6 +54,9 @@ export class RucEntity {
   /** Inverse Relationship **/
   @OneToOne(() => PaymentEntity, (entity) => entity.ruc)
   payment: PaymentEntity;
+
+  @OneToMany(() => EstablishmentEntity, (entity) => entity.ruc)
+  establishments: EstablishmentEntity[];
 
   /** Foreign Keys **/
   @ManyToOne(() => CatalogueEntity, { nullable: true })

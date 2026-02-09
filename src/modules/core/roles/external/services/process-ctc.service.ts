@@ -4,7 +4,7 @@ import { BadRequestException, Inject, Injectable, NotFoundException } from '@nes
 import {
   CatalogueActivitiesCodeEnum,
   CatalogueCadastresStateEnum,
-  CatalogueTypeEnum,
+  CoreCatalogueTypeEnum,
 } from '@modules/core/utils/enums';
 import { ConfigEnum } from '@utils/enums';
 
@@ -244,7 +244,7 @@ export class ProcessCtcService {
     const state = await catalogueRepository.findOne({
       where: {
         code: CatalogueCadastresStateEnum.pending,
-        type: CatalogueTypeEnum.cadastres_state,
+        type: CoreCatalogueTypeEnum.cadastres_state,
       },
     });
 

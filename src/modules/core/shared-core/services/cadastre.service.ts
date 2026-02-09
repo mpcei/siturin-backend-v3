@@ -1,7 +1,7 @@
 import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { DataSource, EntityManager } from 'typeorm';
 import { ConfigEnum } from '@utils/enums';
-import { CatalogueProcessesStateEnum, CatalogueTypeEnum } from '@modules/core/utils/enums';
+import { CatalogueProcessesStateEnum, CoreCatalogueTypeEnum } from '@modules/core/utils/enums';
 import { differenceInDays, format, startOfDay } from 'date-fns';
 import {
   CadastreEntity,
@@ -242,7 +242,7 @@ export class CadastreService {
     const processState = await catalogueRepository.findOne({
       where: {
         code: CatalogueProcessesStateEnum.completed,
-        type: CatalogueTypeEnum.processes_state,
+        type: CoreCatalogueTypeEnum.processes_state,
       },
     });
 
@@ -273,7 +273,7 @@ export class CadastreService {
     const processState = await catalogueRepository.findOne({
       where: {
         code: CatalogueProcessesStateEnum.completed,
-        type: CatalogueTypeEnum.processes_state,
+        type: CoreCatalogueTypeEnum.processes_state,
       },
     });
 
@@ -306,7 +306,7 @@ export class CadastreService {
     const processState = await catalogueRepository.findOne({
       where: {
         code: CatalogueProcessesStateEnum.completed,
-        type: CatalogueTypeEnum.processes_state,
+        type: CoreCatalogueTypeEnum.processes_state,
       },
     });
 
@@ -342,7 +342,7 @@ export class CadastreService {
     const processState = await catalogueRepository.findOne({
       where: {
         code: CatalogueProcessesStateEnum.pending_2,
-        type: CatalogueTypeEnum.processes_state,
+        type: CoreCatalogueTypeEnum.processes_state,
       },
     });
 
@@ -373,7 +373,7 @@ export class CadastreService {
     const processState = await catalogueRepository.findOne({
       where: {
         code: CatalogueProcessesStateEnum.completed,
-        type: CatalogueTypeEnum.processes_state,
+        type: CoreCatalogueTypeEnum.processes_state,
       },
     });
 
@@ -410,7 +410,7 @@ export class CadastreService {
     const processState = await catalogueRepository.findOne({
       where: {
         code: CatalogueProcessesStateEnum.completed,
-        type: CatalogueTypeEnum.processes_state,
+        type: CoreCatalogueTypeEnum.processes_state,
       },
     });
 

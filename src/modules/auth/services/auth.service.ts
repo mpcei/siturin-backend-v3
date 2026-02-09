@@ -442,6 +442,13 @@ export class AuthService {
     });
   }
 
+  async verifyExistEmail(email: string): Promise<UserEntity | null> {
+    return await this.repository.findOne({
+      where: { email },
+      select: { id: true },
+    });
+  }
+
   async verifyUpdatedUser(identification: string, userId: string): Promise<UserEntity | null> {
     return await this.repository.findOne({
       where: { identification, id: Not(userId) },

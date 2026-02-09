@@ -172,6 +172,18 @@ export class AuthController {
   }
 
   @PublicRoute()
+  @Get(':email/email-exist')
+  async verifyExistEmail(@Param('email') email: string): Promise<ResponseHttpInterface> {
+    const serviceResponse = await this.authService.verifyExistEmail(email);
+
+    return {
+      data: serviceResponse,
+      message: `Existe Identificacion`,
+      title: 'Existe',
+    };
+  }
+
+  @PublicRoute()
   @Get(':identification/registered')
   async verifyRegisteredUser(
     @Param('identification') identification: string,

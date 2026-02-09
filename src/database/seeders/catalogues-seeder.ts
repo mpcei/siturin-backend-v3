@@ -13,7 +13,7 @@ export class CataloguesSeeder {
   constructor(private catalogueService: CataloguesService) {}
 
   async run() {
-    await this.createBloodTypeCatalogues();
+    // await this.createBloodTypeCatalogues();
     await this.createEthnicOriginCatalogues();
     await this.createIdentificationTypeCatalogues();
     await this.createSexCatalogues();

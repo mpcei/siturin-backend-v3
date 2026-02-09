@@ -6,6 +6,7 @@ import { ProcessParkController } from '@modules/core/roles/external/controllers/
 import { ProcessCtcController } from '@modules/core/roles/external/controllers/ctc.controller';
 import { ProcessEventController } from '@modules/core/roles/external/controllers/process-event.controller';
 import { ProcessFoodDrinkController } from '@modules/core/roles/external/controllers/process-food-drink.controller';
+import { RucController } from '@modules/core/roles/external/controllers/ruc.controller';
 
 export const controllers = [
   CadastreController,
@@ -16,4 +17,5 @@ export const controllers = [
   ProcessCtcController,
   ProcessEventController,
   ProcessFoodDrinkController,
+  RucController
 ];

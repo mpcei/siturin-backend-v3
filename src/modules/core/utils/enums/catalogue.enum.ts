@@ -1,4 +1,4 @@
-export enum CatalogueTypeEnum {
+export enum CoreCatalogueTypeEnum {
   inspections_state = 'inspections_state',
   processes_state = 'processes_state',
   cadastres_state = 'cadastres_state',
@@ -9,6 +9,7 @@ export enum CatalogueTypeEnum {
   ctc_activities = 'ctc_activities',
   tourist_transport_companies_type = 'tourist_transport_companies_type',
   cadastre_states_state = 'cadastre_states_state',
+  establishments_state = 'establishments_state',
   adventure_tourism_modalities = 'adventure_tourism_modalities',
   adventure_tourism_modalities_air = 'adventure_tourism_modalities_air',
   adventure_tourism_modalities_land = 'adventure_tourism_modalities_land',

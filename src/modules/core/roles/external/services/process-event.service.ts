@@ -2,7 +2,7 @@ import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import {
   CatalogueActivitiesCodeEnum,
   CatalogueCadastresStateEnum,
-  CatalogueTypeEnum,
+  CoreCatalogueTypeEnum,
 } from '@modules/core/utils/enums';
 
 import { ConfigEnum } from '@utils/enums';
@@ -143,7 +143,7 @@ export class ProcessEventService {
     const state = await catalogueRepository.findOne({
       where: {
         code: CatalogueCadastresStateEnum.pending,
-        type: CatalogueTypeEnum.cadastres_state,
+        type: CoreCatalogueTypeEnum.cadastres_state,
       },
     });
 

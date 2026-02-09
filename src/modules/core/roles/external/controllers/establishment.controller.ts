@@ -3,8 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  HttpCode,
-  HttpStatus,
   Param,
   ParseUUIDPipe,
   Post,
@@ -14,7 +12,6 @@ import {
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Auth } from '@auth/decorators';
 import { ResponseHttpInterface } from '@utils/interfaces';
-import { CadastreService } from '@modules/core/roles/external/services/cadastre.service';
 import { CreateCadastreDto } from '@modules/core/roles/external/dto/cadastre';
 import { PaginationDto } from '@utils/pagination';
 import { EstablishmentService } from '@modules/core/roles/external/services/establishment.service';
@@ -27,7 +24,6 @@ export class EstablishmentController {
 
   @ApiOperation({ summary: 'List all Cadastres' })
   @Get()
-  @HttpCode(HttpStatus.OK)
   async findAll(@Query() params: PaginationDto): Promise<ResponseHttpInterface> {
     const serviceResponse = await this.service.findAll(params);
 
@@ -39,14 +35,25 @@ export class EstablishmentController {
     };
   }
 
-  @ApiOperation({ summary: 'Delete Cadastre' })
+  @ApiOperation({ summary: 'List all Cadastres' })
+  @Put('sri/:ruc')
+  async findSRIEstablishments(@Param('ruc') ruc: string): Promise<ResponseHttpInterface> {
+    const serviceResponse = await this.service.updateSRIEstablishments(ruc);
+
+    return {
+      data: serviceResponse.data,
+      message: `Establecimientos Actualizados`,
+      title: `Actualizadoa`,
+    };
+  }
+
+  @ApiOperation({ summary: 'Find One' })
   @Get(':id')
-  @HttpCode(HttpStatus.OK)
   async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<ResponseHttpInterface> {
     const serviceResponse = await this.service.findOne(id);
 
     return {
-      data: serviceResponse.data,
+      data: serviceResponse,
       message: `Registro Consultado`,
       title: `Consultado`,
     };
@@ -54,7 +61,6 @@ export class EstablishmentController {
 
   @ApiOperation({ summary: 'Create Cadastre' })
   @Post()
-  @HttpCode(HttpStatus.OK)
   async create(@Body() payload: CreateCadastreDto): Promise<ResponseHttpInterface> {
     const serviceResponse = await this.service.create(payload);
 
@@ -67,7 +73,6 @@ export class EstablishmentController {
 
   @ApiOperation({ summary: 'Update Cadastre' })
   @Put(':id')
-  @HttpCode(HttpStatus.OK)
   async update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() payload: CreateCadastreDto,
@@ -83,7 +88,6 @@ export class EstablishmentController {
 
   @ApiOperation({ summary: 'Delete Cadastre' })
   @Delete(':id')
-  @HttpCode(HttpStatus.OK)
   async remove(@Param('id', ParseUUIDPipe) id: string): Promise<ResponseHttpInterface> {
     const serviceResponse = await this.service.remove(id);
 

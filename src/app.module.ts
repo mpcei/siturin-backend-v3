@@ -15,6 +15,7 @@ import { CoreModule } from '@modules/core/core.module';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { JoiValidationSchema } from './config/joi.validation';
 import { ResponseHttpInterceptor } from '@utils/interceptors';
+import { MigrationModule } from '@modules/migration/migration.module';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { ResponseHttpInterceptor } from '@utils/interceptors';
     CoreModule,
     ReportsModule,
     ImportsModule,
+    MigrationModule,
   ],
   controllers: [AppController],
   providers: [
