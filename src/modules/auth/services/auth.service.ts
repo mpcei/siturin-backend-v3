@@ -170,6 +170,24 @@ export class AuthService {
   }
 
   async signUpExternal(payload: SignUpExternalDto): Promise<UserEntity> {
+    const user = await this.repository.findOne({
+      where: [{ identification: payload.identification }, { email: payload.email }],
+    });
+
+    if (user && user.identification === payload.identification) {
+      throw new BadRequestException({
+        error: 'El usuario ya existe',
+        message: 'Por favor ingrese otro RUC',
+      });
+    }
+
+    if (user && user.email === payload.email) {
+      throw new BadRequestException({
+        error: 'El correo ya se encuentra en uso',
+        message: 'Por favor ingrese otro correo',
+      });
+    }
+
     const role = await this.roleRepository.findOneBy({ code: RoleEnum.EXTERNAL });
 
     if (payload.password !== payload.passwordConfirm) {
