@@ -25,6 +25,9 @@ export class SignUpExternalDto {
   @IsNotEmpty(isNotEmptyValidationOptions())
   name: string;
 
+  @IsNotEmpty(isNotEmptyValidationOptions())
+  ruc: any;
+
   @IsString(isStringValidationOptions())
   @IsNotEmpty(isNotEmptyValidationOptions())
   password: string;

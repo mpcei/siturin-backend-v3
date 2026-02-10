@@ -118,14 +118,6 @@ export class RucEntity {
   legalRepresentativeNames: string;
 
   @Column({
-    name: 'trade_name',
-    type: 'text',
-    nullable: true,
-    comment: '',
-  })
-  tradeName: string;
-
-  @Column({
     name: 'number',
     type: 'varchar',
     nullable: true,
@@ -168,6 +160,7 @@ export class RucEntity {
   @Column({
     name: 'id_temp',
     type: 'bigint',
+    nullable: true,
     comment: 'Codigo de la tabla migrada',
   })
   idTemp: number;

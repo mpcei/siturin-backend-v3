@@ -629,7 +629,6 @@ export class MigrationService {
         entity.mainEconomicActivity = item.actividad_economica_principal;
         entity.legalRepresentativeIdentification = item.representante_legal_identificacion;
         entity.legalRepresentativeNames = item.representante_legal_nombres;
-        entity.tradeName = item.nombre_comercial;
         entity.number = item.numero;
         entity.companyRegistrationNumber = item.numero_expediente_supercias;
         entity.legalName = item.razon_social;

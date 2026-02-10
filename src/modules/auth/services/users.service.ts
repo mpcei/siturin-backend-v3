@@ -15,6 +15,7 @@ import { ConfigType } from '@nestjs/config';
 import { MailDataInterface } from '@modules/common/mail/interfaces/mail-data.interface';
 import { MailService } from '@modules/common/mail/mail.service';
 import { createHash, randomUUID } from 'node:crypto';
+import { RoleEnum } from '@auth/enums';
 
 @Injectable()
 export class UsersService {
@@ -38,9 +39,18 @@ export class UsersService {
 
     if (entityExist) throw new BadRequestException('El registro ya existe');
 
+    let passwordChanged = !payload.passwordChanged;
+    let securityQuestionAcceptedAt: null | Date = null;
+
+    if (payload.email.includes('@produccion.gob.ec')) {
+      passwordChanged = true;
+      securityQuestionAcceptedAt = new Date();
+    }
+
     const entity = this.repository.create({
       ...payload,
-      passwordChanged: !payload.passwordChanged,
+      passwordChanged,
+      securityQuestionAcceptedAt,
     });
 
     const userCreated = await this.repository.save(entity);

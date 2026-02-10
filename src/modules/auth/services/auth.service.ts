@@ -34,6 +34,10 @@ import { CreateSecurityQuestionDto } from '@auth/dto/security-questions/create-s
 import { EmailResetSecurityQuestionDto } from '@auth/dto/security-questions/email-reset-security-question.dto';
 import { createHash, randomUUID } from 'node:crypto';
 import { PasswordResetDto } from '@auth/dto/auth/password-reset.dto';
+import { CoreRepositoryEnum } from '@modules/core/utils/enums';
+import { RucEntity } from '@modules/core/entities';
+import { CreateRucDto } from '@auth/dto/auth/create-ruc.dto';
+import { CataloguesService } from '@modules/common/catalogue/catalogue.service';
 
 @Injectable()
 export class AuthService {
@@ -48,9 +52,12 @@ export class AuthService {
     private securityQuestionRepository: Repository<SecurityQuestionEntity>,
     @Inject(AuthRepositoryEnum.EMAIL_VERIFICATION_REPOSITORY)
     private emailVerificationRepository: Repository<EmailVerificationsEntity>,
+    @Inject(CoreRepositoryEnum.RUC_REPOSITORY)
+    private rucRepository: Repository<RucEntity>,
     @Inject(envConfig.KEY) private configService: ConfigType<typeof envConfig>,
     @Inject(ConfigEnum.PG_DATA_SOURCE)
     private readonly dataSource: DataSource,
+    private readonly cataloguesService: CataloguesService,
     private jwtService: JwtService,
     private readonly mailService: MailService,
     private readonly httpService: HttpService,
@@ -137,11 +144,21 @@ export class AuthService {
         message: 'Aún no has verificado tu correo electrónico',
       });
 
-    if (!(await this.checkPassword(payload.password, user))) {
-      throw new UnauthorizedException({
-        error: ErrorCodeEnum.INVALID_PASSWORD,
-        message: `Usuario y/o contraseña no válidos, ${user.maxAttempts - 1} intentos restantes`,
-      });
+    if (payload.username.includes('@produccion.gob.ec')) {
+      const response = await this.signInLDAP(payload);
+      if (!response) {
+        throw new UnauthorizedException({
+          error: ErrorCodeEnum.INVALID_PASSWORD,
+          message: `Usuario y/o contraseña no válidos, ${user.maxAttempts - 1} intentos restantes`,
+        });
+      }
+    } else {
+      if (!(await this.checkPassword(payload.password, user))) {
+        throw new UnauthorizedException({
+          error: ErrorCodeEnum.INVALID_PASSWORD,
+          message: `Usuario y/o contraseña no válidos, ${user.maxAttempts - 1} intentos restantes`,
+        });
+      }
     }
 
     const { password, suspendedAt, maxAttempts, ...userRest } = user;
@@ -214,9 +231,28 @@ export class AuthService {
       securityQuestions,
     });
 
+    await this.createRuc(payload.ruc);
+
     return await this.repository.save(entity);
   }
 
+  async createRuc(ruc: CreateRucDto): Promise<RucEntity> {
+    const catalogues = await this.cataloguesService.findCache();
+    const state = catalogues.find((item) => item.code === ruc.estadoContribuyente.toLowerCase());
+    const type = catalogues.find((item) => item.code === ruc.tipoContribuyente.toLowerCase());
+
+    const rucEntity = this.rucRepository.create();
+    rucEntity.mainEconomicActivity = ruc.actividadEconomicaPrincipal;
+    rucEntity.legalRepresentativeIdentification = ruc.cedulaRepresentanteLegal;
+    rucEntity.lastUpdatedAt = ruc.fechaActualizacion;
+    rucEntity.legalRepresentativeNames = ruc.nombreRepresentanteLegal;
+    rucEntity.legalName = ruc.razonSocial;
+    rucEntity.number = ruc.ruc;
+    if (state) rucEntity.state = state;
+    if (type) rucEntity.type = type;
+
+    return this.rucRepository.save(rucEntity);
+  }
   async refreshToken(user: UserEntity): Promise<TokenInterface> {
     const tokens = this.generateJwt(user);
 
@@ -724,5 +760,13 @@ export class AuthService {
       hashedToken,
       expiresAt,
     };
+  }
+
+  async findRuc(ruc: string): Promise<boolean> {
+    const url = `${this.configService.urlDinardap}/sri/${ruc}`;
+
+    const response = await lastValueFrom(this.httpService.get(url));
+
+    return response.data.data;
   }
 }

@@ -267,4 +267,16 @@ export class AuthController {
       title: 'Solicitud Recibida',
     };
   }
+
+  @PublicRoute()
+  @Get('rucs/:ruc')
+  async findRuc(@Param('ruc') ruc: string): Promise<ResponseHttpInterface> {
+    const serviceResponse = await this.authService.findRuc(ruc);
+
+    return {
+      data: serviceResponse,
+      message: `Existe Identificacion`,
+      title: 'Existe',
+    };
+  }
 }
