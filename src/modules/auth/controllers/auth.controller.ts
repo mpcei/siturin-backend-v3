@@ -12,7 +12,7 @@ import {
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { PublicRoute, User } from '@auth/decorators';
 import { UserEntity } from '@auth/entities';
-import { PasswordChangedDto, SignInDto, SignUpExternalDto } from '@auth/dto';
+import { PasswordChangedDto, SignInDto, SignUpExternalDto, TermsDto } from '@auth/dto';
 import { ResponseHttpInterface } from '@utils/interfaces';
 import { AuthService } from '@auth/services/auth.service';
 import { AuthGuard } from '@nestjs/passport';
@@ -272,6 +272,20 @@ export class AuthController {
   @Get('rucs/:ruc')
   async findRuc(@Param('ruc') ruc: string): Promise<ResponseHttpInterface> {
     const serviceResponse = await this.authService.findRuc(ruc);
+
+    return {
+      data: serviceResponse,
+      message: `Existe Identificacion`,
+      title: 'Existe',
+    };
+  }
+
+  @Patch('terms-conditions/accept')
+  async acceptTerms(
+    @User() user: UserEntity,
+    @Body() payload: TermsDto,
+  ): Promise<ResponseHttpInterface> {
+    const serviceResponse = await this.authService.acceptTerms(user.id, payload);
 
     return {
       data: serviceResponse,

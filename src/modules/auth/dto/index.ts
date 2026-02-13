@@ -6,6 +6,7 @@ export * from './menus/base-menu.dto';
 export * from './auth/sign-in.dto';
 export * from './auth/password-changed.dto';
 export * from './auth/sign-up-external.dto';
+export * from './auth/terms.dto';
 
 // Users
 export * from './users/create-user.dto';

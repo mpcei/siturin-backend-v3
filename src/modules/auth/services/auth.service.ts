@@ -18,7 +18,7 @@ import {
 } from '@auth/entities';
 import { PayloadTokenInterface, TokenInterface } from 'src/modules/auth/interfaces';
 import { AuthRepositoryEnum, ConfigEnum, MailSubjectEnum, MailTemplateEnum } from '@utils/enums';
-import { PasswordChangedDto, SignInDto, SignUpExternalDto } from '@auth/dto';
+import { PasswordChangedDto, SignInDto, SignUpExternalDto, TermsDto } from '@auth/dto';
 import { ServiceResponseHttpInterface } from '@utils/interfaces';
 import { MailService } from '@modules/common/mail/mail.service';
 import { envConfig } from '@config';
@@ -70,7 +70,10 @@ export class AuthService {
     });
 
     if (!user) {
-      throw new NotFoundException('Usuario no encontrado para cambio de contraseña');
+      throw new NotFoundException({
+        error: ErrorCodeEnum.NOT_FOUND,
+        message: 'Usuario no encontrado para cambio de contraseña',
+      });
     }
 
     if (payload.password !== payload.passwordConfirm) {
@@ -109,6 +112,7 @@ export class AuthService {
         username: true,
         securityQuestionAcceptedAt: true,
         passwordChanged: true,
+        termsAcceptedAt: true,
       },
       where: {
         username: payload.username,
@@ -236,6 +240,23 @@ export class AuthService {
     return await this.repository.save(entity);
   }
 
+  async acceptTerms(id: string, payload: TermsDto): Promise<boolean> {
+    const user = await this.repository.findOne({
+      where: { id },
+      select: { id: true, termsAcceptedAt: true },
+    });
+
+    if (!user) {
+      throw new NotFoundException('Usuario no encontrado para cambio de contraseña');
+    }
+
+    user.termsAcceptedAt = payload.termsAcceptedAt ? new Date() : null;
+
+    await this.repository.save(user);
+
+    return true;
+  }
+
   async createRuc(ruc: CreateRucDto): Promise<RucEntity> {
     const catalogues = await this.cataloguesService.findCache();
     const state = catalogues.find((item) => item.code === ruc.estadoContribuyente.toLowerCase());
@@ -253,6 +274,7 @@ export class AuthService {
 
     return this.rucRepository.save(rucEntity);
   }
+
   async refreshToken(user: UserEntity): Promise<TokenInterface> {
     const tokens = this.generateJwt(user);
 
@@ -275,7 +297,7 @@ export class AuthService {
     if (!user) {
       throw new NotFoundException({
         error: MessageAuthEnum.NOT_FOUND,
-        message: 'Usuario no encontrado, intente de nuevo',
+        message: 'Usuario no encontrado, intenta de nuevo',
       });
     }
 
@@ -294,7 +316,7 @@ export class AuthService {
         throw new BadRequestException({
           data: { remainingSeconds },
           error: ErrorCodeEnum.REMAINING_TOKEN,
-          message: `Ya has generado un código recientemente. Por favor espera ${remainingSeconds} segundos.`,
+          message: `Por favor espera ${remainingSeconds} segundos.`,
         });
       }
     }
@@ -344,7 +366,7 @@ export class AuthService {
         throw new BadRequestException({
           data: { remainingSeconds },
           error: ErrorCodeEnum.REMAINING_TOKEN,
-          message: `Ya has generado un código recientemente. Por favor espera ${remainingSeconds} segundos antes de solicitar uno nuevo.`,
+          message: `Por favor espera ${remainingSeconds} segundos antes de solicitar uno nuevo.`,
         });
       }
     }
@@ -386,7 +408,7 @@ export class AuthService {
         throw new BadRequestException({
           data: { remainingSeconds },
           error: ErrorCodeEnum.REMAINING_TOKEN,
-          message: `Ya has generado un código recientemente. Por favor espera ${remainingSeconds} segundos antes de solicitar uno nuevo.`,
+          message: `Por favor espera ${remainingSeconds} segundos antes de solicitar uno nuevo.`,
         });
       }
     }
@@ -466,7 +488,7 @@ export class AuthService {
 
     if (!user) {
       throw new NotFoundException({
-        message: 'Usuario no encontrado para resetear contraseña, intente de nuevo',
+        message: 'Usuario no encontrado para resetear contraseña, intenta de nuevo',
         error: MessageAuthEnum.NOT_FOUND,
       });
     }
@@ -528,7 +550,10 @@ export class AuthService {
     });
 
     if (!user) {
-      throw new NotFoundException('Registro no encontrado');
+      throw new NotFoundException({
+        error: 'Registro no encontrado',
+        message: 'Intenta de nuevo',
+      });
     }
 
     return {
@@ -762,7 +787,7 @@ export class AuthService {
     };
   }
 
-  async findRuc(ruc: string): Promise<boolean> {
+  async findRuc(ruc: string): Promise<any> {
     const url = `${this.configService.urlDinardap}/sri/${ruc}`;
 
     const response = await lastValueFrom(this.httpService.get(url));
