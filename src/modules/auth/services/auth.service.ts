@@ -353,13 +353,14 @@ export class AuthService {
     }
 
     const transactionalCode = await this.transactionalCodeRepository.findOne({
-      where: { requester: user.username },
+      where: { requester: user.identification },
       order: { createdAt: 'DESC' },
     });
 
+    console.log(transactionalCode);
     if (transactionalCode) {
       const cooldownTime = addMinutes(transactionalCode.createdAt, 1);
-
+      console.log('cooldownTime password reset', cooldownTime);
       if (isBefore(new Date(), cooldownTime)) {
         const remainingSeconds = differenceInSeconds(cooldownTime, new Date());
 
@@ -401,7 +402,7 @@ export class AuthService {
 
     if (transactionalCode) {
       const cooldownTime = addMinutes(transactionalCode.createdAt, 1);
-
+      console.log('cooldownTime signup', cooldownTime);
       if (isBefore(new Date(), cooldownTime)) {
         const remainingSeconds = differenceInSeconds(cooldownTime, new Date());
 
@@ -444,14 +445,14 @@ export class AuthService {
 
     if (!transactionalCode) {
       throw new BadRequestException({
-        message: 'Código Transaccional no válido',
+        message: 'Código de seguridad no válido',
         error: MessageAuthEnum.TRANSACTIONAL_CODE_INVALID,
       });
     }
 
     if (transactionalCode.requester.toLowerCase() !== requester.toLowerCase()) {
       throw new BadRequestException({
-        message: 'El usuario no corresponde al código transaccional generado',
+        message: 'El usuario no corresponde al código seguridad generado',
         error: MessageAuthEnum.TRANSACTIONAL_CODE_NOT_MATCH,
       });
     }
@@ -713,6 +714,14 @@ export class AuthService {
     });
   }
 
+  async findRuc(ruc: string): Promise<any> {
+    const url = `${this.configService.urlDinardap}/sri/${ruc}`;
+
+    const response = await lastValueFrom(this.httpService.get(url));
+
+    return response.data.data;
+  }
+
   private generateJwt(user: UserEntity) {
     const payload: PayloadTokenInterface = {
       sub: user.id,
@@ -785,13 +794,5 @@ export class AuthService {
       hashedToken,
       expiresAt,
     };
-  }
-
-  async findRuc(ruc: string): Promise<any> {
-    const url = `${this.configService.urlDinardap}/sri/${ruc}`;
-
-    const response = await lastValueFrom(this.httpService.get(url));
-
-    return response.data.data;
   }
 }
