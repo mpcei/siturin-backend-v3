@@ -103,13 +103,13 @@ export class MailService implements OnModuleInit {
     const sendMailOptions = {
       to: mailData.to,
       from: `"${this.configService.mail.fromName}" <${this.configService.mail.from}>`,
-      subject: `${mailData.subject} - ${this.configService.appName}`,
+      subject: `${mailData.subject} - ${this.configService.app.name}`,
       template: mailData.template,
       context: {
         system: {
-          name: this.configService.appName,
-          shortName: this.configService.appShortName,
-          url: this.configService.appUrl,
+          name: this.configService.app.name,
+          shortName: this.configService.app.shortName,
+          url: this.configService.app.url,
         },
         expiresIn: this.configService.securityCodeExpiresIn,
         year: format(new Date(), 'yyyy'),
@@ -140,7 +140,7 @@ export class MailService implements OnModuleInit {
   private async configTemplates() {
     let pathTemplates = join(__dirname, 'templates');
 
-    if (this.configService.env !== 'production') {
+    if (this.configService.app.env !== 'production') {
       pathTemplates = this.folderPathsService.mailTemplates;
     }
 

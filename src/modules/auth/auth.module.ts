@@ -33,9 +33,9 @@ import { CacheModule } from '@nestjs/cache-manager';
       inject: [envConfig.KEY],
       useFactory: (configService: ConfigType<typeof envConfig>) => {
         return {
-          secret: configService.jwtSecret,
+          secret: configService.jwt.secret,
           signOptions: {
-            expiresIn: configService.jwtExpires,
+            expiresIn: configService.jwt.expires,
           },
         };
       },

@@ -15,7 +15,7 @@ export class AppController {
   @PublicRoute()
   @Post('init')
   async init(): Promise<ResponseHttpInterface> {
-    if (this.configService.env === 'local') {
+    if (this.configService.app.env === 'local') {
       await this.databaseSeeder.run();
 
       return {

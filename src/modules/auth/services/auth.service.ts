@@ -183,7 +183,7 @@ export class AuthService {
   }
 
   async signInLDAP(payload: SignInDto): Promise<boolean> {
-    const url = `${this.configService.urlLDAP}/${payload.username.split('@')[0]}/${payload.password}`;
+    const url = `${this.configService.externalApis.urlLDAP}/${payload.username.split('@')[0]}/${payload.password}`;
 
     const response = await lastValueFrom(this.httpService.get(url));
 
@@ -715,7 +715,7 @@ export class AuthService {
   }
 
   async findRuc(ruc: string): Promise<any> {
-    const url = `${this.configService.urlDinardap}/sri/${ruc}`;
+    const url = `${this.configService.externalApis.urlDinardap}/sri/${ruc}`;
 
     const response = await lastValueFrom(this.httpService.get(url));
 
@@ -731,8 +731,8 @@ export class AuthService {
     const accessToken = this.jwtService.sign(payload);
 
     const refreshToken = this.jwtService.sign(payload, {
-      secret: this.configService.jwtRefreshSecret,
-      expiresIn: ms(this.configService.jwtRefreshExpires ?? '7d'),
+      secret: this.configService.jwt.refreshSecret,
+      expiresIn: ms(this.configService.jwt.refreshExpires ?? '7d'),
     });
 
     return { accessToken, refreshToken };

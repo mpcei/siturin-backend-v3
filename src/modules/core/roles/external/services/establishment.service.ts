@@ -75,7 +75,7 @@ export class EstablishmentService {
   }
 
   async updateSRIEstablishments(rucNumber: string): Promise<ServiceResponseHttpInterface> {
-    const url = `${this.configService.urlDinardap}/sri/${rucNumber}`;
+    const url = `${this.configService.externalApis.urlDinardap}/sri/${rucNumber}`;
 
     const response = await firstValueFrom(this.httpService.get(url).pipe(retry(3)));
 

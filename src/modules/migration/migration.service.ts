@@ -55,6 +55,12 @@ import { UserEntity } from '@auth/entities';
 import { ObservationEntity } from '@modules/core/entities/observation.entity';
 import { KitchenTypeEntity } from '@modules/core/entities/kitchen-type.entity';
 import { ServiceTypeEntity } from '@modules/core/entities/service-type.entity';
+import { FileEntity } from '@modules/common/file/file.entity';
+import { join } from 'path';
+import * as fs from 'node:fs';
+import { MinioService } from '@modules/common/minio/minio.service';
+import { format } from 'date-fns';
+import path from 'path';
 
 @Injectable()
 export class MigrationService {
@@ -159,6 +165,9 @@ export class MigrationService {
     private readonly regulationItemRepository: Repository<RegulationItemEntity>,
     @Inject(CoreRepositoryEnum.REGULATION_RESPONSE_REPOSITORY)
     private readonly regulationResponseRepository: Repository<RegulationResponseEntity>,
+    @Inject(CommonRepositoryEnum.FILE_REPOSITORY)
+    private readonly fileRepository: Repository<FileEntity>,
+    private readonly minioService: MinioService,
   ) {}
 
   async getData(table: string): Promise<any> {
@@ -1806,6 +1815,111 @@ export class MigrationService {
         item.type = exist.type;
         item.required = true;
         await this.catalogueRepository.save(item);
+      }
+    }
+
+    return { data: null };
+  }
+
+  async migrateFiles() {
+    // const data = await this.getData('core.files');
+    const data = await this.dataSource.query(`
+      SELECT *
+      FROM core.files where id < 20
+    `);
+
+    const table = await this.fileRepository.find();
+    const processes = await this.processRepository.find();
+    const cadastres = await this.cadastreRepository.find();
+
+    const csvLogPath = join(process.cwd(), 'storage/migration', 'errores_migracion.csv');
+
+    const header = 'ID_Registro,Ruta_Local,Error\n';
+    fs.writeFileSync(csvLogPath, header, 'utf8');
+
+    for (const item of data) {
+      const exists = table.find((register) => register.idTemp == item.id);
+
+      if (!exists) {
+        const entity = this.fileRepository.create();
+        const localPath = join(
+          global.process.cwd(),
+          'storage/migration',
+          item?.directory,
+          `${item.id}.pdf`,
+        );
+
+        if (!fs.existsSync(localPath)) {
+          const id = item?.id ?? 'N/A';
+
+          // Escapamos las comas por si acaso la ruta contiene alguna
+          const row = `"${id}","${localPath}","Archivo no encontrado"\n`;
+
+          fs.appendFileSync(csvLogPath, row);
+          continue;
+        }
+
+        // 3. Leer el archivo como Buffer o Stream
+        const fileBuffer = fs.readFileSync(localPath);
+
+        let folder = '';
+
+        switch (item.directory) {
+          case 'private/actas-notificacion-temporal/':
+            folder = 'actas-notificacion-temporal';
+            break;
+          case 'private/actas-actualizacion/':
+            folder = 'actas-actualizacion';
+            break;
+          case 'private/catastros/inactivacion-interno/':
+            folder = 'actas-inactivacion';
+            break;
+          case 'private/actas-notificacion-definitiva/':
+            folder = 'actas-notificacion-definitiva';
+            break;
+          case 'private/formularios-requisitos/':
+            folder = 'check-list';
+            break;
+          default:
+            folder = 'temp';
+        }
+
+        console.log(folder);
+        const fileName = `${Date.now()}.pdf`;
+        const filePath = `${folder}/${format(new Date(item.created_at), 'yyyy/MM')}/${fileName}`;
+
+        // 4. Subir a Minio usando tu servicio existente
+        await this.minioService.uploadFile({
+          filePath,
+          buffer: fileBuffer,
+          size: fs.statSync(localPath).size,
+          mimetype: 'application/pdf',
+        });
+
+        let model: any = undefined;
+
+        if (item.fileable_type === 'App\\Models\\Siturin\\Tramite')
+          model = processes.find((x) => x.idTemp == item.filelable_id);
+
+        if (item.fileable_type === 'App\\Models\\Siturin\\Catastro')
+          model = cadastres.find((x) => x.idTemp == item.filelable_id);
+
+        if (model) entity.modelId = model.id;
+
+        const payload = {
+          idTemp: item.id,
+          modelId: model?.id,
+          userId: null,
+          fileName,
+          extension: '.pdf',
+          originalName: `${item.name}.pdf`,
+          path: filePath,
+          size: fs.statSync(localPath).size,
+          typeId: null,
+          mimeType: 'application/pdf',
+        };
+
+        await this.fileRepository.save(payload);
       }
     }
 

@@ -527,4 +527,17 @@ export class MigrationController {
       title: 'model-catalogues',
     };
   }
+
+  @PublicRoute()
+  @Post('files')
+  @HttpCode(HttpStatus.CREATED)
+  async migrateFiles(): Promise<ResponseHttpInterface> {
+    const responseService = await this.migrationService.migrateFiles();
+
+    return {
+      data: responseService.data,
+      message: 'created',
+      title: 'files',
+    };
+  }
 }

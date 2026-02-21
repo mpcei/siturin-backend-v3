@@ -7,6 +7,7 @@ import {
   ParseUUIDPipe,
   Post,
   Query,
+  Req,
   Res,
   UploadedFile,
   UploadedFiles,
@@ -23,6 +24,8 @@ import { FilterFileDto } from './dto';
 import * as fs from 'fs';
 import { User } from '@auth/decorators';
 import { UserEntity } from '@auth/entities';
+import * as multer from 'multer';
+import { Request, Response } from 'express';
 
 @ApiTags('Files')
 @Controller('common/files')
@@ -33,24 +36,25 @@ export class FileController {
   @Post(':modelId/upload')
   @UseInterceptors(
     FileInterceptor('file', {
-      storage: diskStorage({
-        destination: join(
-          process.cwd(),
-          'storage/private/uploads',
-          `${new Date().getFullYear()}/${new Date().getMonth()}`,
-        ),
-        filename: getFileName,
-      }),
+      storage: multer.memoryStorage(),
       fileFilter: fileFilter,
       limits: { fieldSize: 10 },
     }),
   )
   async uploadFile(
     @UploadedFile() file: Express.Multer.File,
+    @User() user: UserEntity,
     @Param('modelId', ParseUUIDPipe) modelId: string,
     @Query('typeId') typeId: string,
+    @Query('folder') folder: string,
   ): Promise<ResponseHttpInterface> {
-    const response = await this.filesService.uploadFile(file, modelId, typeId);
+    const response = await this.filesService.uploadFile({
+      file,
+      user,
+      modelId,
+      typeId,
+      folder,
+    });
 
     return {
       data: response,
@@ -91,18 +95,30 @@ export class FileController {
   }
 
   @ApiOperation({ summary: 'Download File' })
+  @Get(':id/url')
+  async findUrl(
+    @Param('id', ParseUUIDPipe) id: string,
+    @User() user: UserEntity,
+    @Req() req: Request,
+  ): Promise<ResponseHttpInterface> {
+    const serviceResponse = await this.filesService.findUrl(id, user, req);
+
+    return {
+      data: serviceResponse,
+      message: 'Find Url',
+      title: 'Find',
+    };
+  }
+
+  @ApiOperation({ summary: 'Download File' })
   @Get(':id/download')
   async download(
     @Param('id', ParseUUIDPipe) id: string,
-    @Res() res,
-  ): Promise<ResponseHttpInterface> {
-    const path = await this.filesService.getPath(id);
-
-    return {
-      data: res.sendFile(path),
-      message: 'Download File',
-      title: 'Download',
-    };
+    @User() user: UserEntity,
+    @Req() req: Request,
+    @Res() res: Response,
+  ): Promise<void> {
+    return this.filesService.download(id, user, req, res);
   }
 
   @ApiOperation({ summary: 'Find By Model' })
@@ -131,27 +147,5 @@ export class FileController {
       message: 'Archivo Eliminado',
       title: 'Eliminado',
     };
-  }
-
-  @ApiOperation({ summary: 'Read Files' })
-  @Get('read-files')
-  async readFiles(): Promise<ResponseHttpInterface> {
-    const path = 'C:\\Users\\cesar.tamayo\\Desktop\\blacibu\\files';
-    const files = fs.readdirSync(path);
-    files.forEach((file) => {
-      const pathFile = join(path, file);
-      const newPathFile = pathFile
-        .replace('á', 'a')
-        .replace('é', 'e')
-        .replace('í', 'i')
-        .replace('ó', 'o')
-        .replace('ú', 'u');
-      const dataFile = fs.lstatSync(pathFile);
-      fs.rename(pathFile, newPathFile, function (err) {
-        if (err) console.error('ERROR: ' + err);
-      });
-    });
-
-    return { data: null, message: '', title: '' };
   }
 }

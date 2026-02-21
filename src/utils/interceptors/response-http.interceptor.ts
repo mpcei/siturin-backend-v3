@@ -3,7 +3,8 @@ import {
   NestInterceptor,
   ExecutionContext,
   CallHandler,
-  ServiceUnavailableException, Inject,
+  ServiceUnavailableException,
+  Inject,
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -21,28 +22,31 @@ export class ResponseHttpInterceptor<T> implements NestInterceptor<T, Response<T
     private readonly configService: ConfigType<typeof envConfig>,
   ) {}
 
-
   intercept(context: ExecutionContext, next: CallHandler): Observable<Response<T>> {
     if (false) {
       throw new ServiceUnavailableException();
     }
 
-    const response = context.switchToHttp().getResponse();
+    const httpResponse = context.switchToHttp().getResponse();
 
-    const contentType = response.getHeader('Content-Type');
+    const contentType = httpResponse.getHeader('Content-Type');
 
     if (contentType && contentType.includes('application/pdf')) {
       return next.handle();
     }
 
     return next.handle().pipe(
-      map((response) => {
+      map((responseData) => {
+        if (!responseData || httpResponse.headersSent) {
+          return responseData;
+        }
+
         return {
-          data: response.data,
-          pagination: response.pagination,
-          message: response.message,
-          title: response.title,
-          version: this.configService.appVersion,
+          data: responseData.data,
+          pagination: responseData.pagination,
+          message: responseData.message,
+          title: responseData.title,
+          version: this.configService.app.version,
         };
       }),
     );

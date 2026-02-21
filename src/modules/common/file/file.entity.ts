@@ -20,7 +20,7 @@ export class FileEntity {
     name: 'created_at',
     type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP',
-    comment: 'Fecha de creacion de la carrera',
+    comment: 'Fecha de creacion',
   })
   createdAt: Date;
 
@@ -28,7 +28,7 @@ export class FileEntity {
     name: 'updated_at',
     type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP',
-    comment: 'Fecha de actualizacion de la carrera',
+    comment: 'Fecha de actualizacion',
   })
   updatedAt: Date;
 
@@ -36,7 +36,7 @@ export class FileEntity {
     name: 'deleted_at',
     type: 'timestamp',
     nullable: true,
-    comment: 'Fecha de eliminacion de la carrera',
+    comment: 'Fecha de eliminacion',
   })
   deletedAt: Date;
 
@@ -51,9 +51,10 @@ export class FileEntity {
   @Column({
     name: 'model_id',
     type: 'varchar',
+    nullable: true,
     comment: 'Foreign Key de cualquier otra entidad',
   })
-  modelId: string;
+  modelId: string | null;
 
   /** Foreign Key **/
   @ManyToOne(() => CatalogueEntity, {
@@ -67,7 +68,7 @@ export class FileEntity {
     nullable: true,
     comment: 'Tipo de documento',
   })
-  typeId: string;
+  typeId: string | null;
 
   @ManyToOne(() => UserEntity, {
     nullable: true,
@@ -80,7 +81,7 @@ export class FileEntity {
     nullable: true,
     comment: 'user',
   })
-  userId: string;
+  userId: string | null;
 
   /** Columns **/
   @Column({
@@ -94,7 +95,7 @@ export class FileEntity {
   @Column({
     name: 'extension',
     type: 'varchar',
-    comment: 'Extension ex. .pdf, .xlsx',
+    comment: 'Extension ex.: .pdf, .xlsx',
   })
   extension: string;
 
@@ -120,9 +121,24 @@ export class FileEntity {
   path: string;
 
   @Column({
+    name: 'mime_type',
+    type: 'varchar',
+    comment: '',
+  })
+  mimeType: string;
+
+  @Column({
     name: 'size',
     type: 'float',
     comment: 'Size file in bytes',
   })
   size: number;
+
+  @Column({
+    name: 'id_temp',
+    type: 'bigint',
+    nullable: true,
+    comment: 'Codigo de la tabla migrada',
+  })
+  idTemp: number;
 }

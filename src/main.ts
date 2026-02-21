@@ -106,6 +106,8 @@ async function bootstrap() {
 
   app.useStaticAssets(join(process.cwd(), 'public'));
 
+  app.set('trust proxy', true);
+
   const documentBuilder = new DocumentBuilder()
     .setTitle('API SIAAW')
     .setDescription('App Description')

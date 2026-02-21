@@ -7,29 +7,48 @@ import { join } from 'path';
 import * as fs from 'fs';
 import { PaginationDto } from '@utils/pagination';
 import { ServiceResponseHttpInterface } from '@utils/interfaces';
-import { FilterFileDto } from './dto';
-import { IsArray } from 'class-validator';
+import { CreateFileDto, FilterFileDto } from './dto';
+import { MinioService } from '@modules/common/minio/minio.service';
+import { format } from 'date-fns';
+import { FileDownloadLogEntity } from '@modules/common/file/file-download-log.entity';
+import { UserEntity } from '@auth/entities';
+import { Request, Response } from 'express';
 
 @Injectable()
 export class FileService {
   constructor(
     @Inject(CommonRepositoryEnum.FILE_REPOSITORY)
     private repository: Repository<FileEntity>,
+    private readonly minioService: MinioService,
+    @Inject(CommonRepositoryEnum.FILE_DOWNLOAD_LOG_REPOSITORY)
+    private fileDownloadLogRepository: Repository<FileDownloadLogEntity>,
   ) {}
 
-  async uploadFile(file: Express.Multer.File, modelId: string, typeId: string) {
-    const filePath = `uploads/${new Date().getFullYear()}/${new Date().getMonth()}/${file.filename}`;
+  async uploadFile({ file, user, modelId, typeId, folder }: CreateFileDto) {
+    const fileName = `${Date.now()}${path.extname(file.originalname)}`;
+    const filePath = `${folder}/${format(new Date(), 'yyyy/MM')}/${fileName}`;
+
     const payload = {
       modelId,
-      fileName: file.filename,
+      userId: user?.id,
+      fileName,
+      name: file.originalname,
       extension: path.extname(file.originalname),
       originalName: file.originalname,
       path: filePath,
       size: file.size,
       typeId: typeId,
+      mimeType: file.mimetype,
     };
 
     const newFile = this.repository.create(payload);
+
+    await this.minioService.uploadFile({
+      filePath,
+      buffer: file.buffer,
+      size: file.size,
+      mimetype: file.mimetype,
+    });
 
     return await this.repository.save(newFile);
   }
@@ -94,6 +113,55 @@ export class FileService {
     }
 
     return path;
+  }
+
+  async findUrl(id: string, user: UserEntity, req: Request): Promise<string> {
+    const file = await this.findOne(id);
+
+    if (!file) {
+      throw new NotFoundException();
+    }
+
+    const url = await this.minioService.generatePresignedUrl(file.path);
+
+    const fileDownloadLog = this.fileDownloadLogRepository.create({
+      file,
+      user,
+      ipAddress: req.ip,
+      userAgent: req.headers['user-agent'],
+    });
+
+    await this.fileDownloadLogRepository.save(fileDownloadLog);
+
+    return url;
+  }
+
+  async download(id: string, user: UserEntity, req: Request, res: Response) {
+    const file = await this.findOne(id);
+
+    if (!file) {
+      throw new NotFoundException();
+    }
+
+    const stream = await this.minioService.getObject(file.path);
+
+    res.set({
+      'Content-Type': file.mimeType,
+      'Content-Disposition': `attachment; filename="${file.originalName}"`,
+      'Cache-Control': 'no-store',
+    });
+
+    const rawIp = (req.headers['x-forwarded-for'] as string) || req.socket.remoteAddress || '';
+    const cleanIp = rawIp.includes('::ffff:') ? rawIp.split('::ffff:')[1] : rawIp;
+
+    await this.fileDownloadLogRepository.save({
+      file,
+      user,
+      ipAddress: cleanIp === '::1' ? '127.0.0.1' : cleanIp,
+      userAgent: req.headers['user-agent'],
+    });
+
+    stream.pipe(res);
   }
 
   async findByModel(
