@@ -3,6 +3,7 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  Index,
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
@@ -13,8 +14,8 @@ import { UserEntity } from '@auth/entities';
 
 @Entity('files', { schema: 'common' })
 export class FileEntity {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @PrimaryGeneratedColumn()
+  id: number;
 
   @CreateDateColumn({
     name: 'created_at',
@@ -48,9 +49,10 @@ export class FileEntity {
   })
   enabled: boolean;
 
+  @Index()
   @Column({
     name: 'model_id',
-    type: 'varchar',
+    type: 'uuid',
     nullable: true,
     comment: 'Foreign Key de cualquier otra entidad',
   })
@@ -62,6 +64,7 @@ export class FileEntity {
   })
   @JoinColumn({ name: 'type_id' })
   type: CatalogueEntity;
+  @Index()
   @Column({
     type: 'uuid',
     name: 'type_id',
@@ -75,6 +78,7 @@ export class FileEntity {
   })
   @JoinColumn({ name: 'user_id' })
   user: UserEntity;
+  @Index()
   @Column({
     type: 'uuid',
     name: 'user_id',
@@ -99,6 +103,7 @@ export class FileEntity {
   })
   extension: string;
 
+  @Index({ unique: true })
   @Column({
     name: 'file_name',
     type: 'varchar',
@@ -129,7 +134,7 @@ export class FileEntity {
 
   @Column({
     name: 'size',
-    type: 'float',
+    type: 'bigint',
     comment: 'Size file in bytes',
   })
   size: number;

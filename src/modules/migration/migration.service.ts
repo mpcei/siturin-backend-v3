@@ -58,9 +58,10 @@ import { ServiceTypeEntity } from '@modules/core/entities/service-type.entity';
 import { FileEntity } from '@modules/common/file/file.entity';
 import { join } from 'path';
 import * as fs from 'node:fs';
-import { MinioService } from '@modules/common/minio/minio.service';
+import { BucketService } from '@modules/common/bucket/bucket.service';
 import { format } from 'date-fns';
 import path from 'path';
+import { S3Service } from '@modules/common/bucket/s3.service';
 
 @Injectable()
 export class MigrationService {
@@ -167,7 +168,8 @@ export class MigrationService {
     private readonly regulationResponseRepository: Repository<RegulationResponseEntity>,
     @Inject(CommonRepositoryEnum.FILE_REPOSITORY)
     private readonly fileRepository: Repository<FileEntity>,
-    private readonly minioService: MinioService,
+    private readonly minioService: BucketService,
+    private readonly s3Service: S3Service,
   ) {}
 
   async getData(table: string): Promise<any> {
@@ -1884,15 +1886,19 @@ export class MigrationService {
             folder = 'temp';
         }
 
-        console.log(folder);
         const fileName = `${Date.now()}.pdf`;
         const filePath = `${folder}/${format(new Date(item.created_at), 'yyyy/MM')}/${fileName}`;
 
-        // 4. Subir a Minio usando tu servicio existente
-        await this.minioService.uploadFile({
+        // await this.minioService.uploadFile({
+        //   filePath,
+        //   buffer: fileBuffer,
+        //   size: fs.statSync(localPath).size,
+        //   mimetype: 'application/pdf',
+        // });
+
+        await this.s3Service.uploadFile({
           filePath,
           buffer: fileBuffer,
-          size: fs.statSync(localPath).size,
           mimetype: 'application/pdf',
         });
 

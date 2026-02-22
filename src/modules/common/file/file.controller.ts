@@ -97,7 +97,7 @@ export class FileController {
   @ApiOperation({ summary: 'Download File' })
   @Get(':id/url')
   async findUrl(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('id') id: number,
     @User() user: UserEntity,
     @Req() req: Request,
   ): Promise<ResponseHttpInterface> {
@@ -113,7 +113,7 @@ export class FileController {
   @ApiOperation({ summary: 'Download File' })
   @Get(':id/download')
   async download(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('id') id: number,
     @User() user: UserEntity,
     @Req() req: Request,
     @Res() res: Response,
@@ -139,7 +139,7 @@ export class FileController {
 
   @ApiOperation({ summary: 'Delete' })
   @Delete('/:id')
-  async remove(@Param('id', ParseUUIDPipe) id: string): Promise<ResponseHttpInterface> {
+  async remove(@Param('id', ParseUUIDPipe) id: number): Promise<ResponseHttpInterface> {
     const serviceResponse = await this.filesService.remove(id);
 
     return {

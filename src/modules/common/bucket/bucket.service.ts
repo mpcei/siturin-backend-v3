@@ -11,7 +11,7 @@ export interface UploadFileParams {
 }
 
 @Injectable()
-export class MinioService implements OnModuleInit {
+export class BucketService implements OnModuleInit {
   private client: Minio.Client;
   constructor(
     @Inject(envConfig.KEY)
@@ -19,6 +19,7 @@ export class MinioService implements OnModuleInit {
   ) {}
 
   async onModuleInit() {
+    /*
     this.client = new Minio.Client({
       endPoint: this.configService.bucket.endPoint!,
       port: Number(this.configService.bucket.port),
@@ -28,6 +29,7 @@ export class MinioService implements OnModuleInit {
     });
 
     await this.ensureBucket();
+     */
   }
 
   async ensureBucket() {

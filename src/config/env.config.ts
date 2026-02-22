@@ -42,12 +42,13 @@ export const envConfig = registerAs('envConfig', () => {
     securityCodeExpiresIn: parseInt(process.env.SECURITY_CODE_EXPIRES_IN!, 10),
 
     bucket: {
-      endPoint: process.env.MINIO_ENDPOINT,
-      port: parseInt(process.env.MINIO_PORT!, 10),
-      accessKey: process.env.MINIO_ACCESS_KEY,
-      secretKey: process.env.MINIO_SECRET_KEY,
-      name: process.env.MINIO_BUCKET,
-      presignedExpiry: parseInt(process.env.MINIO_PRESIGNED_EXPIRY!, 10),
+      endPoint: process.env.BUCKET_ENDPOINT,
+      port: parseInt(process.env.BUCKET_PORT!, 10),
+      accessKey: process.env.BUCKET_ACCESS_KEY,
+      secretKey: process.env.BUCKET_SECRET_KEY,
+      name: process.env.BUCKET_NAME,
+      presignedExpiry: parseInt(process.env.BUCKET_PRESIGNED_EXPIRY!, 10),
+      region: process.env.BUCKET_REGION,
     },
 
     externalApis: {

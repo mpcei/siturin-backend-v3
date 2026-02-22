@@ -8,20 +8,22 @@ import * as fs from 'fs';
 import { PaginationDto } from '@utils/pagination';
 import { ServiceResponseHttpInterface } from '@utils/interfaces';
 import { CreateFileDto, FilterFileDto } from './dto';
-import { MinioService } from '@modules/common/minio/minio.service';
+import { BucketService } from '@modules/common/bucket/bucket.service';
 import { format } from 'date-fns';
 import { FileDownloadLogEntity } from '@modules/common/file/file-download-log.entity';
 import { UserEntity } from '@auth/entities';
 import { Request, Response } from 'express';
+import { S3Service } from '@modules/common/bucket/s3.service';
 
 @Injectable()
 export class FileService {
   constructor(
     @Inject(CommonRepositoryEnum.FILE_REPOSITORY)
     private repository: Repository<FileEntity>,
-    private readonly minioService: MinioService,
     @Inject(CommonRepositoryEnum.FILE_DOWNLOAD_LOG_REPOSITORY)
     private fileDownloadLogRepository: Repository<FileDownloadLogEntity>,
+    private readonly minioService: BucketService,
+    private readonly s3Service: S3Service,
   ) {}
 
   async uploadFile({ file, user, modelId, typeId, folder }: CreateFileDto) {
@@ -43,10 +45,16 @@ export class FileService {
 
     const newFile = this.repository.create(payload);
 
-    await this.minioService.uploadFile({
+    // await this.minioService.uploadFile({
+    //   filePath,
+    //   buffer: file.buffer,
+    //   size: file.size,
+    //   mimetype: file.mimetype,
+    // });
+
+    await this.s3Service.uploadFile({
       filePath,
       buffer: file.buffer,
-      size: file.size,
       mimetype: file.mimetype,
     });
 
@@ -93,7 +101,7 @@ export class FileService {
     return await Promise.all(saveOperations);
   }
 
-  async findOne(id: string): Promise<FileEntity> {
+  async findOne(id: number): Promise<FileEntity> {
     const entity = await this.repository.findOneBy({ id });
 
     if (!entity) {
@@ -103,26 +111,15 @@ export class FileService {
     return entity;
   }
 
-  async getPath(id: string): Promise<string> {
-    const file = await this.findOne(id);
-
-    const path = join(process.cwd(), 'storage/private', file?.path);
-
-    if (!fs.existsSync(path)) {
-      throw new NotFoundException('File not found');
-    }
-
-    return path;
-  }
-
-  async findUrl(id: string, user: UserEntity, req: Request): Promise<string> {
+  async findUrl(id: number, user: UserEntity, req: Request): Promise<string> {
     const file = await this.findOne(id);
 
     if (!file) {
       throw new NotFoundException();
     }
 
-    const url = await this.minioService.generatePresignedUrl(file.path);
+    // const url = await this.minioService.generatePresignedUrl(file.path);
+    const url = await this.s3Service.generatePresignedUrl(file.path);
 
     const fileDownloadLog = this.fileDownloadLogRepository.create({
       file,
@@ -136,14 +133,15 @@ export class FileService {
     return url;
   }
 
-  async download(id: string, user: UserEntity, req: Request, res: Response) {
+  async download(id: number, user: UserEntity, req: Request, res: Response) {
     const file = await this.findOne(id);
 
     if (!file) {
       throw new NotFoundException();
     }
 
-    const stream = await this.minioService.getObject(file.path);
+    // const stream = await this.minioService.getObject(file.path);
+    const stream = await this.s3Service.getObject(file.path);
 
     res.set({
       'Content-Type': file.mimeType,
@@ -217,20 +215,16 @@ export class FileService {
     };
   }
 
-  async remove(id: string): Promise<any> {
+  async remove(id: number): Promise<any> {
     const entity = await this.repository.findOneBy({ id });
 
     if (!entity) {
-      throw new NotFoundException(MessageEnum.NOT_FOUND);
+      throw new NotFoundException({
+        error: 'Registro no encontrado',
+        message: 'Registro no encontrado',
+      });
     }
 
-    if (entity?.fileName) {
-      try {
-        fs.unlinkSync(join(process.cwd(), 'storage/private', entity.path));
-        return await this.repository.softRemove(entity);
-      } catch (err) {
-        console.error('Something wrong happened removing the file', err);
-      }
-    }
+    return await this.repository.softRemove(entity);
   }
 }
