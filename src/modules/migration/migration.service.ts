@@ -58,10 +58,8 @@ import { ServiceTypeEntity } from '@modules/core/entities/service-type.entity';
 import { FileEntity } from '@modules/common/file/file.entity';
 import { join } from 'path';
 import * as fs from 'node:fs';
-import { BucketService } from '@modules/common/bucket/bucket.service';
 import { format } from 'date-fns';
-import path from 'path';
-import { S3Service } from '@modules/common/bucket/s3.service';
+import { BucketService } from '@modules/common/bucket/bucket.service';
 
 @Injectable()
 export class MigrationService {
@@ -168,8 +166,7 @@ export class MigrationService {
     private readonly regulationResponseRepository: Repository<RegulationResponseEntity>,
     @Inject(CommonRepositoryEnum.FILE_REPOSITORY)
     private readonly fileRepository: Repository<FileEntity>,
-    private readonly minioService: BucketService,
-    private readonly s3Service: S3Service,
+    private readonly bucketService: BucketService,
   ) {}
 
   async getData(table: string): Promise<any> {
@@ -1896,7 +1893,7 @@ export class MigrationService {
         //   mimetype: 'application/pdf',
         // });
 
-        await this.s3Service.uploadFile({
+        await this.bucketService.uploadFile({
           filePath,
           buffer: fileBuffer,
           mimetype: 'application/pdf',

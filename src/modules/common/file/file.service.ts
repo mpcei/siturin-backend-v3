@@ -1,19 +1,16 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { Equal, FindOptionsWhere, ILike, Repository } from 'typeorm';
 import { FileEntity } from './file.entity';
-import { CommonRepositoryEnum, MessageEnum } from '@utils/enums';
+import { CommonRepositoryEnum } from '@utils/enums';
 import * as path from 'path';
-import { join } from 'path';
-import * as fs from 'fs';
 import { PaginationDto } from '@utils/pagination';
 import { ServiceResponseHttpInterface } from '@utils/interfaces';
 import { CreateFileDto, FilterFileDto } from './dto';
-import { BucketService } from '@modules/common/bucket/bucket.service';
 import { format } from 'date-fns';
 import { FileDownloadLogEntity } from '@modules/common/file/file-download-log.entity';
 import { UserEntity } from '@auth/entities';
 import { Request, Response } from 'express';
-import { S3Service } from '@modules/common/bucket/s3.service';
+import { BucketService } from '@modules/common/bucket/bucket.service';
 
 @Injectable()
 export class FileService {
@@ -22,8 +19,7 @@ export class FileService {
     private repository: Repository<FileEntity>,
     @Inject(CommonRepositoryEnum.FILE_DOWNLOAD_LOG_REPOSITORY)
     private fileDownloadLogRepository: Repository<FileDownloadLogEntity>,
-    private readonly minioService: BucketService,
-    private readonly s3Service: S3Service,
+    private readonly bucketService: BucketService,
   ) {}
 
   async uploadFile({ file, user, modelId, typeId, folder }: CreateFileDto) {
@@ -52,7 +48,7 @@ export class FileService {
     //   mimetype: file.mimetype,
     // });
 
-    await this.s3Service.uploadFile({
+    await this.bucketService.uploadFile({
       filePath,
       buffer: file.buffer,
       mimetype: file.mimetype,
@@ -119,7 +115,7 @@ export class FileService {
     }
 
     // const url = await this.minioService.generatePresignedUrl(file.path);
-    const url = await this.s3Service.generatePresignedUrl(file.path);
+    const url = await this.bucketService.generatePresignedUrl(file.path);
 
     const fileDownloadLog = this.fileDownloadLogRepository.create({
       file,
@@ -140,8 +136,7 @@ export class FileService {
       throw new NotFoundException();
     }
 
-    // const stream = await this.minioService.getObject(file.path);
-    const stream = await this.s3Service.getObject(file.path);
+    const stream: any = await this.bucketService.getObject(file.path);
 
     res.set({
       'Content-Type': file.mimeType,

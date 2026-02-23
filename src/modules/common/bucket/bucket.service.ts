@@ -1,85 +1,107 @@
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
-import * as Minio from 'minio';
-import { ConfigType } from '@nestjs/config';
+import {
+  CreateBucketCommand,
+  DeleteBucketCommandOutput,
+  DeleteObjectCommand,
+  GetObjectCommand,
+  HeadBucketCommand,
+  PutObjectCommand,
+  PutObjectCommandOutput,
+  S3Client,
+} from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { envConfig } from '@config';
-
-export interface UploadFileParams {
-  filePath: string;
-  buffer: Buffer;
-  size: number;
-  mimetype: string;
-}
+import { ConfigType } from '@nestjs/config';
+import { BucketInterface, UploadFileParams } from '@modules/common/bucket/bucket.interface';
 
 @Injectable()
-export class BucketService implements OnModuleInit {
-  private client: Minio.Client;
+export class BucketService implements OnModuleInit, BucketInterface {
+  private s3: S3Client;
+
   constructor(
     @Inject(envConfig.KEY)
     private configService: ConfigType<typeof envConfig>,
   ) {}
 
   async onModuleInit() {
-    /*
-    this.client = new Minio.Client({
-      endPoint: this.configService.bucket.endPoint!,
-      port: Number(this.configService.bucket.port),
-      useSSL: false,
-      accessKey: this.configService.bucket.accessKey,
-      secretKey: this.configService.bucket.secretKey,
+    this.s3 = new S3Client({
+      endpoint: `${this.configService.bucket.endPoint}:${this.configService.bucket.port}`,
+      region: this.configService.bucket.region!,
+      credentials: {
+        accessKeyId: this.configService.bucket.accessKey!,
+        secretAccessKey: this.configService.bucket.secretKey!,
+      },
+      forcePathStyle: true,
     });
 
-    await this.ensureBucket();
-     */
+    await this.ensure(this.configService.bucket.name!);
   }
 
-  async ensureBucket() {
-    const exists = await this.client.bucketExists(this.configService.bucket.name!);
-    if (!exists) {
-      await this.client.makeBucket(this.configService.bucket.name!);
+  async ensure(bucket: string) {
+    try {
+      await this.s3.send(new HeadBucketCommand({ Bucket: bucket }));
+    } catch (err: any) {
+      console.error('err ensure bucket: ', err);
+      await this.s3.send(new CreateBucketCommand({ Bucket: bucket }));
     }
   }
 
-  async uploadFile({ filePath, buffer, size, mimetype }: UploadFileParams) {
-    await this.client.putObject(this.configService.bucket.name!, filePath, buffer, size, {
-      'Content-Type': mimetype,
+  async uploadFile({
+    filePath,
+    buffer,
+    mimetype,
+  }: UploadFileParams): Promise<PutObjectCommandOutput> {
+    const command = new PutObjectCommand({
+      Bucket: this.configService.bucket.name,
+      Key: filePath,
+      Body: buffer,
+      ContentType: mimetype,
     });
 
-    return filePath;
+    return await this.s3.send(command);
   }
 
-  async uploadFiles(files: Express.Multer.File[], userId: number) {
-    return Promise.all(
-      files.map(async (file) => {
-        const fileName = `${userId}/${Date.now()}-${file.originalname}`;
+  async uploadFiles(files: UploadFileParams[]): Promise<PutObjectCommandOutput[]> {
+    const uploads = files.map((file) => {
+      const command = new PutObjectCommand({
+        Bucket: this.configService.bucket.name,
+        Key: file.filePath,
+        Body: file.buffer,
+        ContentType: file.mimetype,
+      });
 
-        await this.client.putObject(
-          this.configService.bucket.name!,
-          fileName,
-          file.buffer,
-          file.size,
-          {
-            'Content-Type': file.mimetype,
-          },
-        );
+      return this.s3.send(command);
+    });
 
-        return {
-          originalName: file.originalname,
-          fileName,
-          size: file.size,
-        };
-      }),
-    );
+    return Promise.all(uploads);
   }
 
-  async generatePresignedUrl(fileName: string) {
-    return this.client.presignedGetObject(
-      this.configService.bucket.name!,
-      fileName,
-      60 * this.configService.bucket.presignedExpiry,
-    );
+  async deleteFile(key: string): Promise<DeleteBucketCommandOutput> {
+    const command = new DeleteObjectCommand({
+      Bucket: this.configService.bucket.name,
+      Key: key,
+    });
+
+    return this.s3.send(command);
   }
 
-  async getObject(objectKey: string) {
-    return this.client.getObject(this.configService.bucket.name!, objectKey);
+  async getObject(key: string): Promise<any> {
+    const command = new GetObjectCommand({
+      Bucket: this.configService.bucket.name,
+      Key: key,
+    });
+
+    return (await this.s3.send(command)).Body;
+  }
+
+  async generatePresignedUrl(key: string) {
+    const command = new GetObjectCommand({
+      Bucket: this.configService.bucket.name,
+      Key: key,
+    });
+
+    return await getSignedUrl(this.s3, command, {
+      expiresIn: 60 * this.configService.bucket.presignedExpiry,
+    });
   }
 }
