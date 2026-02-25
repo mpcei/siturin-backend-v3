@@ -5,6 +5,7 @@
     "removeComments": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
+    "resolveJsonModule": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "target": "ES2023",
@@ -19,36 +20,16 @@
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-      "@auth/*": [
-        "./src/modules/auth/*"
-      ],
-      "@auth/decorators": [
-        "./src/modules/auth/decorators"
-      ],
-      "@config": [
-        "./src/config"
-      ],
-      "@config/module": [
-        "./src/config"
-      ],
-      "@database/*": [
-        "./src/database/*"
-      ],
-      "@shared/*": [
-        "./src/shared/*"
-      ],
-      "@exceptions": [
-        "./src/exceptions"
-      ],
-      "@middlewares": [
-        "./src/middlewares"
-      ],
-      "@modules/*": [
-        "./src/modules/*"
-      ],
-      "@utils/*": [
-        "./src/utils/*"
-      ]
+      "@auth/*": ["./src/modules/auth/*"],
+      "@auth/decorators": ["./src/modules/auth/decorators"],
+      "@config": ["./src/config"],
+      "@config/module": ["./src/config"],
+      "@database/*": ["./src/database/*"],
+      "@shared/*": ["./src/shared/*"],
+      "@exceptions": ["./src/exceptions"],
+      "@middlewares": ["./src/middlewares"],
+      "@modules/*": ["./src/modules/*"],
+      "@utils/*": ["./src/utils/*"]
     }
   }
 }
