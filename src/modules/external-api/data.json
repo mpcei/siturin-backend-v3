@@ -1,0 +1,352 @@
+{
+  "ldap": {
+    "data": true,
+    "msg": {
+      "summary": "AUTENTICACION EXITOSA",
+      "detail": ""
+    }
+  },
+  "sri": {
+    "data":[
+      {
+        "ruc": "1234567890001",
+        "razonSocial": "NOMBRES PERSONA NATURAL",
+        "actividadEconomicaPrincipal": "ACTIVIDAD PRINCIPAL - PERSONA NATURAL",
+        "tipoContribuyente": "PNL",
+        "estadoContribuyente": "ACTIVO",
+        "fechaActualizacion": "2026-01-01 12:00:00",
+        "cedulaRepresentanteLegal": "",
+        "nombreRepresentanteLegal": "",
+        "establecimientos": [
+          {
+            "numero": "1",
+            "nombreComercial": "ESTABLECIMIENTO 1",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL",
+            "calleNumeracion": "A1",
+            "calleInterseccion": "CALLE INTERSECCION",
+            "calleReferencia": "CALLE REFERENCIA",
+            "ubicacionGeografica": "2170118"
+          },
+          {
+            "numero": "2",
+            "nombreComercial": "",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 2",
+            "calleNumeracion": "A2",
+            "calleInterseccion": "CALLE INTERSECCION 2",
+            "calleReferencia": "CALLE REFERENCIA 2",
+            "ubicacionGeografica": "2170118"
+          },
+          {
+            "numero": "3",
+            "nombreComercial": "ESTABLECIMIENTO 3",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 3",
+            "calleNumeracion": "A3",
+            "calleInterseccion": "CALLE INTERSECCION 3",
+            "calleReferencia": "CALLE REFERENCIA 3",
+            "ubicacionGeografica": "2170118"
+          },
+          {
+            "numero": "4",
+            "nombreComercial": "",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 4",
+            "calleNumeracion": "A4",
+            "calleInterseccion": "CALLE INTERSECCION 4",
+            "calleReferencia": "CALLE REFERENCIA 4",
+            "ubicacionGeografica": "2170118"
+          }
+        ]
+      },
+      {
+        "ruc": "1234567890002",
+        "razonSocial": "NOMBRES PERSONA JURIDICA",
+        "actividadEconomicaPrincipal": "ACTIVIDAD PRINCIPAL - PERSONA JURIDICA",
+        "tipoContribuyente": "SCD",
+        "estadoContribuyente": "ACTIVO",
+        "fechaActualizacion": "2026-01-01 12:00:00",
+        "cedulaRepresentanteLegal": "01234567890",
+        "nombreRepresentanteLegal": "NOMBRES REPRESENTANTE LEGAL",
+        "establecimientos": [
+          {
+            "numero": "1",
+            "nombreComercial": "ESTABLECIMIENTO 1",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL",
+            "calleNumeracion": "A1",
+            "calleInterseccion": "CALLE INTERSECCION",
+            "calleReferencia": "CALLE REFERENCIA",
+            "ubicacionGeografica": "2170118"
+          },
+          {
+            "numero": "2",
+            "nombreComercial": "",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 2",
+            "calleNumeracion": "A2",
+            "calleInterseccion": "CALLE INTERSECCION 2",
+            "calleReferencia": "CALLE REFERENCIA 2",
+            "ubicacionGeografica": "2170118"
+          },
+          {
+            "numero": "3",
+            "nombreComercial": "ESTABLECIMIENTO 3",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 3",
+            "calleNumeracion": "A3",
+            "calleInterseccion": "CALLE INTERSECCION 3",
+            "calleReferencia": "CALLE REFERENCIA 3",
+            "ubicacionGeografica": "2170118"
+          },
+          {
+            "numero": "4",
+            "nombreComercial": "",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 4",
+            "calleNumeracion": "A4",
+            "calleInterseccion": "CALLE INTERSECCION 4",
+            "calleReferencia": "CALLE REFERENCIA 4",
+            "ubicacionGeografica": "2170118"
+          }
+        ]
+      },
+      {
+        "ruc": "1234567890003",
+        "razonSocial": "NOMBRES PERSONA NATURAL PASIVO",
+        "actividadEconomicaPrincipal": "ACTIVIDAD PRINCIPAL - PERSONA NATURAL",
+        "tipoContribuyente": "PNL",
+        "estadoContribuyente": "PASIVO",
+        "fechaActualizacion": "2026-01-01 12:00:00",
+        "cedulaRepresentanteLegal": "",
+        "nombreRepresentanteLegal": "",
+        "establecimientos": [
+          {
+            "numero": "1",
+            "nombreComercial": "ESTABLECIMIENTO 1",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL",
+            "calleNumeracion": "A1",
+            "calleInterseccion": "CALLE INTERSECCION",
+            "calleReferencia": "CALLE REFERENCIA",
+            "ubicacionGeografica": "2170118"
+          },
+          {
+            "numero": "2",
+            "nombreComercial": "",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 2",
+            "calleNumeracion": "A2",
+            "calleInterseccion": "CALLE INTERSECCION 2",
+            "calleReferencia": "CALLE REFERENCIA 2",
+            "ubicacionGeografica": "2170118"
+          },
+          {
+            "numero": "3",
+            "nombreComercial": "ESTABLECIMIENTO 3",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 3",
+            "calleNumeracion": "A3",
+            "calleInterseccion": "CALLE INTERSECCION 3",
+            "calleReferencia": "CALLE REFERENCIA 3",
+            "ubicacionGeografica": "2170118"
+          },
+          {
+            "numero": "4",
+            "nombreComercial": "",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 4",
+            "calleNumeracion": "A4",
+            "calleInterseccion": "CALLE INTERSECCION 4",
+            "calleReferencia": "CALLE REFERENCIA 4",
+            "ubicacionGeografica": "2170118"
+          }
+        ]
+      },
+      {
+        "ruc": "1234567890004",
+        "razonSocial": "NOMBRES PERSONA NATURAL PASIVO",
+        "actividadEconomicaPrincipal": "ACTIVIDAD PRINCIPAL - PERSONA NATURAL",
+        "tipoContribuyente": "PNL",
+        "estadoContribuyente": "SUSPENDIDO",
+        "fechaActualizacion": "2026-01-01 12:00:00",
+        "cedulaRepresentanteLegal": "",
+        "nombreRepresentanteLegal": "",
+        "establecimientos": [
+          {
+            "numero": "1",
+            "nombreComercial": "ESTABLECIMIENTO 1",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL",
+            "calleNumeracion": "A1",
+            "calleInterseccion": "CALLE INTERSECCION",
+            "calleReferencia": "CALLE REFERENCIA",
+            "ubicacionGeografica": "2170118"
+          },
+          {
+            "numero": "2",
+            "nombreComercial": "",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 2",
+            "calleNumeracion": "A2",
+            "calleInterseccion": "CALLE INTERSECCION 2",
+            "calleReferencia": "CALLE REFERENCIA 2",
+            "ubicacionGeografica": "2170118"
+          },
+          {
+            "numero": "3",
+            "nombreComercial": "ESTABLECIMIENTO 3",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 3",
+            "calleNumeracion": "A3",
+            "calleInterseccion": "CALLE INTERSECCION 3",
+            "calleReferencia": "CALLE REFERENCIA 3",
+            "ubicacionGeografica": "2170118"
+          },
+          {
+            "numero": "4",
+            "nombreComercial": "",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 4",
+            "calleNumeracion": "A4",
+            "calleInterseccion": "CALLE INTERSECCION 4",
+            "calleReferencia": "CALLE REFERENCIA 4",
+            "ubicacionGeografica": "2170118"
+          }
+        ]
+      },
+      {
+        "ruc": "1234567890005",
+        "razonSocial": "NOMBRES PERSONA JURIDICA PASIVO",
+        "actividadEconomicaPrincipal": "ACTIVIDAD PRINCIPAL - PERSONA JURIDICA",
+        "tipoContribuyente": "SCD",
+        "estadoContribuyente": "PASIVO",
+        "fechaActualizacion": "2026-01-01 12:00:00",
+        "cedulaRepresentanteLegal": "01234567890",
+        "nombreRepresentanteLegal": "NOMBRES REPRESENTANTE LEGAL",
+        "establecimientos": [
+          {
+            "numero": "1",
+            "nombreComercial": "ESTABLECIMIENTO 1",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL",
+            "calleNumeracion": "A1",
+            "calleInterseccion": "CALLE INTERSECCION",
+            "calleReferencia": "CALLE REFERENCIA",
+            "ubicacionGeografica": "2170118"
+          },
+          {
+            "numero": "2",
+            "nombreComercial": "",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 2",
+            "calleNumeracion": "A2",
+            "calleInterseccion": "CALLE INTERSECCION 2",
+            "calleReferencia": "CALLE REFERENCIA 2",
+            "ubicacionGeografica": "2170118"
+          },
+          {
+            "numero": "3",
+            "nombreComercial": "ESTABLECIMIENTO 3",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 3",
+            "calleNumeracion": "A3",
+            "calleInterseccion": "CALLE INTERSECCION 3",
+            "calleReferencia": "CALLE REFERENCIA 3",
+            "ubicacionGeografica": "2170118"
+          },
+          {
+            "numero": "4",
+            "nombreComercial": "",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 4",
+            "calleNumeracion": "A4",
+            "calleInterseccion": "CALLE INTERSECCION 4",
+            "calleReferencia": "CALLE REFERENCIA 4",
+            "ubicacionGeografica": "2170118"
+          }
+        ]
+      },
+      {
+        "ruc": "1234567890006",
+        "razonSocial": "NOMBRES PERSONA JURIDICA PASIVO",
+        "actividadEconomicaPrincipal": "ACTIVIDAD PRINCIPAL - PERSONA JURIDICA",
+        "tipoContribuyente": "SCD",
+        "estadoContribuyente": "SUSPENDIDO",
+        "fechaActualizacion": "2026-01-01 12:00:00",
+        "cedulaRepresentanteLegal": "01234567890",
+        "nombreRepresentanteLegal": "NOMBRES REPRESENTANTE LEGAL",
+        "establecimientos": [
+          {
+            "numero": "1",
+            "nombreComercial": "ESTABLECIMIENTO 1",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL",
+            "calleNumeracion": "A1",
+            "calleInterseccion": "CALLE INTERSECCION",
+            "calleReferencia": "CALLE REFERENCIA",
+            "ubicacionGeografica": "2170118"
+          },
+          {
+            "numero": "2",
+            "nombreComercial": "",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 2",
+            "calleNumeracion": "A2",
+            "calleInterseccion": "CALLE INTERSECCION 2",
+            "calleReferencia": "CALLE REFERENCIA 2",
+            "ubicacionGeografica": "2170118"
+          },
+          {
+            "numero": "3",
+            "nombreComercial": "ESTABLECIMIENTO 3",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 3",
+            "calleNumeracion": "A3",
+            "calleInterseccion": "CALLE INTERSECCION 3",
+            "calleReferencia": "CALLE REFERENCIA 3",
+            "ubicacionGeografica": "2170118"
+          },
+          {
+            "numero": "4",
+            "nombreComercial": "",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 4",
+            "calleNumeracion": "A4",
+            "calleInterseccion": "CALLE INTERSECCION 4",
+            "calleReferencia": "CALLE REFERENCIA 4",
+            "ubicacionGeografica": "2170118"
+          }
+        ]
+      }
+    ],
+    "msg": {
+      "summary": "CONEXI�N EXITOSA SRI",
+      "detail": ""
+    }
+  },
+  "supercias": {
+    "data": {
+      "expediente": "726333"
+    },
+    "msg": {
+      "summary": "CONEXI�N EXITOSA SUPERINTENDECIA DE COMPA��AS",
+      "detail": ""
+    }
+  },
+  "registroCivil": {
+    "data": {
+      "cedula": "1234567890",
+      "nombre": "PEREZ FERNANDEZ JUAN LUIS",
+      "nacionalidad": "ECUATORIANA",
+      "fechaNacimiento": "04/12/1990",
+      "fechaExpedicion": "01/01/2026",
+      "fechaExpiracion": "01/01/2036"
+    },
+    "msg": {
+      "summary": "CONEXI�N EXITOSA REGISTRO CIVIL",
+      "detail": ""
+    }
+  }
+}

@@ -16,6 +16,8 @@ import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { JoiValidationSchema } from './config/joi.validation';
 import { ResponseHttpInterceptor } from '@utils/interceptors';
 import { MigrationModule } from '@modules/migration/migration.module';
+import { ExternalApiController } from '@modules/external-api/external-api.controller';
+import { ExternalApiModule } from '@modules/external-api/external-api.module';
 
 @Module({
   imports: [
@@ -43,6 +45,7 @@ import { MigrationModule } from '@modules/migration/migration.module';
     ReportsModule,
     ImportsModule,
     MigrationModule,
+    ExternalApiModule
   ],
   controllers: [AppController],
   providers: [

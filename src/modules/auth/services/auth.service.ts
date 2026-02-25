@@ -716,6 +716,7 @@ export class AuthService {
 
   async findRuc(ruc: string): Promise<any> {
     const url = `${this.configService.externalApis.urlDinardap}/sri/${ruc}`;
+    console.log(url);
 
     const response = await lastValueFrom(this.httpService.get(url));
 
