@@ -113,7 +113,7 @@ export class EstablishmentService {
 
       if (!establishment) {
         establishment = this.repository.create();
-        establishment.ruc = { id: ruc.id } as any;
+        establishment.rucId = ruc.id;
       }
 
       establishment.number = sriEstablishment.numero;
@@ -125,6 +125,7 @@ export class EstablishmentService {
       if (state) establishment.state = state;
 
       await this.repository.save(establishment);
+      ruc.lastUpdatedAt = new Date(response.data.data.fechaActualizacion.substring(0, 10));
     }
 
     return { data: null };

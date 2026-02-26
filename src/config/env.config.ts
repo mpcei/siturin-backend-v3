@@ -10,7 +10,7 @@ export const envConfig = registerAs('envConfig', () => {
       name: process.env.APP_NAME,
       shortName: process.env.APP_SHORT_NAME,
       version: process.env.APP_VERSION,
-      env: process.env.ENV,
+      env: process.env.APP_ENV,
     },
 
     jwt: {

@@ -13,7 +13,7 @@ export class CataloguesSeeder {
   constructor(private catalogueService: CataloguesService) {}
 
   async run() {
-    // await this.createBloodTypeCatalogues();
+    await this.createBloodTypeCatalogues();
     await this.createEthnicOriginCatalogues();
     await this.createIdentificationTypeCatalogues();
     await this.createSexCatalogues();
@@ -174,40 +174,6 @@ export class CataloguesSeeder {
     }
   }
 
-  private async createGenderCatalogues() {
-    const catalogues: CreateCatalogueDto[] = [];
-    catalogues.push(
-      {
-        code: 'male',
-        description: 'genero',
-        name: 'Masculino',
-        sort: 1,
-        state: CatalogueStateEnum.enabled,
-        type: CatalogueTypeEnum.users_gender,
-      },
-      {
-        code: 'female',
-        description: 'tipo de identificacion',
-        name: 'Femenino',
-        sort: 2,
-        state: CatalogueStateEnum.enabled,
-        type: CatalogueTypeEnum.users_gender,
-      },
-      {
-        code: 'other',
-        description: '',
-        name: 'Otro',
-        sort: 3,
-        state: CatalogueStateEnum.enabled,
-        type: CatalogueTypeEnum.users_gender,
-      },
-    );
-
-    for (const catalogue of catalogues) {
-      await this.catalogueService.create(catalogue);
-    }
-  }
-
   private async createMaritalStatusCatalogues() {
     const catalogues: CreateCatalogueDto[] = [];
     catalogues.push(
@@ -258,11 +224,45 @@ export class CataloguesSeeder {
     }
   }
 
+  private async createGenderCatalogues() {
+    const catalogues: CreateCatalogueDto[] = [];
+    catalogues.push(
+      {
+        code: 'male',
+        description: 'genero',
+        name: 'Masculino',
+        sort: 1,
+        state: CatalogueStateEnum.enabled,
+        type: CatalogueTypeEnum.users_gender,
+      },
+      {
+        code: 'female',
+        description: 'genero',
+        name: 'Femenino',
+        sort: 2,
+        state: CatalogueStateEnum.enabled,
+        type: CatalogueTypeEnum.users_gender,
+      },
+      {
+        code: 'other',
+        description: 'genero',
+        name: 'Otro',
+        sort: 3,
+        state: CatalogueStateEnum.enabled,
+        type: CatalogueTypeEnum.users_gender,
+      },
+    );
+
+    for (const catalogue of catalogues) {
+      await this.catalogueService.create(catalogue);
+    }
+  }
+
   private async createSexCatalogues() {
     const catalogues: CreateCatalogueDto[] = [];
     catalogues.push(
       {
-        code: '1',
+        code: 'm',
         description: 'sexo',
         name: 'Hombre',
         sort: 1,
@@ -270,7 +270,7 @@ export class CataloguesSeeder {
         type: CatalogueTypeEnum.users_sex,
       },
       {
-        code: '2',
+        code: 'f',
         description: 'sexo',
         name: 'Mujer',
         sort: 1,
@@ -368,7 +368,6 @@ export class CataloguesSeeder {
         state: CatalogueStateEnum.enabled,
         type: CatalogueTypeEnum.users_nationality,
       },
-
       {
         code: 'bd',
         description: 'Nacionalidad',
@@ -409,7 +408,6 @@ export class CataloguesSeeder {
         state: CatalogueStateEnum.enabled,
         type: CatalogueTypeEnum.users_nationality,
       },
-
       {
         code: 'ca',
         description: 'Nacionalidad',
@@ -450,7 +448,6 @@ export class CataloguesSeeder {
         state: CatalogueStateEnum.enabled,
         type: CatalogueTypeEnum.users_nationality,
       },
-
       {
         code: 'cu',
         description: 'Nacionalidad',
@@ -491,7 +488,6 @@ export class CataloguesSeeder {
         state: CatalogueStateEnum.enabled,
         type: CatalogueTypeEnum.users_nationality,
       },
-
       {
         code: 'sv',
         description: 'Nacionalidad',
@@ -532,7 +528,6 @@ export class CataloguesSeeder {
         state: CatalogueStateEnum.enabled,
         type: CatalogueTypeEnum.users_nationality,
       },
-
       {
         code: 'gt',
         description: 'Nacionalidad',
@@ -573,7 +568,6 @@ export class CataloguesSeeder {
         state: CatalogueStateEnum.enabled,
         type: CatalogueTypeEnum.users_nationality,
       },
-
       {
         code: 'jp',
         description: 'Nacionalidad',
@@ -614,7 +608,6 @@ export class CataloguesSeeder {
         state: CatalogueStateEnum.enabled,
         type: CatalogueTypeEnum.users_nationality,
       },
-
       {
         code: 'py',
         description: 'Nacionalidad',
@@ -655,7 +648,6 @@ export class CataloguesSeeder {
         state: CatalogueStateEnum.enabled,
         type: CatalogueTypeEnum.users_nationality,
       },
-
       {
         code: 'se',
         description: 'Nacionalidad',
@@ -696,7 +688,6 @@ export class CataloguesSeeder {
         state: CatalogueStateEnum.enabled,
         type: CatalogueTypeEnum.users_nationality,
       },
-
       {
         code: 've',
         description: 'Nacionalidad',
@@ -718,7 +709,7 @@ export class CataloguesSeeder {
     catalogues.push(
       {
         code: '1',
-        description: '',
+        description: 'Preguntas seguridad',
         name: '¿Cuál es el primer nombre de tu padre?',
         sort: 1,
         state: CatalogueStateEnum.enabled,
@@ -726,7 +717,7 @@ export class CataloguesSeeder {
       },
       {
         code: '2',
-        description: '',
+        description: 'Preguntas seguridad',
         name: '¿Cómo se llamaba tu mascota favorita?',
         sort: 2,
         state: CatalogueStateEnum.enabled,
@@ -734,7 +725,7 @@ export class CataloguesSeeder {
       },
       {
         code: '3',
-        description: '',
+        description: 'Preguntas seguridad',
         name: '¿Cuál es el segundo nombre de tu padre?',
         sort: 3,
         state: CatalogueStateEnum.enabled,
@@ -742,7 +733,7 @@ export class CataloguesSeeder {
       },
       {
         code: '4',
-        description: '',
+        description: 'Preguntas seguridad',
         name: '¿Cuál fue el nombre de tu mejor amigo o amiga de la infancia?',
         sort: 4,
         state: CatalogueStateEnum.enabled,
@@ -750,7 +741,7 @@ export class CataloguesSeeder {
       },
       {
         code: '5',
-        description: '',
+        description: 'Preguntas seguridad',
         name: '¿Cuál era el nombre de tu escuela primaria?',
         sort: 5,
         state: CatalogueStateEnum.enabled,
@@ -758,7 +749,7 @@ export class CataloguesSeeder {
       },
       {
         code: '6',
-        description: '',
+        description: 'Preguntas seguridad',
         name: '¿Cuál es el nombre de tu primo o prima favorita?',
         sort: 6,
         state: CatalogueStateEnum.enabled,
@@ -766,7 +757,7 @@ export class CataloguesSeeder {
       },
       {
         code: '7',
-        description: '',
+        description: 'Preguntas seguridad',
         name: '¿Cuál es el primer nombre de tu madre?',
         sort: 7,
         state: CatalogueStateEnum.enabled,
@@ -774,7 +765,7 @@ export class CataloguesSeeder {
       },
       {
         code: '8',
-        description: '',
+        description: 'Preguntas seguridad',
         name: '¿Cuál es el nombre de tu profesor favorito del colegio?',
         sort: 8,
         state: CatalogueStateEnum.enabled,
@@ -782,7 +773,7 @@ export class CataloguesSeeder {
       },
       {
         code: '9',
-        description: '',
+        description: 'Preguntas seguridad',
         name: '¿Cuál es tu número favorito?',
         sort: 9,
         state: CatalogueStateEnum.enabled,
@@ -790,7 +781,7 @@ export class CataloguesSeeder {
       },
       {
         code: '10',
-        description: '',
+        description: 'Preguntas seguridad',
         name: '¿Cuál es el segundo nombre de tu madre?',
         sort: 10,
         state: CatalogueStateEnum.enabled,

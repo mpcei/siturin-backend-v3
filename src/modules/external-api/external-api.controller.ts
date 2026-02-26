@@ -9,6 +9,7 @@ export class ExternalApiController {
   @PublicRoute()
   @Get('sri/:ruc')
   sri(@Param('ruc') ruc: string): any {
+    console.log(ruc);
     let rucData = data.sri.data.find((x) => x.ruc === ruc);
 
     if (!rucData)

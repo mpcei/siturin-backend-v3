@@ -265,7 +265,6 @@ export class AuthService {
     const rucEntity = this.rucRepository.create();
     rucEntity.mainEconomicActivity = ruc.actividadEconomicaPrincipal;
     rucEntity.legalRepresentativeIdentification = ruc.cedulaRepresentanteLegal;
-    rucEntity.lastUpdatedAt = ruc.fechaActualizacion;
     rucEntity.legalRepresentativeNames = ruc.nombreRepresentanteLegal;
     rucEntity.legalName = ruc.razonSocial;
     rucEntity.number = ruc.ruc;
