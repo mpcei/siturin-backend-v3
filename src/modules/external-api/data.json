@@ -22,21 +22,21 @@
             "numero": "1",
             "nombreComercial": "ESTABLECIMIENTO 1",
             "estado": "ABIERTO",
-            "callePrincipal": "CALLE PRINCIPAL",
+            "callePrincipal": "CALLE PRINCIPAL 1",
             "calleNumeracion": "A1",
-            "calleInterseccion": "CALLE INTERSECCION",
-            "calleReferencia": "CALLE REFERENCIA",
-            "ubicacionGeografica": "2170118"
+            "calleInterseccion": "CALLE INTERSECCION 1",
+            "calleReferencia": "CALLE REFERENCIA 1",
+            "ubicacionGeografica": "2170001"
           },
           {
             "numero": "2",
             "nombreComercial": "",
-            "estado": "ABIERTO",
+            "estado": "CERRADO",
             "callePrincipal": "CALLE PRINCIPAL 2",
             "calleNumeracion": "A2",
             "calleInterseccion": "CALLE INTERSECCION 2",
             "calleReferencia": "CALLE REFERENCIA 2",
-            "ubicacionGeografica": "2170118"
+            "ubicacionGeografica": "2170002"
           },
           {
             "numero": "3",
@@ -46,7 +46,7 @@
             "calleNumeracion": "A3",
             "calleInterseccion": "CALLE INTERSECCION 3",
             "calleReferencia": "CALLE REFERENCIA 3",
-            "ubicacionGeografica": "2170118"
+            "ubicacionGeografica": "2170003"
           },
           {
             "numero": "4",
@@ -56,7 +56,967 @@
             "calleNumeracion": "A4",
             "calleInterseccion": "CALLE INTERSECCION 4",
             "calleReferencia": "CALLE REFERENCIA 4",
-            "ubicacionGeografica": "2170118"
+            "ubicacionGeografica": "2170004"
+          },
+          {
+            "numero": "5",
+            "nombreComercial": "ESTABLECIMIENTO 5",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 5",
+            "calleNumeracion": "A5",
+            "calleInterseccion": "CALLE INTERSECCION 5",
+            "calleReferencia": "CALLE REFERENCIA 5",
+            "ubicacionGeografica": "2170005"
+          },
+          {
+            "numero": "6",
+            "nombreComercial": "ESTABLECIMIENTO 6",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 6",
+            "calleNumeracion": "A6",
+            "calleInterseccion": "CALLE INTERSECCION 6",
+            "calleReferencia": "CALLE REFERENCIA 6",
+            "ubicacionGeografica": "2170006"
+          },
+          {
+            "numero": "7",
+            "nombreComercial": "ESTABLECIMIENTO 7",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 7",
+            "calleNumeracion": "A7",
+            "calleInterseccion": "CALLE INTERSECCION 7",
+            "calleReferencia": "CALLE REFERENCIA 7",
+            "ubicacionGeografica": "2170007"
+          },
+          {
+            "numero": "8",
+            "nombreComercial": "ESTABLECIMIENTO 8",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 8",
+            "calleNumeracion": "A8",
+            "calleInterseccion": "CALLE INTERSECCION 8",
+            "calleReferencia": "CALLE REFERENCIA 8",
+            "ubicacionGeografica": "2170008"
+          },
+          {
+            "numero": "9",
+            "nombreComercial": "ESTABLECIMIENTO 9",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 9",
+            "calleNumeracion": "A9",
+            "calleInterseccion": "CALLE INTERSECCION 9",
+            "calleReferencia": "CALLE REFERENCIA 9",
+            "ubicacionGeografica": "2170009"
+          },
+          {
+            "numero": "10",
+            "nombreComercial": "",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 10",
+            "calleNumeracion": "A10",
+            "calleInterseccion": "CALLE INTERSECCION 10",
+            "calleReferencia": "CALLE REFERENCIA 10",
+            "ubicacionGeografica": "2170010"
+          },
+          {
+            "numero": "11",
+            "nombreComercial": "",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 11",
+            "calleNumeracion": "A11",
+            "calleInterseccion": "CALLE INTERSECCION 11",
+            "calleReferencia": "CALLE REFERENCIA 11",
+            "ubicacionGeografica": "2170011"
+          },
+          {
+            "numero": "12",
+            "nombreComercial": "ESTABLECIMIENTO 12",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 12",
+            "calleNumeracion": "A12",
+            "calleInterseccion": "CALLE INTERSECCION 12",
+            "calleReferencia": "CALLE REFERENCIA 12",
+            "ubicacionGeografica": "2170012"
+          },
+          {
+            "numero": "13",
+            "nombreComercial": "ESTABLECIMIENTO 13",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 13",
+            "calleNumeracion": "A13",
+            "calleInterseccion": "CALLE INTERSECCION 13",
+            "calleReferencia": "CALLE REFERENCIA 13",
+            "ubicacionGeografica": "2170013"
+          },
+          {
+            "numero": "14",
+            "nombreComercial": "ESTABLECIMIENTO 14",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 14",
+            "calleNumeracion": "A14",
+            "calleInterseccion": "CALLE INTERSECCION 14",
+            "calleReferencia": "CALLE REFERENCIA 14",
+            "ubicacionGeografica": "2170014"
+          },
+          {
+            "numero": "15",
+            "nombreComercial": "ESTABLECIMIENTO 15",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 15",
+            "calleNumeracion": "A15",
+            "calleInterseccion": "CALLE INTERSECCION 15",
+            "calleReferencia": "CALLE REFERENCIA 15",
+            "ubicacionGeografica": "2170015"
+          },
+          {
+            "numero": "16",
+            "nombreComercial": "ESTABLECIMIENTO 16",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 16",
+            "calleNumeracion": "A16",
+            "calleInterseccion": "CALLE INTERSECCION 16",
+            "calleReferencia": "CALLE REFERENCIA 16",
+            "ubicacionGeografica": "2170016"
+          },
+          {
+            "numero": "17",
+            "nombreComercial": "ESTABLECIMIENTO 17",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 17",
+            "calleNumeracion": "A17",
+            "calleInterseccion": "CALLE INTERSECCION 17",
+            "calleReferencia": "CALLE REFERENCIA 17",
+            "ubicacionGeografica": "2170017"
+          },
+          {
+            "numero": "18",
+            "nombreComercial": "",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 18",
+            "calleNumeracion": "A18",
+            "calleInterseccion": "CALLE INTERSECCION 18",
+            "calleReferencia": "CALLE REFERENCIA 18",
+            "ubicacionGeografica": "2170018"
+          },
+          {
+            "numero": "19",
+            "nombreComercial": "ESTABLECIMIENTO 19",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 19",
+            "calleNumeracion": "A19",
+            "calleInterseccion": "CALLE INTERSECCION 19",
+            "calleReferencia": "CALLE REFERENCIA 19",
+            "ubicacionGeografica": "2170019"
+          },
+          {
+            "numero": "20",
+            "nombreComercial": "",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 20",
+            "calleNumeracion": "A20",
+            "calleInterseccion": "CALLE INTERSECCION 20",
+            "calleReferencia": "CALLE REFERENCIA 20",
+            "ubicacionGeografica": "2170020"
+          },
+          {
+            "numero": "21",
+            "nombreComercial": "ESTABLECIMIENTO 21",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 21",
+            "calleNumeracion": "A21",
+            "calleInterseccion": "CALLE INTERSECCION 21",
+            "calleReferencia": "CALLE REFERENCIA 21",
+            "ubicacionGeografica": "2170021"
+          },
+          {
+            "numero": "22",
+            "nombreComercial": "ESTABLECIMIENTO 22",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 22",
+            "calleNumeracion": "A22",
+            "calleInterseccion": "CALLE INTERSECCION 22",
+            "calleReferencia": "CALLE REFERENCIA 22",
+            "ubicacionGeografica": "2170022"
+          },
+          {
+            "numero": "23",
+            "nombreComercial": "ESTABLECIMIENTO 23",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 23",
+            "calleNumeracion": "A23",
+            "calleInterseccion": "CALLE INTERSECCION 23",
+            "calleReferencia": "CALLE REFERENCIA 23",
+            "ubicacionGeografica": "2170023"
+          },
+          {
+            "numero": "24",
+            "nombreComercial": "ESTABLECIMIENTO 24",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 24",
+            "calleNumeracion": "A24",
+            "calleInterseccion": "CALLE INTERSECCION 24",
+            "calleReferencia": "CALLE REFERENCIA 24",
+            "ubicacionGeografica": "2170024"
+          },
+          {
+            "numero": "25",
+            "nombreComercial": "ESTABLECIMIENTO 25",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 25",
+            "calleNumeracion": "A25",
+            "calleInterseccion": "CALLE INTERSECCION 25",
+            "calleReferencia": "CALLE REFERENCIA 25",
+            "ubicacionGeografica": "2170025"
+          },
+          {
+            "numero": "26",
+            "nombreComercial": "ESTABLECIMIENTO 26",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 26",
+            "calleNumeracion": "A26",
+            "calleInterseccion": "CALLE INTERSECCION 26",
+            "calleReferencia": "CALLE REFERENCIA 26",
+            "ubicacionGeografica": "2170026"
+          },
+          {
+            "numero": "27",
+            "nombreComercial": "ESTABLECIMIENTO 27",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 27",
+            "calleNumeracion": "A27",
+            "calleInterseccion": "CALLE INTERSECCION 27",
+            "calleReferencia": "CALLE REFERENCIA 27",
+            "ubicacionGeografica": "2170027"
+          },
+          {
+            "numero": "28",
+            "nombreComercial": "ESTABLECIMIENTO 28",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 28",
+            "calleNumeracion": "A28",
+            "calleInterseccion": "CALLE INTERSECCION 28",
+            "calleReferencia": "CALLE REFERENCIA 28",
+            "ubicacionGeografica": "2170028"
+          },
+          {
+            "numero": "29",
+            "nombreComercial": "ESTABLECIMIENTO 29",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 29",
+            "calleNumeracion": "A29",
+            "calleInterseccion": "CALLE INTERSECCION 29",
+            "calleReferencia": "CALLE REFERENCIA 29",
+            "ubicacionGeografica": "2170029"
+          },
+          {
+            "numero": "30",
+            "nombreComercial": "ESTABLECIMIENTO 30",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 30",
+            "calleNumeracion": "A30",
+            "calleInterseccion": "CALLE INTERSECCION 30",
+            "calleReferencia": "CALLE REFERENCIA 30",
+            "ubicacionGeografica": "2170030"
+          },
+          {
+            "numero": "31",
+            "nombreComercial": "ESTABLECIMIENTO 31",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 31",
+            "calleNumeracion": "A31",
+            "calleInterseccion": "CALLE INTERSECCION 31",
+            "calleReferencia": "CALLE REFERENCIA 31",
+            "ubicacionGeografica": "2170031"
+          },
+          {
+            "numero": "32",
+            "nombreComercial": "ESTABLECIMIENTO 32",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 32",
+            "calleNumeracion": "A32",
+            "calleInterseccion": "CALLE INTERSECCION 32",
+            "calleReferencia": "CALLE REFERENCIA 32",
+            "ubicacionGeografica": "2170032"
+          },
+          {
+            "numero": "33",
+            "nombreComercial": "ESTABLECIMIENTO 33",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 33",
+            "calleNumeracion": "A33",
+            "calleInterseccion": "CALLE INTERSECCION 33",
+            "calleReferencia": "CALLE REFERENCIA 33",
+            "ubicacionGeografica": "2170033"
+          },
+          {
+            "numero": "34",
+            "nombreComercial": "ESTABLECIMIENTO 34",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 34",
+            "calleNumeracion": "A34",
+            "calleInterseccion": "CALLE INTERSECCION 34",
+            "calleReferencia": "CALLE REFERENCIA 34",
+            "ubicacionGeografica": "2170034"
+          },
+          {
+            "numero": "35",
+            "nombreComercial": "",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 35",
+            "calleNumeracion": "A35",
+            "calleInterseccion": "CALLE INTERSECCION 35",
+            "calleReferencia": "CALLE REFERENCIA 35",
+            "ubicacionGeografica": "2170035"
+          },
+          {
+            "numero": "36",
+            "nombreComercial": "ESTABLECIMIENTO 36",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 36",
+            "calleNumeracion": "A36",
+            "calleInterseccion": "CALLE INTERSECCION 36",
+            "calleReferencia": "CALLE REFERENCIA 36",
+            "ubicacionGeografica": "2170036"
+          },
+          {
+            "numero": "37",
+            "nombreComercial": "ESTABLECIMIENTO 37",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 37",
+            "calleNumeracion": "A37",
+            "calleInterseccion": "CALLE INTERSECCION 37",
+            "calleReferencia": "CALLE REFERENCIA 37",
+            "ubicacionGeografica": "2170037"
+          },
+          {
+            "numero": "38",
+            "nombreComercial": "ESTABLECIMIENTO 38",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 38",
+            "calleNumeracion": "A38",
+            "calleInterseccion": "CALLE INTERSECCION 38",
+            "calleReferencia": "CALLE REFERENCIA 38",
+            "ubicacionGeografica": "2170038"
+          },
+          {
+            "numero": "39",
+            "nombreComercial": "ESTABLECIMIENTO 39",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 39",
+            "calleNumeracion": "A39",
+            "calleInterseccion": "CALLE INTERSECCION 39",
+            "calleReferencia": "CALLE REFERENCIA 39",
+            "ubicacionGeografica": "2170039"
+          },
+          {
+            "numero": "40",
+            "nombreComercial": "ESTABLECIMIENTO 40",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 40",
+            "calleNumeracion": "A40",
+            "calleInterseccion": "CALLE INTERSECCION 40",
+            "calleReferencia": "CALLE REFERENCIA 40",
+            "ubicacionGeografica": "2170040"
+          },
+          {
+            "numero": "41",
+            "nombreComercial": "",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 41",
+            "calleNumeracion": "A41",
+            "calleInterseccion": "CALLE INTERSECCION 41",
+            "calleReferencia": "CALLE REFERENCIA 41",
+            "ubicacionGeografica": "2170041"
+          },
+          {
+            "numero": "42",
+            "nombreComercial": "ESTABLECIMIENTO 42",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 42",
+            "calleNumeracion": "A42",
+            "calleInterseccion": "CALLE INTERSECCION 42",
+            "calleReferencia": "CALLE REFERENCIA 42",
+            "ubicacionGeografica": "2170042"
+          },
+          {
+            "numero": "43",
+            "nombreComercial": "",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 43",
+            "calleNumeracion": "A43",
+            "calleInterseccion": "CALLE INTERSECCION 43",
+            "calleReferencia": "CALLE REFERENCIA 43",
+            "ubicacionGeografica": "2170043"
+          },
+          {
+            "numero": "44",
+            "nombreComercial": "ESTABLECIMIENTO 44",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 44",
+            "calleNumeracion": "A44",
+            "calleInterseccion": "CALLE INTERSECCION 44",
+            "calleReferencia": "CALLE REFERENCIA 44",
+            "ubicacionGeografica": "2170044"
+          },
+          {
+            "numero": "45",
+            "nombreComercial": "ESTABLECIMIENTO 45",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 45",
+            "calleNumeracion": "A45",
+            "calleInterseccion": "CALLE INTERSECCION 45",
+            "calleReferencia": "CALLE REFERENCIA 45",
+            "ubicacionGeografica": "2170045"
+          },
+          {
+            "numero": "46",
+            "nombreComercial": "ESTABLECIMIENTO 46",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 46",
+            "calleNumeracion": "A46",
+            "calleInterseccion": "CALLE INTERSECCION 46",
+            "calleReferencia": "CALLE REFERENCIA 46",
+            "ubicacionGeografica": "2170046"
+          },
+          {
+            "numero": "47",
+            "nombreComercial": "ESTABLECIMIENTO 47",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 47",
+            "calleNumeracion": "A47",
+            "calleInterseccion": "CALLE INTERSECCION 47",
+            "calleReferencia": "CALLE REFERENCIA 47",
+            "ubicacionGeografica": "2170047"
+          },
+          {
+            "numero": "48",
+            "nombreComercial": "ESTABLECIMIENTO 48",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 48",
+            "calleNumeracion": "A48",
+            "calleInterseccion": "CALLE INTERSECCION 48",
+            "calleReferencia": "CALLE REFERENCIA 48",
+            "ubicacionGeografica": "2170048"
+          },
+          {
+            "numero": "49",
+            "nombreComercial": "ESTABLECIMIENTO 49",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 49",
+            "calleNumeracion": "A49",
+            "calleInterseccion": "CALLE INTERSECCION 49",
+            "calleReferencia": "CALLE REFERENCIA 49",
+            "ubicacionGeografica": "2170049"
+          },
+          {
+            "numero": "50",
+            "nombreComercial": "",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 50",
+            "calleNumeracion": "A50",
+            "calleInterseccion": "CALLE INTERSECCION 50",
+            "calleReferencia": "CALLE REFERENCIA 50",
+            "ubicacionGeografica": "2170050"
+          },
+          {
+            "numero": "51",
+            "nombreComercial": "ESTABLECIMIENTO 51",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 51",
+            "calleNumeracion": "A51",
+            "calleInterseccion": "CALLE INTERSECCION 51",
+            "calleReferencia": "CALLE REFERENCIA 51",
+            "ubicacionGeografica": "2170051"
+          },
+          {
+            "numero": "52",
+            "nombreComercial": "ESTABLECIMIENTO 52",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 52",
+            "calleNumeracion": "A52",
+            "calleInterseccion": "CALLE INTERSECCION 52",
+            "calleReferencia": "CALLE REFERENCIA 52",
+            "ubicacionGeografica": "2170052"
+          },
+          {
+            "numero": "53",
+            "nombreComercial": "ESTABLECIMIENTO 53",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 53",
+            "calleNumeracion": "A53",
+            "calleInterseccion": "CALLE INTERSECCION 53",
+            "calleReferencia": "CALLE REFERENCIA 53",
+            "ubicacionGeografica": "2170053"
+          },
+          {
+            "numero": "54",
+            "nombreComercial": "",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 54",
+            "calleNumeracion": "A54",
+            "calleInterseccion": "CALLE INTERSECCION 54",
+            "calleReferencia": "CALLE REFERENCIA 54",
+            "ubicacionGeografica": "2170054"
+          },
+          {
+            "numero": "55",
+            "nombreComercial": "ESTABLECIMIENTO 55",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 55",
+            "calleNumeracion": "A55",
+            "calleInterseccion": "CALLE INTERSECCION 55",
+            "calleReferencia": "CALLE REFERENCIA 55",
+            "ubicacionGeografica": "2170055"
+          },
+          {
+            "numero": "56",
+            "nombreComercial": "ESTABLECIMIENTO 56",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 56",
+            "calleNumeracion": "A56",
+            "calleInterseccion": "CALLE INTERSECCION 56",
+            "calleReferencia": "CALLE REFERENCIA 56",
+            "ubicacionGeografica": "2170056"
+          },
+          {
+            "numero": "57",
+            "nombreComercial": "ESTABLECIMIENTO 57",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 57",
+            "calleNumeracion": "A57",
+            "calleInterseccion": "CALLE INTERSECCION 57",
+            "calleReferencia": "CALLE REFERENCIA 57",
+            "ubicacionGeografica": "2170057"
+          },
+          {
+            "numero": "58",
+            "nombreComercial": "ESTABLECIMIENTO 58",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 58",
+            "calleNumeracion": "A58",
+            "calleInterseccion": "CALLE INTERSECCION 58",
+            "calleReferencia": "CALLE REFERENCIA 58",
+            "ubicacionGeografica": "2170058"
+          },
+          {
+            "numero": "59",
+            "nombreComercial": "ESTABLECIMIENTO 59",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 59",
+            "calleNumeracion": "A59",
+            "calleInterseccion": "CALLE INTERSECCION 59",
+            "calleReferencia": "CALLE REFERENCIA 59",
+            "ubicacionGeografica": "2170059"
+          },
+          {
+            "numero": "60",
+            "nombreComercial": "ESTABLECIMIENTO 60",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 60",
+            "calleNumeracion": "A60",
+            "calleInterseccion": "CALLE INTERSECCION 60",
+            "calleReferencia": "CALLE REFERENCIA 60",
+            "ubicacionGeografica": "2170060"
+          },
+          {
+            "numero": "61",
+            "nombreComercial": "ESTABLECIMIENTO 61",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 61",
+            "calleNumeracion": "A61",
+            "calleInterseccion": "CALLE INTERSECCION 61",
+            "calleReferencia": "CALLE REFERENCIA 61",
+            "ubicacionGeografica": "2170061"
+          },
+          {
+            "numero": "62",
+            "nombreComercial": "ESTABLECIMIENTO 62",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 62",
+            "calleNumeracion": "A62",
+            "calleInterseccion": "CALLE INTERSECCION 62",
+            "calleReferencia": "CALLE REFERENCIA 62",
+            "ubicacionGeografica": "2170062"
+          },
+          {
+            "numero": "63",
+            "nombreComercial": "ESTABLECIMIENTO 63",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 63",
+            "calleNumeracion": "A63",
+            "calleInterseccion": "CALLE INTERSECCION 63",
+            "calleReferencia": "CALLE REFERENCIA 63",
+            "ubicacionGeografica": "2170063"
+          },
+          {
+            "numero": "64",
+            "nombreComercial": "ESTABLECIMIENTO 64",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 64",
+            "calleNumeracion": "A64",
+            "calleInterseccion": "CALLE INTERSECCION 64",
+            "calleReferencia": "CALLE REFERENCIA 64",
+            "ubicacionGeografica": "2170064"
+          },
+          {
+            "numero": "65",
+            "nombreComercial": "ESTABLECIMIENTO 65",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 65",
+            "calleNumeracion": "A65",
+            "calleInterseccion": "CALLE INTERSECCION 65",
+            "calleReferencia": "CALLE REFERENCIA 65",
+            "ubicacionGeografica": "2170065"
+          },
+          {
+            "numero": "66",
+            "nombreComercial": "ESTABLECIMIENTO 66",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 66",
+            "calleNumeracion": "A66",
+            "calleInterseccion": "CALLE INTERSECCION 66",
+            "calleReferencia": "CALLE REFERENCIA 66",
+            "ubicacionGeografica": "2170066"
+          },
+          {
+            "numero": "67",
+            "nombreComercial": "ESTABLECIMIENTO 67",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 67",
+            "calleNumeracion": "A67",
+            "calleInterseccion": "CALLE INTERSECCION 67",
+            "calleReferencia": "CALLE REFERENCIA 67",
+            "ubicacionGeografica": "2170067"
+          },
+          {
+            "numero": "68",
+            "nombreComercial": "ESTABLECIMIENTO 68",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 68",
+            "calleNumeracion": "A68",
+            "calleInterseccion": "CALLE INTERSECCION 68",
+            "calleReferencia": "CALLE REFERENCIA 68",
+            "ubicacionGeografica": "2170068"
+          },
+          {
+            "numero": "69",
+            "nombreComercial": "",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 69",
+            "calleNumeracion": "A69",
+            "calleInterseccion": "CALLE INTERSECCION 69",
+            "calleReferencia": "CALLE REFERENCIA 69",
+            "ubicacionGeografica": "2170069"
+          },
+          {
+            "numero": "70",
+            "nombreComercial": "ESTABLECIMIENTO 70",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 70",
+            "calleNumeracion": "A70",
+            "calleInterseccion": "CALLE INTERSECCION 70",
+            "calleReferencia": "CALLE REFERENCIA 70",
+            "ubicacionGeografica": "2170070"
+          },
+          {
+            "numero": "71",
+            "nombreComercial": "ESTABLECIMIENTO 71",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 71",
+            "calleNumeracion": "A71",
+            "calleInterseccion": "CALLE INTERSECCION 71",
+            "calleReferencia": "CALLE REFERENCIA 71",
+            "ubicacionGeografica": "2170071"
+          },
+          {
+            "numero": "72",
+            "nombreComercial": "ESTABLECIMIENTO 72",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 72",
+            "calleNumeracion": "A72",
+            "calleInterseccion": "CALLE INTERSECCION 72",
+            "calleReferencia": "CALLE REFERENCIA 72",
+            "ubicacionGeografica": "2170072"
+          },
+          {
+            "numero": "73",
+            "nombreComercial": "",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 73",
+            "calleNumeracion": "A73",
+            "calleInterseccion": "CALLE INTERSECCION 73",
+            "calleReferencia": "CALLE REFERENCIA 73",
+            "ubicacionGeografica": "2170073"
+          },
+          {
+            "numero": "74",
+            "nombreComercial": "ESTABLECIMIENTO 74",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 74",
+            "calleNumeracion": "A74",
+            "calleInterseccion": "CALLE INTERSECCION 74",
+            "calleReferencia": "CALLE REFERENCIA 74",
+            "ubicacionGeografica": "2170074"
+          },
+          {
+            "numero": "75",
+            "nombreComercial": "",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 75",
+            "calleNumeracion": "A75",
+            "calleInterseccion": "CALLE INTERSECCION 75",
+            "calleReferencia": "CALLE REFERENCIA 75",
+            "ubicacionGeografica": "2170075"
+          },
+          {
+            "numero": "76",
+            "nombreComercial": "ESTABLECIMIENTO 76",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 76",
+            "calleNumeracion": "A76",
+            "calleInterseccion": "CALLE INTERSECCION 76",
+            "calleReferencia": "CALLE REFERENCIA 76",
+            "ubicacionGeografica": "2170076"
+          },
+          {
+            "numero": "77",
+            "nombreComercial": "ESTABLECIMIENTO 77",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 77",
+            "calleNumeracion": "A77",
+            "calleInterseccion": "CALLE INTERSECCION 77",
+            "calleReferencia": "CALLE REFERENCIA 77",
+            "ubicacionGeografica": "2170077"
+          },
+          {
+            "numero": "78",
+            "nombreComercial": "ESTABLECIMIENTO 78",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 78",
+            "calleNumeracion": "A78",
+            "calleInterseccion": "CALLE INTERSECCION 78",
+            "calleReferencia": "CALLE REFERENCIA 78",
+            "ubicacionGeografica": "2170078"
+          },
+          {
+            "numero": "79",
+            "nombreComercial": "",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 79",
+            "calleNumeracion": "A79",
+            "calleInterseccion": "CALLE INTERSECCION 79",
+            "calleReferencia": "CALLE REFERENCIA 79",
+            "ubicacionGeografica": "2170079"
+          },
+          {
+            "numero": "80",
+            "nombreComercial": "ESTABLECIMIENTO 80",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 80",
+            "calleNumeracion": "A80",
+            "calleInterseccion": "CALLE INTERSECCION 80",
+            "calleReferencia": "CALLE REFERENCIA 80",
+            "ubicacionGeografica": "2170080"
+          },
+          {
+            "numero": "81",
+            "nombreComercial": "ESTABLECIMIENTO 81",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 81",
+            "calleNumeracion": "A81",
+            "calleInterseccion": "CALLE INTERSECCION 81",
+            "calleReferencia": "CALLE REFERENCIA 81",
+            "ubicacionGeografica": "2170081"
+          },
+          {
+            "numero": "82",
+            "nombreComercial": "ESTABLECIMIENTO 82",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 82",
+            "calleNumeracion": "A82",
+            "calleInterseccion": "CALLE INTERSECCION 82",
+            "calleReferencia": "CALLE REFERENCIA 82",
+            "ubicacionGeografica": "2170082"
+          },
+          {
+            "numero": "83",
+            "nombreComercial": "",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 83",
+            "calleNumeracion": "A83",
+            "calleInterseccion": "CALLE INTERSECCION 83",
+            "calleReferencia": "CALLE REFERENCIA 83",
+            "ubicacionGeografica": "2170083"
+          },
+          {
+            "numero": "84",
+            "nombreComercial": "ESTABLECIMIENTO 84",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 84",
+            "calleNumeracion": "A84",
+            "calleInterseccion": "CALLE INTERSECCION 84",
+            "calleReferencia": "CALLE REFERENCIA 84",
+            "ubicacionGeografica": "2170084"
+          },
+          {
+            "numero": "85",
+            "nombreComercial": "ESTABLECIMIENTO 85",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 85",
+            "calleNumeracion": "A85",
+            "calleInterseccion": "CALLE INTERSECCION 85",
+            "calleReferencia": "CALLE REFERENCIA 85",
+            "ubicacionGeografica": "2170085"
+          },
+          {
+            "numero": "86",
+            "nombreComercial": "ESTABLECIMIENTO 86",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 86",
+            "calleNumeracion": "A86",
+            "calleInterseccion": "CALLE INTERSECCION 86",
+            "calleReferencia": "CALLE REFERENCIA 86",
+            "ubicacionGeografica": "2170086"
+          },
+          {
+            "numero": "87",
+            "nombreComercial": "ESTABLECIMIENTO 87",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 87",
+            "calleNumeracion": "A87",
+            "calleInterseccion": "CALLE INTERSECCION 87",
+            "calleReferencia": "CALLE REFERENCIA 87",
+            "ubicacionGeografica": "2170087"
+          },
+          {
+            "numero": "88",
+            "nombreComercial": "ESTABLECIMIENTO 88",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 88",
+            "calleNumeracion": "A88",
+            "calleInterseccion": "CALLE INTERSECCION 88",
+            "calleReferencia": "CALLE REFERENCIA 88",
+            "ubicacionGeografica": "2170088"
+          },
+          {
+            "numero": "89",
+            "nombreComercial": "ESTABLECIMIENTO 89",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 89",
+            "calleNumeracion": "A89",
+            "calleInterseccion": "CALLE INTERSECCION 89",
+            "calleReferencia": "CALLE REFERENCIA 89",
+            "ubicacionGeografica": "2170089"
+          },
+          {
+            "numero": "90",
+            "nombreComercial": "ESTABLECIMIENTO 90",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 90",
+            "calleNumeracion": "A90",
+            "calleInterseccion": "CALLE INTERSECCION 90",
+            "calleReferencia": "CALLE REFERENCIA 90",
+            "ubicacionGeografica": "2170090"
+          },
+          {
+            "numero": "91",
+            "nombreComercial": "ESTABLECIMIENTO 91",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 91",
+            "calleNumeracion": "A91",
+            "calleInterseccion": "CALLE INTERSECCION 91",
+            "calleReferencia": "CALLE REFERENCIA 91",
+            "ubicacionGeografica": "2170091"
+          },
+          {
+            "numero": "92",
+            "nombreComercial": "ESTABLECIMIENTO 92",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 92",
+            "calleNumeracion": "A92",
+            "calleInterseccion": "CALLE INTERSECCION 92",
+            "calleReferencia": "CALLE REFERENCIA 92",
+            "ubicacionGeografica": "2170092"
+          },
+          {
+            "numero": "93",
+            "nombreComercial": "ESTABLECIMIENTO 93",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 93",
+            "calleNumeracion": "A93",
+            "calleInterseccion": "CALLE INTERSECCION 93",
+            "calleReferencia": "CALLE REFERENCIA 93",
+            "ubicacionGeografica": "2170093"
+          },
+          {
+            "numero": "94",
+            "nombreComercial": "",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 94",
+            "calleNumeracion": "A94",
+            "calleInterseccion": "CALLE INTERSECCION 94",
+            "calleReferencia": "CALLE REFERENCIA 94",
+            "ubicacionGeografica": "2170094"
+          },
+          {
+            "numero": "95",
+            "nombreComercial": "ESTABLECIMIENTO 95",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 95",
+            "calleNumeracion": "A95",
+            "calleInterseccion": "CALLE INTERSECCION 95",
+            "calleReferencia": "CALLE REFERENCIA 95",
+            "ubicacionGeografica": "2170095"
+          },
+          {
+            "numero": "96",
+            "nombreComercial": "ESTABLECIMIENTO 96",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 96",
+            "calleNumeracion": "A96",
+            "calleInterseccion": "CALLE INTERSECCION 96",
+            "calleReferencia": "CALLE REFERENCIA 96",
+            "ubicacionGeografica": "2170096"
+          },
+          {
+            "numero": "97",
+            "nombreComercial": "ESTABLECIMIENTO 97",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 97",
+            "calleNumeracion": "A97",
+            "calleInterseccion": "CALLE INTERSECCION 97",
+            "calleReferencia": "CALLE REFERENCIA 97",
+            "ubicacionGeografica": "2170097"
+          },
+          {
+            "numero": "98",
+            "nombreComercial": "ESTABLECIMIENTO 98",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 98",
+            "calleNumeracion": "A98",
+            "calleInterseccion": "CALLE INTERSECCION 98",
+            "calleReferencia": "CALLE REFERENCIA 98",
+            "ubicacionGeografica": "2170098"
+          },
+          {
+            "numero": "99",
+            "nombreComercial": "",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 99",
+            "calleNumeracion": "A99",
+            "calleInterseccion": "CALLE INTERSECCION 99",
+            "calleReferencia": "CALLE REFERENCIA 99",
+            "ubicacionGeografica": "2170099"
+          },
+          {
+            "numero": "100",
+            "nombreComercial": "ESTABLECIMIENTO 100",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 100",
+            "calleNumeracion": "A100",
+            "calleInterseccion": "CALLE INTERSECCION 100",
+            "calleReferencia": "CALLE REFERENCIA 100",
+            "ubicacionGeografica": "2170100"
           }
         ]
       },
@@ -74,21 +1034,21 @@
             "numero": "1",
             "nombreComercial": "ESTABLECIMIENTO 1",
             "estado": "ABIERTO",
-            "callePrincipal": "CALLE PRINCIPAL",
+            "callePrincipal": "CALLE PRINCIPAL 1",
             "calleNumeracion": "A1",
-            "calleInterseccion": "CALLE INTERSECCION",
-            "calleReferencia": "CALLE REFERENCIA",
-            "ubicacionGeografica": "2170118"
+            "calleInterseccion": "CALLE INTERSECCION 1",
+            "calleReferencia": "CALLE REFERENCIA 1",
+            "ubicacionGeografica": "2170001"
           },
           {
             "numero": "2",
             "nombreComercial": "",
-            "estado": "ABIERTO",
+            "estado": "CERRADO",
             "callePrincipal": "CALLE PRINCIPAL 2",
             "calleNumeracion": "A2",
             "calleInterseccion": "CALLE INTERSECCION 2",
             "calleReferencia": "CALLE REFERENCIA 2",
-            "ubicacionGeografica": "2170118"
+            "ubicacionGeografica": "2170002"
           },
           {
             "numero": "3",
@@ -98,7 +1058,7 @@
             "calleNumeracion": "A3",
             "calleInterseccion": "CALLE INTERSECCION 3",
             "calleReferencia": "CALLE REFERENCIA 3",
-            "ubicacionGeografica": "2170118"
+            "ubicacionGeografica": "2170003"
           },
           {
             "numero": "4",
@@ -108,7 +1068,967 @@
             "calleNumeracion": "A4",
             "calleInterseccion": "CALLE INTERSECCION 4",
             "calleReferencia": "CALLE REFERENCIA 4",
-            "ubicacionGeografica": "2170118"
+            "ubicacionGeografica": "2170004"
+          },
+          {
+            "numero": "5",
+            "nombreComercial": "ESTABLECIMIENTO 5",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 5",
+            "calleNumeracion": "A5",
+            "calleInterseccion": "CALLE INTERSECCION 5",
+            "calleReferencia": "CALLE REFERENCIA 5",
+            "ubicacionGeografica": "2170005"
+          },
+          {
+            "numero": "6",
+            "nombreComercial": "ESTABLECIMIENTO 6",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 6",
+            "calleNumeracion": "A6",
+            "calleInterseccion": "CALLE INTERSECCION 6",
+            "calleReferencia": "CALLE REFERENCIA 6",
+            "ubicacionGeografica": "2170006"
+          },
+          {
+            "numero": "7",
+            "nombreComercial": "ESTABLECIMIENTO 7",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 7",
+            "calleNumeracion": "A7",
+            "calleInterseccion": "CALLE INTERSECCION 7",
+            "calleReferencia": "CALLE REFERENCIA 7",
+            "ubicacionGeografica": "2170007"
+          },
+          {
+            "numero": "8",
+            "nombreComercial": "ESTABLECIMIENTO 8",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 8",
+            "calleNumeracion": "A8",
+            "calleInterseccion": "CALLE INTERSECCION 8",
+            "calleReferencia": "CALLE REFERENCIA 8",
+            "ubicacionGeografica": "2170008"
+          },
+          {
+            "numero": "9",
+            "nombreComercial": "ESTABLECIMIENTO 9",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 9",
+            "calleNumeracion": "A9",
+            "calleInterseccion": "CALLE INTERSECCION 9",
+            "calleReferencia": "CALLE REFERENCIA 9",
+            "ubicacionGeografica": "2170009"
+          },
+          {
+            "numero": "10",
+            "nombreComercial": "",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 10",
+            "calleNumeracion": "A10",
+            "calleInterseccion": "CALLE INTERSECCION 10",
+            "calleReferencia": "CALLE REFERENCIA 10",
+            "ubicacionGeografica": "2170010"
+          },
+          {
+            "numero": "11",
+            "nombreComercial": "",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 11",
+            "calleNumeracion": "A11",
+            "calleInterseccion": "CALLE INTERSECCION 11",
+            "calleReferencia": "CALLE REFERENCIA 11",
+            "ubicacionGeografica": "2170011"
+          },
+          {
+            "numero": "12",
+            "nombreComercial": "ESTABLECIMIENTO 12",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 12",
+            "calleNumeracion": "A12",
+            "calleInterseccion": "CALLE INTERSECCION 12",
+            "calleReferencia": "CALLE REFERENCIA 12",
+            "ubicacionGeografica": "2170012"
+          },
+          {
+            "numero": "13",
+            "nombreComercial": "ESTABLECIMIENTO 13",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 13",
+            "calleNumeracion": "A13",
+            "calleInterseccion": "CALLE INTERSECCION 13",
+            "calleReferencia": "CALLE REFERENCIA 13",
+            "ubicacionGeografica": "2170013"
+          },
+          {
+            "numero": "14",
+            "nombreComercial": "ESTABLECIMIENTO 14",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 14",
+            "calleNumeracion": "A14",
+            "calleInterseccion": "CALLE INTERSECCION 14",
+            "calleReferencia": "CALLE REFERENCIA 14",
+            "ubicacionGeografica": "2170014"
+          },
+          {
+            "numero": "15",
+            "nombreComercial": "ESTABLECIMIENTO 15",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 15",
+            "calleNumeracion": "A15",
+            "calleInterseccion": "CALLE INTERSECCION 15",
+            "calleReferencia": "CALLE REFERENCIA 15",
+            "ubicacionGeografica": "2170015"
+          },
+          {
+            "numero": "16",
+            "nombreComercial": "ESTABLECIMIENTO 16",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 16",
+            "calleNumeracion": "A16",
+            "calleInterseccion": "CALLE INTERSECCION 16",
+            "calleReferencia": "CALLE REFERENCIA 16",
+            "ubicacionGeografica": "2170016"
+          },
+          {
+            "numero": "17",
+            "nombreComercial": "ESTABLECIMIENTO 17",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 17",
+            "calleNumeracion": "A17",
+            "calleInterseccion": "CALLE INTERSECCION 17",
+            "calleReferencia": "CALLE REFERENCIA 17",
+            "ubicacionGeografica": "2170017"
+          },
+          {
+            "numero": "18",
+            "nombreComercial": "",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 18",
+            "calleNumeracion": "A18",
+            "calleInterseccion": "CALLE INTERSECCION 18",
+            "calleReferencia": "CALLE REFERENCIA 18",
+            "ubicacionGeografica": "2170018"
+          },
+          {
+            "numero": "19",
+            "nombreComercial": "ESTABLECIMIENTO 19",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 19",
+            "calleNumeracion": "A19",
+            "calleInterseccion": "CALLE INTERSECCION 19",
+            "calleReferencia": "CALLE REFERENCIA 19",
+            "ubicacionGeografica": "2170019"
+          },
+          {
+            "numero": "20",
+            "nombreComercial": "",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 20",
+            "calleNumeracion": "A20",
+            "calleInterseccion": "CALLE INTERSECCION 20",
+            "calleReferencia": "CALLE REFERENCIA 20",
+            "ubicacionGeografica": "2170020"
+          },
+          {
+            "numero": "21",
+            "nombreComercial": "ESTABLECIMIENTO 21",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 21",
+            "calleNumeracion": "A21",
+            "calleInterseccion": "CALLE INTERSECCION 21",
+            "calleReferencia": "CALLE REFERENCIA 21",
+            "ubicacionGeografica": "2170021"
+          },
+          {
+            "numero": "22",
+            "nombreComercial": "ESTABLECIMIENTO 22",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 22",
+            "calleNumeracion": "A22",
+            "calleInterseccion": "CALLE INTERSECCION 22",
+            "calleReferencia": "CALLE REFERENCIA 22",
+            "ubicacionGeografica": "2170022"
+          },
+          {
+            "numero": "23",
+            "nombreComercial": "ESTABLECIMIENTO 23",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 23",
+            "calleNumeracion": "A23",
+            "calleInterseccion": "CALLE INTERSECCION 23",
+            "calleReferencia": "CALLE REFERENCIA 23",
+            "ubicacionGeografica": "2170023"
+          },
+          {
+            "numero": "24",
+            "nombreComercial": "ESTABLECIMIENTO 24",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 24",
+            "calleNumeracion": "A24",
+            "calleInterseccion": "CALLE INTERSECCION 24",
+            "calleReferencia": "CALLE REFERENCIA 24",
+            "ubicacionGeografica": "2170024"
+          },
+          {
+            "numero": "25",
+            "nombreComercial": "ESTABLECIMIENTO 25",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 25",
+            "calleNumeracion": "A25",
+            "calleInterseccion": "CALLE INTERSECCION 25",
+            "calleReferencia": "CALLE REFERENCIA 25",
+            "ubicacionGeografica": "2170025"
+          },
+          {
+            "numero": "26",
+            "nombreComercial": "ESTABLECIMIENTO 26",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 26",
+            "calleNumeracion": "A26",
+            "calleInterseccion": "CALLE INTERSECCION 26",
+            "calleReferencia": "CALLE REFERENCIA 26",
+            "ubicacionGeografica": "2170026"
+          },
+          {
+            "numero": "27",
+            "nombreComercial": "ESTABLECIMIENTO 27",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 27",
+            "calleNumeracion": "A27",
+            "calleInterseccion": "CALLE INTERSECCION 27",
+            "calleReferencia": "CALLE REFERENCIA 27",
+            "ubicacionGeografica": "2170027"
+          },
+          {
+            "numero": "28",
+            "nombreComercial": "ESTABLECIMIENTO 28",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 28",
+            "calleNumeracion": "A28",
+            "calleInterseccion": "CALLE INTERSECCION 28",
+            "calleReferencia": "CALLE REFERENCIA 28",
+            "ubicacionGeografica": "2170028"
+          },
+          {
+            "numero": "29",
+            "nombreComercial": "ESTABLECIMIENTO 29",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 29",
+            "calleNumeracion": "A29",
+            "calleInterseccion": "CALLE INTERSECCION 29",
+            "calleReferencia": "CALLE REFERENCIA 29",
+            "ubicacionGeografica": "2170029"
+          },
+          {
+            "numero": "30",
+            "nombreComercial": "ESTABLECIMIENTO 30",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 30",
+            "calleNumeracion": "A30",
+            "calleInterseccion": "CALLE INTERSECCION 30",
+            "calleReferencia": "CALLE REFERENCIA 30",
+            "ubicacionGeografica": "2170030"
+          },
+          {
+            "numero": "31",
+            "nombreComercial": "ESTABLECIMIENTO 31",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 31",
+            "calleNumeracion": "A31",
+            "calleInterseccion": "CALLE INTERSECCION 31",
+            "calleReferencia": "CALLE REFERENCIA 31",
+            "ubicacionGeografica": "2170031"
+          },
+          {
+            "numero": "32",
+            "nombreComercial": "ESTABLECIMIENTO 32",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 32",
+            "calleNumeracion": "A32",
+            "calleInterseccion": "CALLE INTERSECCION 32",
+            "calleReferencia": "CALLE REFERENCIA 32",
+            "ubicacionGeografica": "2170032"
+          },
+          {
+            "numero": "33",
+            "nombreComercial": "ESTABLECIMIENTO 33",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 33",
+            "calleNumeracion": "A33",
+            "calleInterseccion": "CALLE INTERSECCION 33",
+            "calleReferencia": "CALLE REFERENCIA 33",
+            "ubicacionGeografica": "2170033"
+          },
+          {
+            "numero": "34",
+            "nombreComercial": "ESTABLECIMIENTO 34",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 34",
+            "calleNumeracion": "A34",
+            "calleInterseccion": "CALLE INTERSECCION 34",
+            "calleReferencia": "CALLE REFERENCIA 34",
+            "ubicacionGeografica": "2170034"
+          },
+          {
+            "numero": "35",
+            "nombreComercial": "",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 35",
+            "calleNumeracion": "A35",
+            "calleInterseccion": "CALLE INTERSECCION 35",
+            "calleReferencia": "CALLE REFERENCIA 35",
+            "ubicacionGeografica": "2170035"
+          },
+          {
+            "numero": "36",
+            "nombreComercial": "ESTABLECIMIENTO 36",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 36",
+            "calleNumeracion": "A36",
+            "calleInterseccion": "CALLE INTERSECCION 36",
+            "calleReferencia": "CALLE REFERENCIA 36",
+            "ubicacionGeografica": "2170036"
+          },
+          {
+            "numero": "37",
+            "nombreComercial": "ESTABLECIMIENTO 37",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 37",
+            "calleNumeracion": "A37",
+            "calleInterseccion": "CALLE INTERSECCION 37",
+            "calleReferencia": "CALLE REFERENCIA 37",
+            "ubicacionGeografica": "2170037"
+          },
+          {
+            "numero": "38",
+            "nombreComercial": "ESTABLECIMIENTO 38",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 38",
+            "calleNumeracion": "A38",
+            "calleInterseccion": "CALLE INTERSECCION 38",
+            "calleReferencia": "CALLE REFERENCIA 38",
+            "ubicacionGeografica": "2170038"
+          },
+          {
+            "numero": "39",
+            "nombreComercial": "ESTABLECIMIENTO 39",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 39",
+            "calleNumeracion": "A39",
+            "calleInterseccion": "CALLE INTERSECCION 39",
+            "calleReferencia": "CALLE REFERENCIA 39",
+            "ubicacionGeografica": "2170039"
+          },
+          {
+            "numero": "40",
+            "nombreComercial": "ESTABLECIMIENTO 40",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 40",
+            "calleNumeracion": "A40",
+            "calleInterseccion": "CALLE INTERSECCION 40",
+            "calleReferencia": "CALLE REFERENCIA 40",
+            "ubicacionGeografica": "2170040"
+          },
+          {
+            "numero": "41",
+            "nombreComercial": "",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 41",
+            "calleNumeracion": "A41",
+            "calleInterseccion": "CALLE INTERSECCION 41",
+            "calleReferencia": "CALLE REFERENCIA 41",
+            "ubicacionGeografica": "2170041"
+          },
+          {
+            "numero": "42",
+            "nombreComercial": "ESTABLECIMIENTO 42",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 42",
+            "calleNumeracion": "A42",
+            "calleInterseccion": "CALLE INTERSECCION 42",
+            "calleReferencia": "CALLE REFERENCIA 42",
+            "ubicacionGeografica": "2170042"
+          },
+          {
+            "numero": "43",
+            "nombreComercial": "",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 43",
+            "calleNumeracion": "A43",
+            "calleInterseccion": "CALLE INTERSECCION 43",
+            "calleReferencia": "CALLE REFERENCIA 43",
+            "ubicacionGeografica": "2170043"
+          },
+          {
+            "numero": "44",
+            "nombreComercial": "ESTABLECIMIENTO 44",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 44",
+            "calleNumeracion": "A44",
+            "calleInterseccion": "CALLE INTERSECCION 44",
+            "calleReferencia": "CALLE REFERENCIA 44",
+            "ubicacionGeografica": "2170044"
+          },
+          {
+            "numero": "45",
+            "nombreComercial": "ESTABLECIMIENTO 45",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 45",
+            "calleNumeracion": "A45",
+            "calleInterseccion": "CALLE INTERSECCION 45",
+            "calleReferencia": "CALLE REFERENCIA 45",
+            "ubicacionGeografica": "2170045"
+          },
+          {
+            "numero": "46",
+            "nombreComercial": "ESTABLECIMIENTO 46",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 46",
+            "calleNumeracion": "A46",
+            "calleInterseccion": "CALLE INTERSECCION 46",
+            "calleReferencia": "CALLE REFERENCIA 46",
+            "ubicacionGeografica": "2170046"
+          },
+          {
+            "numero": "47",
+            "nombreComercial": "ESTABLECIMIENTO 47",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 47",
+            "calleNumeracion": "A47",
+            "calleInterseccion": "CALLE INTERSECCION 47",
+            "calleReferencia": "CALLE REFERENCIA 47",
+            "ubicacionGeografica": "2170047"
+          },
+          {
+            "numero": "48",
+            "nombreComercial": "ESTABLECIMIENTO 48",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 48",
+            "calleNumeracion": "A48",
+            "calleInterseccion": "CALLE INTERSECCION 48",
+            "calleReferencia": "CALLE REFERENCIA 48",
+            "ubicacionGeografica": "2170048"
+          },
+          {
+            "numero": "49",
+            "nombreComercial": "ESTABLECIMIENTO 49",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 49",
+            "calleNumeracion": "A49",
+            "calleInterseccion": "CALLE INTERSECCION 49",
+            "calleReferencia": "CALLE REFERENCIA 49",
+            "ubicacionGeografica": "2170049"
+          },
+          {
+            "numero": "50",
+            "nombreComercial": "",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 50",
+            "calleNumeracion": "A50",
+            "calleInterseccion": "CALLE INTERSECCION 50",
+            "calleReferencia": "CALLE REFERENCIA 50",
+            "ubicacionGeografica": "2170050"
+          },
+          {
+            "numero": "51",
+            "nombreComercial": "ESTABLECIMIENTO 51",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 51",
+            "calleNumeracion": "A51",
+            "calleInterseccion": "CALLE INTERSECCION 51",
+            "calleReferencia": "CALLE REFERENCIA 51",
+            "ubicacionGeografica": "2170051"
+          },
+          {
+            "numero": "52",
+            "nombreComercial": "ESTABLECIMIENTO 52",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 52",
+            "calleNumeracion": "A52",
+            "calleInterseccion": "CALLE INTERSECCION 52",
+            "calleReferencia": "CALLE REFERENCIA 52",
+            "ubicacionGeografica": "2170052"
+          },
+          {
+            "numero": "53",
+            "nombreComercial": "ESTABLECIMIENTO 53",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 53",
+            "calleNumeracion": "A53",
+            "calleInterseccion": "CALLE INTERSECCION 53",
+            "calleReferencia": "CALLE REFERENCIA 53",
+            "ubicacionGeografica": "2170053"
+          },
+          {
+            "numero": "54",
+            "nombreComercial": "",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 54",
+            "calleNumeracion": "A54",
+            "calleInterseccion": "CALLE INTERSECCION 54",
+            "calleReferencia": "CALLE REFERENCIA 54",
+            "ubicacionGeografica": "2170054"
+          },
+          {
+            "numero": "55",
+            "nombreComercial": "ESTABLECIMIENTO 55",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 55",
+            "calleNumeracion": "A55",
+            "calleInterseccion": "CALLE INTERSECCION 55",
+            "calleReferencia": "CALLE REFERENCIA 55",
+            "ubicacionGeografica": "2170055"
+          },
+          {
+            "numero": "56",
+            "nombreComercial": "ESTABLECIMIENTO 56",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 56",
+            "calleNumeracion": "A56",
+            "calleInterseccion": "CALLE INTERSECCION 56",
+            "calleReferencia": "CALLE REFERENCIA 56",
+            "ubicacionGeografica": "2170056"
+          },
+          {
+            "numero": "57",
+            "nombreComercial": "ESTABLECIMIENTO 57",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 57",
+            "calleNumeracion": "A57",
+            "calleInterseccion": "CALLE INTERSECCION 57",
+            "calleReferencia": "CALLE REFERENCIA 57",
+            "ubicacionGeografica": "2170057"
+          },
+          {
+            "numero": "58",
+            "nombreComercial": "ESTABLECIMIENTO 58",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 58",
+            "calleNumeracion": "A58",
+            "calleInterseccion": "CALLE INTERSECCION 58",
+            "calleReferencia": "CALLE REFERENCIA 58",
+            "ubicacionGeografica": "2170058"
+          },
+          {
+            "numero": "59",
+            "nombreComercial": "ESTABLECIMIENTO 59",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 59",
+            "calleNumeracion": "A59",
+            "calleInterseccion": "CALLE INTERSECCION 59",
+            "calleReferencia": "CALLE REFERENCIA 59",
+            "ubicacionGeografica": "2170059"
+          },
+          {
+            "numero": "60",
+            "nombreComercial": "ESTABLECIMIENTO 60",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 60",
+            "calleNumeracion": "A60",
+            "calleInterseccion": "CALLE INTERSECCION 60",
+            "calleReferencia": "CALLE REFERENCIA 60",
+            "ubicacionGeografica": "2170060"
+          },
+          {
+            "numero": "61",
+            "nombreComercial": "ESTABLECIMIENTO 61",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 61",
+            "calleNumeracion": "A61",
+            "calleInterseccion": "CALLE INTERSECCION 61",
+            "calleReferencia": "CALLE REFERENCIA 61",
+            "ubicacionGeografica": "2170061"
+          },
+          {
+            "numero": "62",
+            "nombreComercial": "ESTABLECIMIENTO 62",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 62",
+            "calleNumeracion": "A62",
+            "calleInterseccion": "CALLE INTERSECCION 62",
+            "calleReferencia": "CALLE REFERENCIA 62",
+            "ubicacionGeografica": "2170062"
+          },
+          {
+            "numero": "63",
+            "nombreComercial": "ESTABLECIMIENTO 63",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 63",
+            "calleNumeracion": "A63",
+            "calleInterseccion": "CALLE INTERSECCION 63",
+            "calleReferencia": "CALLE REFERENCIA 63",
+            "ubicacionGeografica": "2170063"
+          },
+          {
+            "numero": "64",
+            "nombreComercial": "ESTABLECIMIENTO 64",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 64",
+            "calleNumeracion": "A64",
+            "calleInterseccion": "CALLE INTERSECCION 64",
+            "calleReferencia": "CALLE REFERENCIA 64",
+            "ubicacionGeografica": "2170064"
+          },
+          {
+            "numero": "65",
+            "nombreComercial": "ESTABLECIMIENTO 65",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 65",
+            "calleNumeracion": "A65",
+            "calleInterseccion": "CALLE INTERSECCION 65",
+            "calleReferencia": "CALLE REFERENCIA 65",
+            "ubicacionGeografica": "2170065"
+          },
+          {
+            "numero": "66",
+            "nombreComercial": "ESTABLECIMIENTO 66",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 66",
+            "calleNumeracion": "A66",
+            "calleInterseccion": "CALLE INTERSECCION 66",
+            "calleReferencia": "CALLE REFERENCIA 66",
+            "ubicacionGeografica": "2170066"
+          },
+          {
+            "numero": "67",
+            "nombreComercial": "ESTABLECIMIENTO 67",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 67",
+            "calleNumeracion": "A67",
+            "calleInterseccion": "CALLE INTERSECCION 67",
+            "calleReferencia": "CALLE REFERENCIA 67",
+            "ubicacionGeografica": "2170067"
+          },
+          {
+            "numero": "68",
+            "nombreComercial": "ESTABLECIMIENTO 68",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 68",
+            "calleNumeracion": "A68",
+            "calleInterseccion": "CALLE INTERSECCION 68",
+            "calleReferencia": "CALLE REFERENCIA 68",
+            "ubicacionGeografica": "2170068"
+          },
+          {
+            "numero": "69",
+            "nombreComercial": "",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 69",
+            "calleNumeracion": "A69",
+            "calleInterseccion": "CALLE INTERSECCION 69",
+            "calleReferencia": "CALLE REFERENCIA 69",
+            "ubicacionGeografica": "2170069"
+          },
+          {
+            "numero": "70",
+            "nombreComercial": "ESTABLECIMIENTO 70",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 70",
+            "calleNumeracion": "A70",
+            "calleInterseccion": "CALLE INTERSECCION 70",
+            "calleReferencia": "CALLE REFERENCIA 70",
+            "ubicacionGeografica": "2170070"
+          },
+          {
+            "numero": "71",
+            "nombreComercial": "ESTABLECIMIENTO 71",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 71",
+            "calleNumeracion": "A71",
+            "calleInterseccion": "CALLE INTERSECCION 71",
+            "calleReferencia": "CALLE REFERENCIA 71",
+            "ubicacionGeografica": "2170071"
+          },
+          {
+            "numero": "72",
+            "nombreComercial": "ESTABLECIMIENTO 72",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 72",
+            "calleNumeracion": "A72",
+            "calleInterseccion": "CALLE INTERSECCION 72",
+            "calleReferencia": "CALLE REFERENCIA 72",
+            "ubicacionGeografica": "2170072"
+          },
+          {
+            "numero": "73",
+            "nombreComercial": "",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 73",
+            "calleNumeracion": "A73",
+            "calleInterseccion": "CALLE INTERSECCION 73",
+            "calleReferencia": "CALLE REFERENCIA 73",
+            "ubicacionGeografica": "2170073"
+          },
+          {
+            "numero": "74",
+            "nombreComercial": "ESTABLECIMIENTO 74",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 74",
+            "calleNumeracion": "A74",
+            "calleInterseccion": "CALLE INTERSECCION 74",
+            "calleReferencia": "CALLE REFERENCIA 74",
+            "ubicacionGeografica": "2170074"
+          },
+          {
+            "numero": "75",
+            "nombreComercial": "",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 75",
+            "calleNumeracion": "A75",
+            "calleInterseccion": "CALLE INTERSECCION 75",
+            "calleReferencia": "CALLE REFERENCIA 75",
+            "ubicacionGeografica": "2170075"
+          },
+          {
+            "numero": "76",
+            "nombreComercial": "ESTABLECIMIENTO 76",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 76",
+            "calleNumeracion": "A76",
+            "calleInterseccion": "CALLE INTERSECCION 76",
+            "calleReferencia": "CALLE REFERENCIA 76",
+            "ubicacionGeografica": "2170076"
+          },
+          {
+            "numero": "77",
+            "nombreComercial": "ESTABLECIMIENTO 77",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 77",
+            "calleNumeracion": "A77",
+            "calleInterseccion": "CALLE INTERSECCION 77",
+            "calleReferencia": "CALLE REFERENCIA 77",
+            "ubicacionGeografica": "2170077"
+          },
+          {
+            "numero": "78",
+            "nombreComercial": "ESTABLECIMIENTO 78",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 78",
+            "calleNumeracion": "A78",
+            "calleInterseccion": "CALLE INTERSECCION 78",
+            "calleReferencia": "CALLE REFERENCIA 78",
+            "ubicacionGeografica": "2170078"
+          },
+          {
+            "numero": "79",
+            "nombreComercial": "",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 79",
+            "calleNumeracion": "A79",
+            "calleInterseccion": "CALLE INTERSECCION 79",
+            "calleReferencia": "CALLE REFERENCIA 79",
+            "ubicacionGeografica": "2170079"
+          },
+          {
+            "numero": "80",
+            "nombreComercial": "ESTABLECIMIENTO 80",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 80",
+            "calleNumeracion": "A80",
+            "calleInterseccion": "CALLE INTERSECCION 80",
+            "calleReferencia": "CALLE REFERENCIA 80",
+            "ubicacionGeografica": "2170080"
+          },
+          {
+            "numero": "81",
+            "nombreComercial": "ESTABLECIMIENTO 81",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 81",
+            "calleNumeracion": "A81",
+            "calleInterseccion": "CALLE INTERSECCION 81",
+            "calleReferencia": "CALLE REFERENCIA 81",
+            "ubicacionGeografica": "2170081"
+          },
+          {
+            "numero": "82",
+            "nombreComercial": "ESTABLECIMIENTO 82",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 82",
+            "calleNumeracion": "A82",
+            "calleInterseccion": "CALLE INTERSECCION 82",
+            "calleReferencia": "CALLE REFERENCIA 82",
+            "ubicacionGeografica": "2170082"
+          },
+          {
+            "numero": "83",
+            "nombreComercial": "",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 83",
+            "calleNumeracion": "A83",
+            "calleInterseccion": "CALLE INTERSECCION 83",
+            "calleReferencia": "CALLE REFERENCIA 83",
+            "ubicacionGeografica": "2170083"
+          },
+          {
+            "numero": "84",
+            "nombreComercial": "ESTABLECIMIENTO 84",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 84",
+            "calleNumeracion": "A84",
+            "calleInterseccion": "CALLE INTERSECCION 84",
+            "calleReferencia": "CALLE REFERENCIA 84",
+            "ubicacionGeografica": "2170084"
+          },
+          {
+            "numero": "85",
+            "nombreComercial": "ESTABLECIMIENTO 85",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 85",
+            "calleNumeracion": "A85",
+            "calleInterseccion": "CALLE INTERSECCION 85",
+            "calleReferencia": "CALLE REFERENCIA 85",
+            "ubicacionGeografica": "2170085"
+          },
+          {
+            "numero": "86",
+            "nombreComercial": "ESTABLECIMIENTO 86",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 86",
+            "calleNumeracion": "A86",
+            "calleInterseccion": "CALLE INTERSECCION 86",
+            "calleReferencia": "CALLE REFERENCIA 86",
+            "ubicacionGeografica": "2170086"
+          },
+          {
+            "numero": "87",
+            "nombreComercial": "ESTABLECIMIENTO 87",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 87",
+            "calleNumeracion": "A87",
+            "calleInterseccion": "CALLE INTERSECCION 87",
+            "calleReferencia": "CALLE REFERENCIA 87",
+            "ubicacionGeografica": "2170087"
+          },
+          {
+            "numero": "88",
+            "nombreComercial": "ESTABLECIMIENTO 88",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 88",
+            "calleNumeracion": "A88",
+            "calleInterseccion": "CALLE INTERSECCION 88",
+            "calleReferencia": "CALLE REFERENCIA 88",
+            "ubicacionGeografica": "2170088"
+          },
+          {
+            "numero": "89",
+            "nombreComercial": "ESTABLECIMIENTO 89",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 89",
+            "calleNumeracion": "A89",
+            "calleInterseccion": "CALLE INTERSECCION 89",
+            "calleReferencia": "CALLE REFERENCIA 89",
+            "ubicacionGeografica": "2170089"
+          },
+          {
+            "numero": "90",
+            "nombreComercial": "ESTABLECIMIENTO 90",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 90",
+            "calleNumeracion": "A90",
+            "calleInterseccion": "CALLE INTERSECCION 90",
+            "calleReferencia": "CALLE REFERENCIA 90",
+            "ubicacionGeografica": "2170090"
+          },
+          {
+            "numero": "91",
+            "nombreComercial": "ESTABLECIMIENTO 91",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 91",
+            "calleNumeracion": "A91",
+            "calleInterseccion": "CALLE INTERSECCION 91",
+            "calleReferencia": "CALLE REFERENCIA 91",
+            "ubicacionGeografica": "2170091"
+          },
+          {
+            "numero": "92",
+            "nombreComercial": "ESTABLECIMIENTO 92",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 92",
+            "calleNumeracion": "A92",
+            "calleInterseccion": "CALLE INTERSECCION 92",
+            "calleReferencia": "CALLE REFERENCIA 92",
+            "ubicacionGeografica": "2170092"
+          },
+          {
+            "numero": "93",
+            "nombreComercial": "ESTABLECIMIENTO 93",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 93",
+            "calleNumeracion": "A93",
+            "calleInterseccion": "CALLE INTERSECCION 93",
+            "calleReferencia": "CALLE REFERENCIA 93",
+            "ubicacionGeografica": "2170093"
+          },
+          {
+            "numero": "94",
+            "nombreComercial": "",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 94",
+            "calleNumeracion": "A94",
+            "calleInterseccion": "CALLE INTERSECCION 94",
+            "calleReferencia": "CALLE REFERENCIA 94",
+            "ubicacionGeografica": "2170094"
+          },
+          {
+            "numero": "95",
+            "nombreComercial": "ESTABLECIMIENTO 95",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 95",
+            "calleNumeracion": "A95",
+            "calleInterseccion": "CALLE INTERSECCION 95",
+            "calleReferencia": "CALLE REFERENCIA 95",
+            "ubicacionGeografica": "2170095"
+          },
+          {
+            "numero": "96",
+            "nombreComercial": "ESTABLECIMIENTO 96",
+            "estado": "ABIERTO",
+            "callePrincipal": "CALLE PRINCIPAL 96",
+            "calleNumeracion": "A96",
+            "calleInterseccion": "CALLE INTERSECCION 96",
+            "calleReferencia": "CALLE REFERENCIA 96",
+            "ubicacionGeografica": "2170096"
+          },
+          {
+            "numero": "97",
+            "nombreComercial": "ESTABLECIMIENTO 97",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 97",
+            "calleNumeracion": "A97",
+            "calleInterseccion": "CALLE INTERSECCION 97",
+            "calleReferencia": "CALLE REFERENCIA 97",
+            "ubicacionGeografica": "2170097"
+          },
+          {
+            "numero": "98",
+            "nombreComercial": "ESTABLECIMIENTO 98",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 98",
+            "calleNumeracion": "A98",
+            "calleInterseccion": "CALLE INTERSECCION 98",
+            "calleReferencia": "CALLE REFERENCIA 98",
+            "ubicacionGeografica": "2170098"
+          },
+          {
+            "numero": "99",
+            "nombreComercial": "",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 99",
+            "calleNumeracion": "A99",
+            "calleInterseccion": "CALLE INTERSECCION 99",
+            "calleReferencia": "CALLE REFERENCIA 99",
+            "ubicacionGeografica": "2170099"
+          },
+          {
+            "numero": "100",
+            "nombreComercial": "ESTABLECIMIENTO 100",
+            "estado": "CERRADO",
+            "callePrincipal": "CALLE PRINCIPAL 100",
+            "calleNumeracion": "A100",
+            "calleInterseccion": "CALLE INTERSECCION 100",
+            "calleReferencia": "CALLE REFERENCIA 100",
+            "ubicacionGeografica": "2170100"
           }
         ]
       },

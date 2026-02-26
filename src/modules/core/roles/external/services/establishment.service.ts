@@ -12,6 +12,7 @@ import { envConfig } from '@config';
 import { ConfigType } from '@nestjs/config';
 import { CataloguesService } from '@modules/common/catalogue/catalogue.service';
 import { retry } from 'rxjs/operators';
+import { format, isEqual, isSameDay, parse, startOfDay } from 'date-fns';
 
 interface SriEstablishment {
   numero: string;
@@ -81,51 +82,52 @@ export class EstablishmentService {
 
     const ruc = await this.rucRepository.findOne({
       where: { number: rucNumber },
-      relations: { establishments: true },
     });
 
-    const establishments = ruc?.establishments;
-
-    if (response.data) {
-      const catalogues = await this.cataloguesService.findCache();
-
-      const sriEstablishments: SriEstablishment[] = response.data.data.establecimientos;
-
-      for (const sriEstablishment of sriEstablishments) {
-        const state = catalogues.find(
-          (catalogue) =>
-            catalogue.type === CoreCatalogueTypeEnum.establishments_state &&
-            catalogue.code === (sriEstablishment.estado === 'ABIERTO' ? 'open' : 'closed'),
-        );
-
-        let establishment: EstablishmentEntity | undefined = undefined;
-
-        if (establishments) {
-          establishment = establishments.find(
-            (establishment) => establishment.number === sriEstablishment.numero,
-          );
-        }
-
-        if (!establishment) {
-          establishment = this.repository.create();
-        }
-
-        establishment.number = sriEstablishment.numero;
-        establishment.tradeName = sriEstablishment.nombreComercial;
-        establishment.mainStreet = sriEstablishment.callePrincipal;
-        establishment.numberStreet = sriEstablishment.calleNumeracion;
-        establishment.secondaryStreet = sriEstablishment.calleInterseccion;
-        establishment.referenceStreet = sriEstablishment.calleReferencia;
-        if (ruc) establishment.ruc = ruc;
-        if (state) establishment.state = state;
-
-        await this.repository.save(establishment);
-      }
+    if (!ruc || !response.data) {
+      return { data: null };
     }
 
-    return {
-      data: null,
-    };
+    if (
+      isEqual(ruc.lastUpdatedAt, new Date(response.data.data.fechaActualizacion.substring(0, 10)))
+    ) {
+      return { data: null };
+    }
+
+    const catalogues = await this.cataloguesService.findCache();
+    const sriEstablishments: SriEstablishment[] = response.data.data.establecimientos;
+
+    for (const sriEstablishment of sriEstablishments) {
+      const state = catalogues.find(
+        (catalogue) =>
+          catalogue.type === CoreCatalogueTypeEnum.establishments_state &&
+          catalogue.code === (sriEstablishment.estado === 'ABIERTO' ? 'open' : 'closed'),
+      );
+
+      let establishment = await this.repository.findOne({
+        where: {
+          number: sriEstablishment.numero,
+          ruc: { id: ruc.id },
+        },
+      });
+
+      if (!establishment) {
+        establishment = this.repository.create();
+        establishment.ruc = { id: ruc.id } as any;
+      }
+
+      establishment.number = sriEstablishment.numero;
+      establishment.tradeName = sriEstablishment.nombreComercial;
+      establishment.mainStreet = sriEstablishment.callePrincipal;
+      establishment.numberStreet = sriEstablishment.calleNumeracion;
+      establishment.secondaryStreet = sriEstablishment.calleInterseccion;
+      establishment.referenceStreet = sriEstablishment.calleReferencia;
+      if (state) establishment.state = state;
+
+      await this.repository.save(establishment);
+    }
+
+    return { data: null };
   }
 
   async findOne(id: string): Promise<EstablishmentEntity> {
