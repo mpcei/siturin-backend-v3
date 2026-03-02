@@ -21,7 +21,7 @@ export class LandTransportEntity {
 
   @CreateDateColumn({
     name: 'created_at',
-    type: 'timestamp',
+    type: 'timestamptz',
     default: () => 'CURRENT_timestampP',
     comment: 'Fecha de creacion del registro',
   })
@@ -29,7 +29,7 @@ export class LandTransportEntity {
 
   @UpdateDateColumn({
     name: 'updated_at',
-    type: 'timestamp',
+    type: 'timestamptz',
     default: () => 'CURRENT_timestampP',
     comment: 'Fecha de actualizacion de la ultima actualizacion del registro',
   })
@@ -37,7 +37,7 @@ export class LandTransportEntity {
 
   @DeleteDateColumn({
     name: 'deleted_at',
-    type: 'timestamp',
+    type: 'timestamptz',
     nullable: true,
     comment: 'Fecha de eliminacion del registro',
   })
@@ -100,14 +100,14 @@ export class LandTransportEntity {
 
   @Column({
     name: 'registration_at',
-    type: 'timestamp',
+    type: 'timestamptz',
     comment: 'Fecha de Matricula',
   })
   registrationAt: Date;
 
   @Column({
     name: 'registration_expiration_at',
-    type: 'timestamp',
+    type: 'timestamptz',
     comment: 'Fecha de caducidad de Matricula',
   })
   registrationExpirationAt: Date;

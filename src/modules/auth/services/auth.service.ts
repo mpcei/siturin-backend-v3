@@ -363,6 +363,7 @@ export class AuthService {
       if (isBefore(new Date(), cooldownTime)) {
         const remainingSeconds = differenceInSeconds(cooldownTime, new Date());
 
+        console.log(remainingSeconds);
         throw new BadRequestException({
           data: { remainingSeconds },
           error: ErrorCodeEnum.REMAINING_TOKEN,
@@ -715,7 +716,6 @@ export class AuthService {
 
   async findRuc(ruc: string): Promise<any> {
     const url = `${this.configService.externalApis.urlDinardap}/sri/${ruc}`;
-    console.log(url);
 
     const response = await lastValueFrom(this.httpService.get(url));
 

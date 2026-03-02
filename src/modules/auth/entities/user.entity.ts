@@ -27,21 +27,21 @@ export class UserEntity {
 
   @CreateDateColumn({
     name: 'created_at',
-    type: 'timestamp',
+    type: 'timestamptz',
     default: () => 'CURRENT_TIMESTAMP',
   })
   createdAt: Date;
 
   @UpdateDateColumn({
     name: 'updated_at',
-    type: 'timestamp',
+    type: 'timestamptz',
     default: () => 'CURRENT_TIMESTAMP',
   })
   updatedAt: Date;
 
   @DeleteDateColumn({
     name: 'deleted_at',
-    type: 'timestamp',
+    type: 'timestamptz',
     nullable: true,
   })
   deletedAt: Date;
@@ -146,7 +146,7 @@ export class UserEntity {
 
   @Column({
     name: 'activated_at',
-    type: 'timestamp',
+    type: 'timestamptz',
     nullable: true,
     comment: 'Fecha de ultimo login',
   })
@@ -187,7 +187,7 @@ export class UserEntity {
 
   @Column({
     name: 'email_verified_at',
-    type: 'timestamp',
+    type: 'timestamptz',
     nullable: true,
     comment: 'Verificacion de correo',
   })
@@ -259,7 +259,7 @@ export class UserEntity {
 
   @Column({
     name: 'suspended_at',
-    type: 'timestamp',
+    type: 'timestamptz',
     nullable: true,
     comment: 'Fecha de la ultima suspension del usuario',
   })
@@ -274,7 +274,7 @@ export class UserEntity {
 
   @Column({
     name: 'terms_accepted_at',
-    type: 'timestamp',
+    type: 'timestamptz',
     nullable: true,
     comment: 'Fecha de la ultima aceptacion de terminos y condiciones',
   })
@@ -282,7 +282,7 @@ export class UserEntity {
 
   @Column({
     name: 'security_question_accepted_at',
-    type: 'timestamp',
+    type: 'timestamptz',
     nullable: true,
     comment: 'Fecha de la ultima aceptacion de terminos y condiciones',
   })

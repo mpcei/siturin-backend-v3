@@ -16,7 +16,7 @@ export class FileDownloadLogEntity {
 
   @CreateDateColumn({
     name: 'created_at',
-    type: 'timestamp',
+    type: 'timestamptz',
     default: () => 'CURRENT_TIMESTAMP',
     comment: 'Fecha de creacion',
   })

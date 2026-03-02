@@ -19,7 +19,7 @@ export class RegulationItemEntity {
 
   @CreateDateColumn({
     name: 'created_at',
-    type: 'timestamp',
+    type: 'timestamptz',
     default: () => 'CURRENT_timestampP',
     comment: 'Fecha de creacion del registro',
   })
@@ -27,7 +27,7 @@ export class RegulationItemEntity {
 
   @UpdateDateColumn({
     name: 'updated_at',
-    type: 'timestamp',
+    type: 'timestamptz',
     default: () => 'CURRENT_timestampP',
     comment: 'Fecha de actualizacion de la ultima actualizacion del registro',
   })
@@ -35,7 +35,7 @@ export class RegulationItemEntity {
 
   @DeleteDateColumn({
     name: 'deleted_at',
-    type: 'timestamp',
+    type: 'timestamptz',
     nullable: true,
     comment: 'Fecha de eliminacion del registro',
   })

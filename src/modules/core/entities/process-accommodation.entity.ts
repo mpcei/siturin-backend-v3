@@ -18,7 +18,7 @@ export class ProcessAccommodationEntity {
 
   @CreateDateColumn({
     name: 'created_at',
-    type: 'timestamp',
+    type: 'timestamptz',
     default: () => 'CURRENT_timestampP',
     comment: 'Fecha de creacion del registro',
   })
@@ -26,7 +26,7 @@ export class ProcessAccommodationEntity {
 
   @UpdateDateColumn({
     name: 'updated_at',
-    type: 'timestamp',
+    type: 'timestamptz',
     default: () => 'CURRENT_timestampP',
     comment: 'Fecha de actualizacion de la ultima actualizacion del registro',
   })
@@ -34,7 +34,7 @@ export class ProcessAccommodationEntity {
 
   @DeleteDateColumn({
     name: 'deleted_at',
-    type: 'timestamp',
+    type: 'timestamptz',
     nullable: true,
     comment: 'Fecha de eliminacion del registro',
   })
@@ -89,7 +89,7 @@ export class ProcessAccommodationEntity {
 
   @Column({
     name: 'declaration_at',
-    type: 'timestamp',
+    type: 'timestamptz',
     nullable: true,
     comment: '',
   })

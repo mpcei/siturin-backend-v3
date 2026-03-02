@@ -29,7 +29,7 @@ export class ProcessEntity {
 
   @CreateDateColumn({
     name: 'created_at',
-    type: 'timestamp',
+    type: 'timestamptz',
     default: () => 'CURRENT_timestampP',
     comment: 'Fecha de creacion del registro',
   })
@@ -37,7 +37,7 @@ export class ProcessEntity {
 
   @UpdateDateColumn({
     name: 'updated_at',
-    type: 'timestamp',
+    type: 'timestamptz',
     default: () => 'CURRENT_timestampP',
     comment: 'Fecha de actualizacion de la ultima actualizacion del registro',
   })
@@ -45,7 +45,7 @@ export class ProcessEntity {
 
   @DeleteDateColumn({
     name: 'deleted_at',
-    type: 'timestamp',
+    type: 'timestamptz',
     nullable: true,
     comment: 'Fecha de eliminacion del registro',
   })
@@ -186,7 +186,7 @@ export class ProcessEntity {
   /** Columns **/
   @Column({
     name: 'registered_at',
-    type: 'timestamp',
+    type: 'timestamptz',
     nullable: true,
     comment: 'Fecha de la solicitud del registro',
   })
@@ -194,7 +194,7 @@ export class ProcessEntity {
 
   @Column({
     name: 'attended_at',
-    type: 'timestamp',
+    type: 'timestamptz',
     nullable: true,
     comment: 'Fecha de atencion de la solicitud del registro',
   })
@@ -202,7 +202,7 @@ export class ProcessEntity {
 
   @Column({
     name: 'started_at',
-    type: 'timestamp',
+    type: 'timestamptz',
     nullable: true,
     comment: 'Fecha de inicio de la solicitud',
   })
@@ -210,7 +210,7 @@ export class ProcessEntity {
 
   @Column({
     name: 'ended_at',
-    type: 'timestamp',
+    type: 'timestamptz',
     nullable: true,
     comment: 'Fecha de finalizacion de la solicitud',
   })
@@ -250,7 +250,7 @@ export class ProcessEntity {
 
   @Column({
     name: 'inspection_expiration_at',
-    type: 'timestamp',
+    type: 'timestamptz',
     nullable: true,
     comment: '',
   })

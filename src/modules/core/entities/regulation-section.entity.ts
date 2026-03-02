@@ -15,7 +15,7 @@ export class RegulationSectionEntity {
 
   @CreateDateColumn({
     name: 'created_at',
-    type: 'timestamp',
+    type: 'timestamptz',
     default: () => 'CURRENT_timestampP',
     comment: 'Fecha de creacion del registro',
   })
@@ -23,7 +23,7 @@ export class RegulationSectionEntity {
 
   @UpdateDateColumn({
     name: 'updated_at',
-    type: 'timestamp',
+    type: 'timestamptz',
     default: () => 'CURRENT_timestampP',
     comment: 'Fecha de la ultima actualizacion del registro',
   })

@@ -19,7 +19,7 @@ export class FileEntity {
 
   @CreateDateColumn({
     name: 'created_at',
-    type: 'timestamp',
+    type: 'timestamptz',
     default: () => 'CURRENT_TIMESTAMP',
     comment: 'Fecha de creacion',
   })
@@ -27,7 +27,7 @@ export class FileEntity {
 
   @UpdateDateColumn({
     name: 'updated_at',
-    type: 'timestamp',
+    type: 'timestamptz',
     default: () => 'CURRENT_TIMESTAMP',
     comment: 'Fecha de actualizacion',
   })
@@ -35,7 +35,7 @@ export class FileEntity {
 
   @DeleteDateColumn({
     name: 'deleted_at',
-    type: 'timestamp',
+    type: 'timestamptz',
     nullable: true,
     comment: 'Fecha de eliminacion',
   })
