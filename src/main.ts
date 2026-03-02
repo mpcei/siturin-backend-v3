@@ -109,7 +109,7 @@ async function bootstrap() {
   app.set('trust proxy', true);
 
   const documentBuilder = new DocumentBuilder()
-    .setTitle('API SIAAW')
+    .setTitle('API DOCUMENTATION')
     .setDescription('App Description')
     .setVersion('3')
     .addBearerAuth()

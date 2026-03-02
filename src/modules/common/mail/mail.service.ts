@@ -109,7 +109,7 @@ export class MailService implements OnModuleInit {
         system: {
           name: this.configService.app.name,
           shortName: this.configService.app.shortName,
-          url: this.configService.app.url,
+          url: this.configService.app.frontendUrl,
         },
         expiresIn: this.configService.securityCodeExpiresIn,
         year: format(new Date(), 'yyyy'),

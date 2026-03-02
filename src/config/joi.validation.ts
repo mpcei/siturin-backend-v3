@@ -1,8 +1,9 @@
 import Joi from 'joi';
 
 export const JoiValidationSchema = Joi.object({
+  FRONTEND_URL: Joi.string().required(),
+
   APP_PORT: Joi.number().required(),
-  APP_URL: Joi.string().required(),
   APP_NAME: Joi.string().required(),
   APP_SHORT_NAME: Joi.string().required(),
   APP_VERSION: Joi.string().required(),

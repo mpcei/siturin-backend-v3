@@ -19,7 +19,7 @@ export class DatabaseSeeder {
     await this.rolesSeeder.run();
     await this.usersSeeder.run();
     await this.menusSeeder.run();
-    this.createUploadsDirectories();
+    // this.createUploadsDirectories();
   }
 
   createUploadsDirectories() {

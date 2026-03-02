@@ -6,7 +6,7 @@ export const envConfig = registerAs('envConfig', () => {
   return {
     app: {
       port: parseInt(process.env.PORT!, 10),
-      url: process.env.APP_URL,
+      frontendUrl: process.env.FRONTEND_URL,
       name: process.env.APP_NAME,
       shortName: process.env.APP_SHORT_NAME,
       version: process.env.APP_VERSION,
