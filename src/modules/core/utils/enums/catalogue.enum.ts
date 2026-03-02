@@ -162,3 +162,8 @@ export enum CatalogueEconomicContributionEnum {
   OWN_SALARY = 'own_salary',
   OTHER = 'other',
 }
+
+export enum CatalogueEstablishmentsStateEnum {
+  open = 'abierto',
+  closed = 'cerrado',
+}

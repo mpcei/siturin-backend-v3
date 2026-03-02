@@ -399,8 +399,6 @@ export class MigrationService {
         entity.enabled = item.es_visible;
         entity.idTemp = item.id;
 
-        entity.hasTermCondition = item.terminos_condiciones;
-
         if (user) entity.userId = user.id;
 
         await this.externalUserRepository.save(entity);

@@ -1,6 +1,10 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
-import { CoreCatalogueTypeEnum, CoreRepositoryEnum } from '@modules/core/utils/enums';
+import {
+  CatalogueEstablishmentsStateEnum,
+  CoreCatalogueTypeEnum,
+  CoreRepositoryEnum,
+} from '@modules/core/utils/enums';
 import { ServiceResponseHttpInterface } from '@utils/interfaces';
 import { EstablishmentEntity, RucEntity } from '@modules/core/entities';
 import { CreateCadastreDto, UpdateCadastreDto } from '@modules/core/roles/external/dto/cadastre';
@@ -101,9 +105,13 @@ export class EstablishmentService {
       const state = catalogues.find(
         (catalogue) =>
           catalogue.type === CoreCatalogueTypeEnum.establishments_state &&
-          catalogue.code === (sriEstablishment.estado === 'ABIERTO' ? 'open' : 'closed'),
+          catalogue.code ===
+            (sriEstablishment.estado === 'ABIERTO'
+              ? CatalogueEstablishmentsStateEnum.open
+              : CatalogueEstablishmentsStateEnum.closed),
       );
 
+      console.log(state);
       let establishment = await this.repository.findOne({
         where: {
           number: sriEstablishment.numero,

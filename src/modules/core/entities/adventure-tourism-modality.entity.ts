@@ -77,14 +77,14 @@ export class AdventureTourismModalityEntity {
   @Column({
     name: 'className',
     type: 'varchar',
-    comment: 'Nombre Clase de modalidad',
+    comment: 'Nombre Clase de modalidad', // review posiblemente quitar
   })
   className: string;
 
   @Column({
     name: 'id_temp',
     type: 'bigint',
-    nullable:true,
+    nullable: true,
     comment: 'Codigo de la tabla migrada',
   })
   idTemp: number;

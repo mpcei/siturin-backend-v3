@@ -63,13 +63,6 @@ export class ExternalUserEntity {
 
   /** Columns **/
   @Column({
-    name: 'has_term_condition',
-    type: 'boolean',
-    comment: '',
-  })
-  hasTermCondition: boolean;
-
-  @Column({
     name: 'id_temp',
     type: 'bigint',
     comment: 'Codigo de la tabla migrada',
