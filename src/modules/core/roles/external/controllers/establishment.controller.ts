@@ -36,7 +36,7 @@ export class EstablishmentController {
   }
 
   @ApiOperation({ summary: 'List all Cadastres' })
-  @Put('sri/:ruc')
+  @Get('sri/:ruc')
   async findSRIEstablishments(@Param('ruc') ruc: string): Promise<ResponseHttpInterface> {
     const serviceResponse = await this.service.updateSRIEstablishments(ruc);
 
