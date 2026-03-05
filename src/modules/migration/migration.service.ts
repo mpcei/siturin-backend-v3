@@ -1822,7 +1822,7 @@ export class MigrationService {
     // const data = await this.getData('core.files');
     const data = await this.dataSource.query(`
       SELECT *
-      FROM core.files where id < 20
+      FROM core.files
     `);
 
     const table = await this.fileRepository.find();
@@ -1839,7 +1839,7 @@ export class MigrationService {
 
       if (!exists) {
         const entity = this.fileRepository.create();
-        const localPath = join(
+        let localPath = join(
           global.process.cwd(),
           'storage/migration',
           item?.directory,
@@ -1847,13 +1847,16 @@ export class MigrationService {
         );
 
         if (!fs.existsSync(localPath)) {
-          const id = item?.id ?? 'N/A';
+          localPath = join(process.cwd(), 'storage/migration', item?.directory, `${item.id}.PDF`);
+          if (!fs.existsSync(localPath)) {
+            const id = item?.id ?? 'N/A';
 
-          // Escapamos las comas por si acaso la ruta contiene alguna
-          const row = `"${id}","${localPath}","Archivo no encontrado"\n`;
+            // Escapamos las comas por si acaso la ruta contiene alguna
+            const row = `"${id}","${localPath}","Archivo no encontrado"\n`;
 
-          fs.appendFileSync(csvLogPath, row);
-          continue;
+            fs.appendFileSync(csvLogPath, row);
+            continue;
+          }
         }
 
         // 3. Leer el archivo como Buffer o Stream
