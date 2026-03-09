@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import {
   ClassSerializerInterceptor,
+  INestApplication,
   UnprocessableEntityException,
   ValidationError,
   ValidationPipe,
@@ -13,6 +14,12 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { FIELD_LABEL_KEY } from '@utils/dto-validation';
 import { AllExceptionsFilter } from '@utils/exceptions';
 import { Client } from 'pg';
+
+import { ExpressAdapter } from '@bull-board/express';
+import { createBullBoard } from '@bull-board/api';
+import { BullMQAdapter } from '@bull-board/api/bullMQAdapter';
+import { getQueueToken } from '@nestjs/bullmq';
+import { Queue } from 'bullmq';
 
 async function createDatabaseIfNotExists() {
   const dbName = process.env.DB_NAME;
@@ -32,8 +39,9 @@ async function createDatabaseIfNotExists() {
 
     if (res.rowCount === 0) {
       await client.query(`CREATE DATABASE "${dbName}"`);
+      console.info(`ℹ️  La base de datos '${dbName}' fue creada correctamente`);
     } else {
-      console.log(`ℹ️  La base de datos '${dbName}' ya existe`);
+      console.info(`ℹ️  La base de datos '${dbName}' ya existe, no es necesario crearla`);
     }
   } catch (error) {
     console.error('Error al verificar/crear la base de datos:', error);
@@ -42,13 +50,7 @@ async function createDatabaseIfNotExists() {
   }
 }
 
-async function bootstrap() {
-  await createDatabaseIfNotExists();
-
-  const app = await NestFactory.create<NestExpressApplication>(AppModule);
-
-  app.enableCors();
-
+export function setupValidationPipe(app: INestApplication) {
   app.useGlobalPipes(
     new ValidationPipe({
       errorHttpStatusCode: 422,
@@ -97,6 +99,44 @@ async function bootstrap() {
       },
     }),
   );
+}
+
+export function setupBullBoard(app: INestApplication, queues: string[]) {
+  const serverAdapter = new ExpressAdapter();
+  serverAdapter.setBasePath('/admin/queues');
+
+  const adapters = queues.map((queueName) => {
+    const queue = app.get<Queue>(getQueueToken(queueName));
+    return new BullMQAdapter(queue);
+  });
+
+  createBullBoard({
+    queues: adapters,
+    serverAdapter,
+  });
+
+  app.use('/admin/queues', serverAdapter.getRouter());
+}
+
+export function setupSwagger(app: INestApplication) {
+  const config = new DocumentBuilder()
+    .setTitle('API DOCUMENTATION')
+    .setDescription('App Description')
+    .setVersion('3')
+    .addBearerAuth()
+    .build();
+
+  const document = SwaggerModule.createDocument(app, config);
+
+  SwaggerModule.setup('docs', app, document);
+}
+
+async function bootstrap() {
+  await createDatabaseIfNotExists();
+
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+
+  app.enableCors();
 
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
 
@@ -108,16 +148,11 @@ async function bootstrap() {
 
   app.set('trust proxy', true);
 
-  const documentBuilder = new DocumentBuilder()
-    .setTitle('API DOCUMENTATION')
-    .setDescription('App Description')
-    .setVersion('3')
-    .addBearerAuth()
-    .build();
+  setupValidationPipe(app);
 
-  const document = SwaggerModule.createDocument(app, documentBuilder);
+  setupSwagger(app);
 
-  SwaggerModule.setup('docs', app, document);
+  setupBullBoard(app, ['email']);
 
   await app.listen(process.env.PORT ?? 3000);
 }

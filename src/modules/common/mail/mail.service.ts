@@ -9,14 +9,22 @@ import { FolderPathsService } from '../folder-paths.service';
 import { Attachment } from 'nodemailer/lib/mailer';
 import { MailSendException } from '@utils/exceptions/MailSendException';
 import { format } from 'date-fns';
+import { Queue } from 'bullmq';
+import { InjectQueue } from '@nestjs/bullmq';
+import { CommonRepositoryEnum } from '@utils/enums';
+import { Repository } from 'typeorm';
+import { MailLogEntity } from '@modules/common/mail/mail-log.entity';
 
 @Injectable()
 export class MailService implements OnModuleInit {
   private transporter: nodemailer.Transporter;
 
   constructor(
+    @InjectQueue('email') private emailQueue: Queue,
     @Inject(envConfig.KEY) private configService: ConfigType<typeof envConfig>,
     private readonly folderPathsService: FolderPathsService,
+    @Inject(CommonRepositoryEnum.MAIL_LOG_REPOSITORY)
+    private readonly mailLogRepository: Repository<MailLogEntity>,
   ) {
     this.transporter = nodemailer.createTransport({
       host: this.configService.mail.host,
@@ -34,6 +42,32 @@ export class MailService implements OnModuleInit {
   }
 
   async sendMail(mailData: MailDataInterface) {
+    const entity = this.mailLogRepository.create({
+      to: mailData.to,
+      subject: mailData.subject,
+      template: mailData.template,
+      status: 'queued',
+    }) as MailLogEntity;
+
+    const logMail = await this.mailLogRepository.save(entity);
+
+    await this.emailQueue.add(
+      'sendMail',
+      {
+        ...mailData,
+        logId: logMail.id,
+      },
+      {
+        attempts: 5,
+        backoff: {
+          type: 'exponential',
+          delay: 5000,
+        },
+      },
+    );
+  }
+
+  async sendEMail(mailData: MailDataInterface) {
     const mailAttachments: Attachment[] = [];
 
     if (mailData?.attachments) {
@@ -121,6 +155,7 @@ export class MailService implements OnModuleInit {
     try {
       const response: SentMessageInfo = await this.transporter.sendMail(sendMailOptions);
 
+      console.log('response: ', response);
       return {
         accepted: response.accepted,
         rejected: response.rejected,

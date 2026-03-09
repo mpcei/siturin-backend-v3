@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { Body, Controller, Post } from '@nestjs/common';
 import { ResponseHttpInterface } from '@utils/interfaces';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { MailService } from '@modules/common/mail/mail.service';

@@ -16,8 +16,8 @@ import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { JoiValidationSchema } from './config/joi.validation';
 import { ResponseHttpInterceptor } from '@utils/interceptors';
 import { MigrationModule } from '@modules/migration/migration.module';
-import { ExternalApiController } from '@modules/external-api/external-api.controller';
 import { ExternalApiModule } from '@modules/external-api/external-api.module';
+import { BullModule } from '@nestjs/bullmq';
 
 @Module({
   imports: [
@@ -36,6 +36,12 @@ import { ExternalApiModule } from '@modules/external-api/external-api.module';
         },
       ],
     }),
+    BullModule.forRoot({
+      connection: {
+        host: 'localhost',
+        port: 6379,
+      },
+    }),
     MulterModule.register({ dest: './uploads' }),
     HttpModule,
     AuditModule,
@@ -45,7 +51,7 @@ import { ExternalApiModule } from '@modules/external-api/external-api.module';
     ReportsModule,
     ImportsModule,
     MigrationModule,
-    ExternalApiModule
+    ExternalApiModule,
   ],
   controllers: [AppController],
   providers: [
