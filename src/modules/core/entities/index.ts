@@ -19,7 +19,6 @@ export { InspectionEntity } from './inspection.entity';
 export { InternalDpaUserEntity } from './internal-dpa-user.entity';
 export { InternalUserEntity } from './internal-user.entity';
 export { InternalZonalUserEntity } from './internal-zonal-user.entity';
-export { JuridicalPersonEntity } from './juridical-person.entity';
 export { LandTransportEntity } from './land-transport.entity';
 export { ModelCatalogueEntity } from './model-catalogue.entity';
 export { ObservationEntity } from './observation.entity';
@@ -67,7 +66,6 @@ import { InspectionEntity } from './inspection.entity';
 import { InternalDpaUserEntity } from './internal-dpa-user.entity';
 import { InternalUserEntity } from './internal-user.entity';
 import { InternalZonalUserEntity } from './internal-zonal-user.entity';
-import { JuridicalPersonEntity } from './juridical-person.entity';
 import { LandTransportEntity } from './land-transport.entity';
 import { ModelCatalogueEntity } from './model-catalogue.entity';
 import { ObservationEntity } from './observation.entity';
@@ -116,7 +114,6 @@ export const entities = [
   InternalDpaUserEntity,
   InternalUserEntity,
   InternalZonalUserEntity,
-  JuridicalPersonEntity,
   LandTransportEntity,
   ModelCatalogueEntity,
   ObservationEntity,

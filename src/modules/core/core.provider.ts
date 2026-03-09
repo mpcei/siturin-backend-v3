@@ -23,7 +23,6 @@ import {
   InternalDpaUserEntity,
   InternalUserEntity,
   InternalZonalUserEntity,
-  JuridicalPersonEntity,
   LandTransportEntity,
   ModelCatalogueEntity,
   ObservationEntity,
@@ -160,11 +159,6 @@ export const coreProviders = [
   {
     provide: CoreRepositoryEnum.INTERNAL_ZONAL_USER_REPOSITORY,
     useFactory: (dataSource: DataSource) => dataSource.getRepository(InternalZonalUserEntity),
-    inject: [ConfigEnum.PG_DATA_SOURCE],
-  },
-  {
-    provide: CoreRepositoryEnum.JURIDICAL_PERSON_REPOSITORY,
-    useFactory: (dataSource: DataSource) => dataSource.getRepository(JuridicalPersonEntity),
     inject: [ConfigEnum.PG_DATA_SOURCE],
   },
   {
