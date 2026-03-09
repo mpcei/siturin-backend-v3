@@ -50,13 +50,12 @@ export class ModelCatalogueEntity {
   /** Inverse Relationship **/
 
   /** Foreign Keys **/
-  @ManyToOne(() => CatalogueEntity, { nullable: true })
+  @ManyToOne(() => CatalogueEntity)
   @JoinColumn({ name: 'catalogue_id' })
   catalogue: CatalogueEntity;
   @Column({
     type: 'uuid',
     name: 'catalogue_id',
-    nullable: true,
     comment: '',
   })
   catalogueId: string;
