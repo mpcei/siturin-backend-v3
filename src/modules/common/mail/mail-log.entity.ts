@@ -43,6 +43,12 @@ export class MailLogEntity {
   @Column()
   subject: string;
 
+  @Column({ type: 'jsonb', nullable: true })
+  data: any;
+
+  @Column({ type: 'jsonb', nullable: true })
+  attachments: any[];
+
   @Column({ nullable: true })
   template: string;
 

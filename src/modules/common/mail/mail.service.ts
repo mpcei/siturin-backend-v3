@@ -46,6 +46,7 @@ export class MailService implements OnModuleInit {
       to: mailData.to,
       subject: mailData.subject,
       template: mailData.template,
+      data: mailData.data,
       status: 'queued',
     }) as MailLogEntity;
 
@@ -55,7 +56,7 @@ export class MailService implements OnModuleInit {
       'sendMail',
       {
         ...mailData,
-        logId: logMail.id,
+        id: logMail.id,
       },
       {
         attempts: 5,
@@ -67,7 +68,7 @@ export class MailService implements OnModuleInit {
     );
   }
 
-  async sendEMail(mailData: MailDataInterface) {
+  async sendRealMail(mailData: MailDataInterface) {
     const mailAttachments: Attachment[] = [];
 
     if (mailData?.attachments) {
@@ -96,43 +97,17 @@ export class MailService implements OnModuleInit {
       });
     }
 
-    // if (mailData?.attachment) {
-    //   let data!: Attachment;
-    //
-    //   if (mailData.attachment.file) {
-    //     data = {
-    //       content: mailData.attachment.file,
-    //       filename: mailData.attachment.filename,
-    //       contentDisposition: 'attachment',
-    //     };
-    //
-    //     mailAttachments.push(data);
-    //   }
-    //
-    //   if (mailData.attachment.path) {
-    //     data = {
-    //       path: join(this.folderPathsService.mailTemporaryFiles, mailData.attachment.path),
-    //       filename: mailData.attachment.filename,
-    //       contentDisposition: 'attachment',
-    //     };
-    //     mailAttachments.push(data);
-    //   }
-    // }
-
-    const header = {
+    mailAttachments.push({
       filename: 'header.png',
       path: join(this.folderPathsService.mailImages, 'header.png'),
       cid: 'header',
-    };
+    });
 
-    const footer = {
-      filename: 'footer.png',
-      path: join(this.folderPathsService.mailImages, 'footer.png'),
-      cid: 'footer',
-    };
-
-    mailAttachments.push(header);
-    // mailAttachments.push(footer);
+    // mailAttachments.push({
+    //       filename: 'footer.png',
+    //       path: join(this.folderPathsService.mailImages, 'footer.png'),
+    //       cid: 'footer',
+    //     });
 
     const sendMailOptions = {
       to: mailData.to,
