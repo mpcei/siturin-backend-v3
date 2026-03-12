@@ -9,7 +9,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { ProcessEntity } from '@modules/core/entities/process.entity';
-import { CatalogueEntity } from '@modules/common/catalogue/catalogue.entity';
+import { EstablishmentEntity } from '@modules/core/entities/establishment.entity';
 
 @Entity('adventure_tourism_modalities', { schema: 'core' })
 export class AdventureTourismModalityEntity {
@@ -51,35 +51,48 @@ export class AdventureTourismModalityEntity {
   /** Inverse Relationship **/
 
   /** Foreign Keys **/
-  @ManyToOne(() => ProcessEntity, { nullable: true })
+  @ManyToOne(() => ProcessEntity)
   @JoinColumn({ name: 'process_id' })
   process: ProcessEntity;
   @Column({
     type: 'uuid',
     name: 'process_id',
-    nullable: true,
     comment: '',
   })
   processId: string;
 
-  @ManyToOne(() => CatalogueEntity, { nullable: true })
-  @JoinColumn({ name: 'type_id' })
-  type: CatalogueEntity;
+  @ManyToOne(() => EstablishmentEntity, { nullable: true })
+  @JoinColumn({ name: 'establishment_id' })
+  establishment: EstablishmentEntity;
   @Column({
     type: 'uuid',
-    name: 'type_id',
+    name: 'establishment_id',
     nullable: true,
     comment: '',
   })
-  typeId: string;
+  establishmentId: string;
 
   /** Columns **/
   @Column({
     name: 'className',
     type: 'varchar',
-    comment: 'Nombre Clase de modalidad', // review posiblemente quitar
+    comment: 'Nombre Clase de modalidad: agua, aire o tierra',
   })
   className: string;
+
+  @Column({
+    name: 'code',
+    type: 'varchar',
+    comment: 'Codigo de la mdalidad, proviene de la tabla catalogues',
+  })
+  code: string;
+
+  @Column({
+    name: 'name',
+    type: 'varchar',
+    comment: 'Nombre de la mdalidad, proviene de la tabla catalogues',
+  })
+  name: string;
 
   @Column({
     name: 'id_temp',
