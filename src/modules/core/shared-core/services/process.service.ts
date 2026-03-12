@@ -505,7 +505,7 @@ export class ProcessService {
         modality.processId = processId;
         modality.className = item.className;
 
-        modality.typeId = item.type.id;
+        // modality.typeId = item.type.id;
 
         await modalityRepository.save(modality);
         console.log('Guardado modalidad:', modality);

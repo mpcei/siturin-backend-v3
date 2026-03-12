@@ -198,7 +198,7 @@ export class ProcessAgencyService {
         const adventureTourismModality = adventureTourismModalityRepository.create();
         adventureTourismModality.processId = payload.processId;
         adventureTourismModality.className = item.className;
-        adventureTourismModality.typeId = item.type.id;
+        // adventureTourismModality.typeId = item.type.id;
 
         await adventureTourismModalityRepository.save(adventureTourismModality);
       } catch (error: unknown) {

@@ -1542,7 +1542,7 @@ export class MigrationService {
         const type = catalogues.find((x) => x.idTemp == item.tipo_id);
 
         if (process) entity.processId = process.id;
-        if (type) entity.typeId = type.id;
+        // if (type) entity.typeId = type.id;
 
         await this.adventureTourismModalityRepository.save(entity);
       }
