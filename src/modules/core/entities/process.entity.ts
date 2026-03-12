@@ -21,6 +21,8 @@ import { CadastreEntity } from '@modules/core/entities/cadastre.entity';
 import { InspectionEntity } from '@modules/core/entities/inspection.entity';
 import { InactivationCauseEntity } from '@modules/core/entities/inactivation-cause.entity';
 import { AssignmentEntity } from '@modules/core/entities/assignment.entity';
+import { ProcessStateEntity } from '@modules/core/entities/process-state.entity';
+import { ProcessGuideEntity } from '@modules/core/entities/process-guide.entity';
 
 @Entity('processes', { schema: 'core' })
 export class ProcessEntity {
@@ -83,6 +85,13 @@ export class ProcessEntity {
 
   @OneToMany(() => AssignmentEntity, (entity) => entity.process)
   assignments: AssignmentEntity[];
+
+  @OneToMany(() => ProcessStateEntity, (entity) => entity.process)
+  processStates: ProcessStateEntity[];
+
+  @OneToOne(() => ProcessGuideEntity, (entity) => entity.process)
+  processGuia: ProcessStateEntity;
+
   /** Foreign Keys **/
   @ManyToOne(() => ActivityEntity, { nullable: true })
   @JoinColumn({ name: 'activity_id' })

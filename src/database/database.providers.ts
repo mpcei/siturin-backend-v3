@@ -30,6 +30,7 @@ export const databaseProviders = [
       await dataSource.query(`CREATE SCHEMA IF NOT EXISTS auth`);
       await dataSource.query(`CREATE SCHEMA IF NOT EXISTS common`);
       await dataSource.query(`CREATE SCHEMA IF NOT EXISTS core`);
+      await dataSource.query(`CREATE SCHEMA IF NOT EXISTS guide`);
 
       await dataSource.synchronize();
 
