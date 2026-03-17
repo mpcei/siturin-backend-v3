@@ -9,7 +9,6 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { ProcessEntity } from '@modules/core/entities/process.entity';
-import { CatalogueEntity } from '@modules/common/catalogue/catalogue.entity';
 
 @Entity('process_parks', { schema: 'core' })
 export class ProcessParkEntity {

@@ -1,8 +1,4 @@
-import {
-  IsUUID,
-  IsOptional,
-  IsString,
-} from 'class-validator';
+import { IsUUID, IsOptional, IsString } from 'class-validator';
 
 export class ServiceTypeDto {
   @IsUUID()

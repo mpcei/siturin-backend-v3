@@ -9,5 +9,4 @@ export class FilterSalesRepresentativeDto extends PaginationDto {
   @IsOptional()
   @IsString()
   readonly legalName?: string;
-
 }

@@ -1932,28 +1932,28 @@ export class MigrationService {
     return { data: null };
   }
 
-  async migrateGuideActivity(file: Express.Multer.File){
-   const catalogues= await this.catalogueRepository.find();
+  async migrateGuideActivity(file: Express.Multer.File) {
+    const catalogues = await this.catalogueRepository.find();
 
     const workbook = XLSX.read(file.buffer, { type: 'buffer' });
     const sheetName = workbook.SheetNames[1];
-    const dataExcel:any[] = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
+    const dataExcel: any[] = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
 
     for (const data of dataExcel) {
-      if(data['type'] == 'activity'){
+      if (data['type'] == 'activity') {
         const zona = catalogues.find((x) => x.code == data['foreignkey']);
         const activity = this.activityRepository.create({
           code: data['code'],
           name: data['name'],
           sort: data['sort'],
-          geographicAreaId:zona?.id
+          geographicAreaId: zona?.id,
         });
-        await  this.activityRepository.save(activity);
+        await this.activityRepository.save(activity);
       }
 
-      if(data['type'] == 'classification'){
-        const  activity = await this.activityRepository.findOne({
-          where: {code: data['foreignkey']}
+      if (data['type'] == 'classification') {
+        const activity = await this.activityRepository.findOne({
+          where: { code: data['foreignkey'] },
         });
         const classification = this.classificationRepository.create({
           code: data['code'],
@@ -1961,26 +1961,25 @@ export class MigrationService {
           sort: data['sort'],
           hasRegulation: true,
           isComplementaryService: false,
-          hasCategorization:false,
-          activityId: activity?.id
+          hasCategorization: false,
+          activityId: activity?.id,
         });
-        await  this.classificationRepository.save(classification);
+        await this.classificationRepository.save(classification);
       }
 
-      if(data['type'] == 'category'){
-        const  classification = await this.classificationRepository.findOne({
-          where: {code: data['foreignkey']}
+      if (data['type'] == 'category') {
+        const classification = await this.classificationRepository.findOne({
+          where: { code: data['foreignkey'] },
         });
         const category = this.categoryRepository.create({
           code: data['code'],
           name: data['name'],
           sort: data['sort'],
           hasRegulation: false,
-          classificationId: classification?.id
+          classificationId: classification?.id,
         });
-        await  this.categoryRepository.save(category);
+        await this.categoryRepository.save(category);
       }
-
     }
     return null;
   }
@@ -2146,6 +2145,4 @@ export class MigrationService {
 
     return { data: null };
   }
-
-
 }

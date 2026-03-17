@@ -17,5 +17,5 @@ export const controllers = [
   ProcessCtcController,
   ProcessEventController,
   ProcessFoodDrinkController,
-  RucController
+  RucController,
 ];

@@ -43,5 +43,4 @@ export class CreateRegistrationProcessEventDto {
 
   @IsNumber()
   readonly totalCapacities: number;
-
 }

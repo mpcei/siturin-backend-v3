@@ -1,8 +1,5 @@
 import { IsString, IsNotEmpty } from 'class-validator';
-import {
-  isNotEmptyValidationOptions,
-  isStringValidationOptions,
-} from '@utils/dto-validation';
+import { isNotEmptyValidationOptions, isStringValidationOptions } from '@utils/dto-validation';
 
 export class RoleDto {
   @IsNotEmpty(isNotEmptyValidationOptions())

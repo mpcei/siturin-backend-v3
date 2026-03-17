@@ -56,8 +56,7 @@ export class InternalPdfService {
     const data: any = await this.internalPdfSql.findRegisterInactivation(cadastreId);
 
     try {
-      if (type === 'buffer')
-        return this.printerService.createPdfBuffer(registerInactivation(data));
+      if (type === 'buffer') return this.printerService.createPdfBuffer(registerInactivation(data));
       else return this.printerService.createPdf(registerInactivation(data));
     } catch (error) {
       console.log(error);
@@ -74,8 +73,7 @@ export class InternalPdfService {
     const data: any = await this.internalPdfSql.findRegisterUpdate(cadastreId);
 
     try {
-      if (type === 'buffer')
-        return this.printerService.createPdfBuffer(registerUpdate(data));
+      if (type === 'buffer') return this.printerService.createPdfBuffer(registerUpdate(data));
       else return this.printerService.createPdf(registerUpdate(data));
     } catch (error) {
       console.log(error);
@@ -92,8 +90,7 @@ export class InternalPdfService {
     const data: any = await this.internalPdfSql.findRegisterSuspension(cadastreId);
 
     try {
-      if (type === 'buffer')
-        return this.printerService.createPdfBuffer(registerSuspension(data));
+      if (type === 'buffer') return this.printerService.createPdfBuffer(registerSuspension(data));
       else return this.printerService.createPdf(registerSuspension(data));
     } catch (error) {
       console.log(error);

@@ -708,6 +708,10 @@ export class AuthService {
         securityQuestionAcceptedAt: new Date(),
       });
 
+      if (!userToUpdate) {
+        throw new NotFoundException(`Usuario no encontrado`);
+      }
+
       await manager.save(userToUpdate);
 
       return await manager.save(newQuestions);

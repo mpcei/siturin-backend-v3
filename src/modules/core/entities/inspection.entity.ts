@@ -8,7 +8,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { InternalUserEntity, ProcessEntity } from '@modules/core/entities';
+import { ProcessEntity } from '@modules/core/entities';
 import { UserEntity } from '@auth/entities';
 import { CatalogueEntity } from '@modules/common/catalogue/catalogue.entity';
 

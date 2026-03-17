@@ -5,12 +5,9 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
-  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { InternalUserEntity } from '@modules/core/entities/internal-user.entity';
-import { UserEntity } from '@auth/entities';
 import { ProcessEntity } from '@modules/core/entities/process.entity';
 import { CatalogueEntity } from '@modules/common/catalogue/catalogue.entity';
 

@@ -9,7 +9,6 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { CategoryEntity } from '@modules/core/entities/category.entity';
-import { RoomEntity } from '@modules/core/entities/room.entity';
 import { RoomTypeEntity } from '@modules/core/entities/room-type.entity';
 
 @Entity('room_capacities', { schema: 'core' })

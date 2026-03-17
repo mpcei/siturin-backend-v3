@@ -11,8 +11,6 @@ import {
 import { DpaEntity } from '@modules/common/dpa/dpa.entity';
 import { ProcessEntity } from '@modules/core/entities/process.entity';
 import { InternalUserEntity } from '@modules/core/entities/internal-user.entity';
-import { UserEntity } from '@auth/entities';
-import { ZoneEntity } from '@modules/core/entities/zone.entity';
 
 @Entity('assignments', { schema: 'core' })
 export class AssignmentEntity {

@@ -1,4 +1,11 @@
-import { IsArray, IsBoolean, IsObject, IsOptional, IsPositive, ValidateNested } from 'class-validator';
+import {
+  IsArray,
+  IsBoolean,
+  IsObject,
+  IsOptional,
+  IsPositive,
+  ValidateNested,
+} from 'class-validator';
 import { isBooleanValidationOptions, isPositiveValidationOptions } from '@utils/dto-validation';
 import { TouristTransportCompanyEntity } from '@modules/core/entities/tourist-transport-company.entity';
 import { Type } from 'class-transformer';
@@ -16,6 +23,5 @@ import { CatalogueEntity } from '@modules/common/catalogue/catalogue.entity';
 //     @IsObject()
 //       @Type(() => CatalogueEntity)
 //       readonly types: CatalogueEntity;
-
 
 // }

@@ -2,7 +2,6 @@ import { IsBoolean, IsString } from 'class-validator';
 import { isBooleanValidationOptions, isStringValidationOptions } from '@utils/dto-validation';
 
 export class SalesRepresentativeDto {
-
   @IsString(isStringValidationOptions())
   readonly ruc: string;
 

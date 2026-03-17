@@ -105,7 +105,7 @@ export class SalesRepresentativeEntity {
   @Column({
     name: 'id_temp',
     type: 'bigint',
-    nullable:true,
+    nullable: true,
     comment: 'Codigo de la tabla migrada',
   })
   idTemp: number;

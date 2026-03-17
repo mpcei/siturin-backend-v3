@@ -24,7 +24,7 @@ export class InternalPdfController {
     @Param('cadastreId', ParseUUIDPipe) cadastreId: string,
   ) {
     const pdfDoc: PDFKit.PDFDocument = (await this.internalPdfService.generateRegisterCertificate({
-      type:'pdf',
+      type: 'pdf',
       cadastreId: cadastreId,
     })) as PDFKit.PDFDocument;
 
@@ -33,7 +33,7 @@ export class InternalPdfController {
     pdfDoc.end();
   }
 
-   @PublicRoute()
+  @PublicRoute()
   @Header('Content-Type', 'application/pdf')
   @Get('inactivation/:cadastreId')
   async generateInactivation(
@@ -41,7 +41,7 @@ export class InternalPdfController {
     @Param('cadastreId', ParseUUIDPipe) cadastreId: string,
   ) {
     const pdfDoc: PDFKit.PDFDocument = (await this.internalPdfService.generateInactivation({
-      type:'pdf',
+      type: 'pdf',
       cadastreId: cadastreId,
     })) as PDFKit.PDFDocument;
 
@@ -50,7 +50,7 @@ export class InternalPdfController {
     pdfDoc.end();
   }
 
-   @PublicRoute()
+  @PublicRoute()
   @Header('Content-Type', 'application/pdf')
   @Get('update/:cadastreId')
   async generateUpdate(
@@ -58,7 +58,7 @@ export class InternalPdfController {
     @Param('cadastreId', ParseUUIDPipe) cadastreId: string,
   ) {
     const pdfDoc: PDFKit.PDFDocument = (await this.internalPdfService.generateUpdate({
-      type:'pdf',
+      type: 'pdf',
       cadastreId: cadastreId,
     })) as PDFKit.PDFDocument;
 
@@ -67,7 +67,7 @@ export class InternalPdfController {
     pdfDoc.end();
   }
 
-   @PublicRoute()
+  @PublicRoute()
   @Header('Content-Type', 'application/pdf')
   @Get('suspension/:cadastreId')
   async generateSuspension(
@@ -75,7 +75,7 @@ export class InternalPdfController {
     @Param('cadastreId', ParseUUIDPipe) cadastreId: string,
   ) {
     const pdfDoc: PDFKit.PDFDocument = (await this.internalPdfService.generateSuspension({
-      type:'pdf',
+      type: 'pdf',
       cadastreId: cadastreId,
     })) as PDFKit.PDFDocument;
 
