@@ -83,7 +83,7 @@ export class LanguageEntity {
   @Column({
     name: 'language_name',
     type: 'varchar',
-    comment: 'Nombre del idioma. Proviene de catalago.',
+    comment: 'Nombre del idioma. Proviene de catalago',
   })
   languageName: string;
 

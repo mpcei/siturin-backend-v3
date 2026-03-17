@@ -1,8 +1,18 @@
-import { Controller, HttpCode, HttpStatus, Patch, Post } from '@nestjs/common';
+import {
+  Controller,
+  HttpCode,
+  HttpStatus,
+  Patch,
+  Post,
+  UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ResponseHttpInterface } from '@utils/interfaces';
 import { MigrationService } from '@modules/migration/migration.service';
 import { PublicRoute } from '@auth/decorators';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { memoryStorage } from 'multer';
 
 @ApiTags('Migrations')
 @Controller('migrations')
@@ -536,6 +546,25 @@ export class MigrationController {
 
     return {
       data: responseService.data,
+      message: 'created',
+      title: 'files',
+    };
+  }
+
+  @PublicRoute()
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: memoryStorage(),
+    }),
+  )
+  @Post('guide-activities')
+  async migrateGuideActivity(
+    @UploadedFile() file: Express.Multer.File,
+  ): Promise<ResponseHttpInterface> {
+    const responseService = await this.migrationService.migrateGuideActivity(file);
+
+    return {
+      data: responseService,
       message: 'created',
       title: 'files',
     };
