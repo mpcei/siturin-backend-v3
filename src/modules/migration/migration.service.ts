@@ -1984,6 +1984,39 @@ export class MigrationService {
     return null;
   }
 
+  async migrateExcelModalCatalogue(file: Express.Multer.File) {
+    const catalogues = await this.catalogueRepository.find();
+    const allDpa = await this.dpaRepository.find();
+    const classifications = await this.classificationRepository.find();
+
+    const workbook = XLSX.read(file.buffer, { type: 'buffer' });
+    const sheetName = workbook.SheetNames[2];
+    const dataExcel: any[] = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
+
+    for (const data of dataExcel) {
+      if (data['type'] == 'protected_areas_name') {
+        const catalogue = catalogues.find((x) => x.code == data['code_catalogue'] && x.type == data['type']);
+        const dpa = allDpa.find((x) => x.code == data['code_model'] );
+        const modelCatalogue = this.modelCatalogueRepository.create({
+          catalogueId: catalogue?.id,
+          modelId: dpa?.id
+        });
+        await this.modelCatalogueRepository.save(modelCatalogue);
+      }
+
+      if (data['type'] == 'adventure_tourism_modalities_name') {
+        const catalogue = catalogues.find((x) => x.code == data['code_catalogue'] && x.type == data['type']);
+        const model = classifications.find((x) => x.code == data['code_model'] );
+        const modelCatalogue = this.modelCatalogueRepository.create({
+          catalogueId: catalogue?.id,
+          modelId: model?.id
+        });
+        await this.modelCatalogueRepository.save(modelCatalogue);
+      }
+    }
+    return null;
+  }
+
   private async migratePersoneriaJuridicas() {
     const data = await this.getData('siturin.personeria_juridicas');
 

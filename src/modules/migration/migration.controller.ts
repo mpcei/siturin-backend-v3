@@ -565,8 +565,27 @@ export class MigrationController {
 
     return {
       data: responseService,
-      message: 'created',
-      title: 'files',
+      message: 'guide activities',
+      title: 'created',
+    };
+  }
+
+  @PublicRoute()
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: memoryStorage(),
+    }),
+  )
+  @Post('excel-model-catalogues')
+  async migrateExcelModalCatalogue(
+    @UploadedFile() file: Express.Multer.File,
+  ): Promise<ResponseHttpInterface> {
+    const responseService = await this.migrationService.migrateExcelModalCatalogue(file);
+
+    return {
+      data: responseService,
+      message: 'excel-modal-catalogues',
+      title: 'created',
     };
   }
 }
