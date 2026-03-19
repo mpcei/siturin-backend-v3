@@ -111,7 +111,6 @@ export class EstablishmentService {
               : CatalogueEstablishmentsStateEnum.closed),
       );
 
-      console.log(state);
       let establishment = await this.repository.findOne({
         where: {
           number: sriEstablishment.numero,
@@ -143,7 +142,7 @@ export class EstablishmentService {
     const entity = await this.repository.findOne({
       where: { id },
       relations: {
-        ruc: true,
+        ruc: { state: true },
         state: true,
         processes: { cadastre: { cadastreState: { state: true } } },
         establishmentAddress: { province: true, canton: true, parish: true },
