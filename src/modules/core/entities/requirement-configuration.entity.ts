@@ -127,4 +127,25 @@ export class RequirementConfigurationEntity {
     comment: 'Requisito para renovacion de cumplimiento obligatorio',
   })
   requiredRenovation: boolean;
+
+  @Column({
+    name: 'sort_current_credential',
+    type: 'int',
+    comment: 'Orden requisitos credencial vigente',
+  })
+  sortCurrentCredential: number;
+
+  @Column({
+    name: 'enabled_current_credential',
+    type: 'boolean',
+    comment: 'Requisito activo para credencial vigente',
+  })
+  enabledCurrentCredential: boolean;
+
+  @Column({
+    name: 'required_current_credential',
+    type: 'boolean',
+    comment: 'Requisito para credencial vigente de cumplimiento obligatorio',
+  })
+  requiredCurrentCredential: boolean;
 }
