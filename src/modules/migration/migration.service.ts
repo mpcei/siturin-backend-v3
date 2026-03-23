@@ -1,6 +1,11 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { DataSource, IsNull, Not, Repository } from 'typeorm';
-import { AuthRepositoryEnum, CommonRepositoryEnum, ConfigEnum } from '@utils/enums';
+import {
+  AuthRepositoryEnum,
+  CommonRepositoryEnum,
+  ConfigEnum,
+  GuideRepositoryEnum,
+} from '@utils/enums';
 
 import { CoreRepositoryEnum } from '@modules/core/utils/enums';
 
@@ -62,6 +67,7 @@ import { join } from 'path';
 import * as fs from 'node:fs';
 import { format } from 'date-fns';
 import { BucketService } from '@modules/common/bucket/bucket.service';
+import { RequirementConfigurationEntity } from '@modules/core/entities/requirement-configuration.entity';
 
 @Injectable()
 export class MigrationService {
@@ -168,6 +174,8 @@ export class MigrationService {
     private readonly regulationResponseRepository: Repository<RegulationResponseEntity>,
     @Inject(CommonRepositoryEnum.FILE_REPOSITORY)
     private readonly fileRepository: Repository<FileEntity>,
+    @Inject(GuideRepositoryEnum.REQUIREMENT_CONFIGURATION_REPOSITORY)
+    private readonly requirementConfigurationRepository: Repository<RequirementConfigurationEntity>,
     private readonly bucketService: BucketService,
   ) {}
 
@@ -1995,24 +2003,65 @@ export class MigrationService {
 
     for (const data of dataExcel) {
       if (data['type'] == 'protected_areas_name') {
-        const catalogue = catalogues.find((x) => x.code == data['code_catalogue'] && x.type == data['type']);
-        const dpa = allDpa.find((x) => x.code == data['code_model'] );
+        const catalogue = catalogues.find(
+          (x) => x.code == data['code_catalogue'] && x.type == data['type'],
+        );
+        const dpa = allDpa.find((x) => x.code == data['code_model']);
         const modelCatalogue = this.modelCatalogueRepository.create({
           catalogueId: catalogue?.id,
-          modelId: dpa?.id
+          modelId: dpa?.id,
         });
         await this.modelCatalogueRepository.save(modelCatalogue);
       }
 
       if (data['type'] == 'adventure_tourism_modalities_name') {
-        const catalogue = catalogues.find((x) => x.code == data['code_catalogue'] && x.type == data['type']);
-        const model = classifications.find((x) => x.code == data['code_model'] );
+        const catalogue = catalogues.find(
+          (x) => x.code == data['code_catalogue'] && x.type == data['type'],
+        );
+        const model = classifications.find((x) => x.code == data['code_model']);
         const modelCatalogue = this.modelCatalogueRepository.create({
           catalogueId: catalogue?.id,
-          modelId: model?.id
+          modelId: model?.id,
         });
         await this.modelCatalogueRepository.save(modelCatalogue);
       }
+    }
+    return null;
+  }
+
+  async migrateExcelRequirementConfiguration(file: Express.Multer.File) {
+    const requirements = await this.catalogueRepository.find();
+    const guideTitles = await this.catalogueRepository.find();
+    const classifications = await this.classificationRepository.find();
+
+    const workbook = XLSX.read(file.buffer, { type: 'buffer' });
+    const sheetName = workbook.SheetNames[3];
+    const dataExcel: any[] = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
+
+    for (const data of dataExcel) {
+      const requirement = requirements.find((x) => x.code == data['code_requirement'] && x.type == data['type_requirement']);
+      const guideTitle = guideTitles.find((x) => x.code == data['code_title']);
+      const classification = classifications.find((x) => x.code == data['code_classification']);
+      const requirementConfiguration = this.requirementConfigurationRepository.create({
+        classificationId: classification?.id,
+        requirementId: requirement?.id,
+        professionalTypeCode: guideTitle?.code,
+        professionalTypeName: guideTitle?.name,
+        sortRegister: data['sort_register'],
+        enabledRegister: data['enabled_register'],
+        requiredRegister: data['required_register'],
+        sortRenovation: data['sort_renovation'],
+        enabledRenovation: data['enabled_renovation'],
+        requiredRenovation: data['required_renovation'],
+        sortCurrentCredential: data['sort_current_credential'],
+        enabledCurrentCredential: data['enabled_current_credential'],
+        requiredCurrentCredential: data['required_current_credential'],
+        sortExpiredCredential: data['sort_expired_credential'],
+        enabledExpiredCredential: data['enabled_expired_credential'],
+        requiredExpiredCredential: data['required_expired_credential'],
+
+      });
+      await this.requirementConfigurationRepository.save(requirementConfiguration);
     }
     return null;
   }

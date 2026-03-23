@@ -1,5 +1,5 @@
 import { DataSource } from 'typeorm';
-import { ConfigEnum } from '@utils/enums';
+import { ConfigEnum, GuideRepositoryEnum } from '@utils/enums';
 import { CoreRepositoryEnum } from '@modules/core/utils/enums';
 import {
   ActivityEntity,
@@ -51,6 +51,7 @@ import {
 } from '@modules/core/entities';
 import { KitchenTypeEntity } from '@modules/core/entities/kitchen-type.entity';
 import { ServiceTypeEntity } from '@modules/core/entities/service-type.entity';
+import { RequirementConfigurationEntity } from '@modules/core/entities/requirement-configuration.entity';
 
 export const coreProviders = [
   {
@@ -294,6 +295,11 @@ export const coreProviders = [
   {
     provide: CoreRepositoryEnum.ZONE_REPOSITORY,
     useFactory: (dataSource: DataSource) => dataSource.getRepository(ZoneEntity),
+    inject: [ConfigEnum.PG_DATA_SOURCE],
+  },
+  {
+    provide: GuideRepositoryEnum.REQUIREMENT_CONFIGURATION_REPOSITORY,
+    useFactory: (dataSource: DataSource) => dataSource.getRepository(RequirementConfigurationEntity),
     inject: [ConfigEnum.PG_DATA_SOURCE],
   },
 ];

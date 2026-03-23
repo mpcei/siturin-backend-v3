@@ -89,6 +89,7 @@ export class RequirementConfigurationEntity {
   @Column({
     name: 'sort_register',
     type: 'int',
+    nullable: true,
     comment: 'Orden requisitos registro',
   })
   sortRegister: number;
@@ -96,6 +97,7 @@ export class RequirementConfigurationEntity {
   @Column({
     name: 'enabled_register',
     type: 'boolean',
+    nullable: true,
     comment: 'Requisito activo para registro',
   })
   enabledRegister: boolean;
@@ -103,6 +105,7 @@ export class RequirementConfigurationEntity {
   @Column({
     name: 'required_register',
     type: 'boolean',
+    nullable: true,
     comment: 'Requisito para registro de cumplimiento obligatorio',
   })
   requiredRegister: boolean;
@@ -110,6 +113,7 @@ export class RequirementConfigurationEntity {
   @Column({
     name: 'sort_renovation',
     type: 'int',
+    nullable: true,
     comment: 'Orden requisitos renovacion',
   })
   sortRenovation: number;
@@ -117,6 +121,7 @@ export class RequirementConfigurationEntity {
   @Column({
     name: 'enabled_renovation',
     type: 'boolean',
+    nullable: true,
     comment: 'Requisito activo para renovacion',
   })
   enabledRenovation: boolean;
@@ -124,6 +129,7 @@ export class RequirementConfigurationEntity {
   @Column({
     name: 'required_renovation',
     type: 'boolean',
+    nullable: true,
     comment: 'Requisito para renovacion de cumplimiento obligatorio',
   })
   requiredRenovation: boolean;
@@ -131,6 +137,7 @@ export class RequirementConfigurationEntity {
   @Column({
     name: 'sort_current_credential',
     type: 'int',
+    nullable: true,
     comment: 'Orden requisitos credencial vigente',
   })
   sortCurrentCredential: number;
@@ -138,6 +145,7 @@ export class RequirementConfigurationEntity {
   @Column({
     name: 'enabled_current_credential',
     type: 'boolean',
+    nullable: true,
     comment: 'Requisito activo para credencial vigente',
   })
   enabledCurrentCredential: boolean;
@@ -145,7 +153,32 @@ export class RequirementConfigurationEntity {
   @Column({
     name: 'required_current_credential',
     type: 'boolean',
+    nullable: true,
     comment: 'Requisito para credencial vigente de cumplimiento obligatorio',
   })
   requiredCurrentCredential: boolean;
+
+  @Column({
+    name: 'sort_expired_credential',
+    type: 'int',
+    nullable: true,
+    comment: 'Orden requisitos credencial caducada',
+  })
+  sortExpiredCredential: number;
+
+  @Column({
+    name: 'enabled_expired_credential',
+    type: 'boolean',
+    nullable: true,
+    comment: 'Requisito activo para credencial caducada',
+  })
+  enabledExpiredCredential: boolean;
+
+  @Column({
+    name: 'required_expired_credential',
+    type: 'boolean',
+    nullable: true,
+    comment: 'Requisito para credencial caducada de cumplimiento obligatorio',
+  })
+  requiredExpiredCredential: boolean;
 }

@@ -588,4 +588,23 @@ export class MigrationController {
       title: 'created',
     };
   }
+
+  @PublicRoute()
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: memoryStorage(),
+    }),
+  )
+  @Post('excel-requirement-configurations')
+  async migrateExcelRequirementConfiguration(
+    @UploadedFile() file: Express.Multer.File,
+  ): Promise<ResponseHttpInterface> {
+    const responseService = await this.migrationService.migrateExcelRequirementConfiguration(file);
+
+    return {
+      data: responseService,
+      message: 'excel-requirement-configurations',
+      title: 'created',
+    };
+  }
 }
