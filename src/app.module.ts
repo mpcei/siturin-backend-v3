@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigType } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { MulterModule } from '@nestjs/platform-express';
@@ -28,19 +28,26 @@ import { BullModule } from '@nestjs/bullmq';
       expandVariables: true,
       validationSchema: JoiValidationSchema,
     }),
-    ThrottlerModule.forRoot({
-      throttlers: [
-        {
-          ttl: 60 * 1000,
-          limit: 100,
-        },
-      ],
+    ThrottlerModule.forRootAsync({
+      inject: [envConfig.KEY],
+      useFactory: (configService: ConfigType<typeof envConfig>) => ({
+        throttlers: [
+          {
+            ttl: configService.throttler.ttl,
+            limit: configService.throttler.limit,
+          },
+        ],
+      }),
     }),
-    BullModule.forRoot({
-      connection: {
-        host: 'localhost',
-        port: 6379,
-      },
+    BullModule.forRootAsync({
+      inject: [envConfig.KEY],
+      useFactory: (configService: ConfigType<typeof envConfig>) => ({
+        connection: {
+          host: configService.redis.host,
+          port: configService.redis.port,
+          password: configService.redis.password,
+        },
+      }),
     }),
     MulterModule.register({ dest: './uploads' }),
     HttpModule,

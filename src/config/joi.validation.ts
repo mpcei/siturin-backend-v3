@@ -17,11 +17,18 @@ export const JoiValidationSchema = Joi.object({
   MAX_ATTEMPTS: Joi.number().required(),
   SECURITY_CODE_EXPIRES_IN: Joi.number().required(),
 
+  THROTTLER_TTL: Joi.string().required(),
+  THROTTLER_LIMIT: Joi.number().required(),
+
   DB_HOST: Joi.string().required(),
   DB_PORT: Joi.number().required(),
   DB_USER: Joi.string().required(),
   DB_PASSWORD: Joi.string().required(),
   DB_NAME: Joi.string().required(),
+
+  REDIS_HOST: Joi.string().required(),
+  REDIS_PORT: Joi.number().required(),
+  REDIS_PASSWORD: Joi.string().required(),
 
   MAIL_HOST: Joi.string().required(),
   MAIL_PORT: Joi.string().required(),

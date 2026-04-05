@@ -1,6 +1,6 @@
 import { registerAs } from '@nestjs/config';
 import * as process from 'node:process';
-import { StringValue } from 'ms';
+import ms, { StringValue } from 'ms';
 
 export const envConfig = registerAs('envConfig', () => {
   return {
@@ -17,7 +17,12 @@ export const envConfig = registerAs('envConfig', () => {
       secret: process.env.JWT_SECRET,
       expires: process.env.JWT_EXPIRES as StringValue,
       refreshSecret: process.env.JWT_REFRESH_SECRET,
-      refreshExpires: process.env.JWT_REFRESH_EXPIRES as StringValue,
+      refreshExpires: ms(process.env.JWT_REFRESH_EXPIRES as StringValue),
+    },
+
+    throttler: {
+      ttl: ms(process.env.THROTTLER_TTL as StringValue),
+      limit: parseInt(process.env.THROTTLER_LIMIT!, 10),
     },
 
     database: {
@@ -26,6 +31,12 @@ export const envConfig = registerAs('envConfig', () => {
       password: process.env.DB_PASSWORD,
       port: parseInt(process.env.DB_PORT!, 10),
       username: process.env.DB_USER,
+    },
+
+    redis: {
+      host: process.env.REDIS_HOST,
+      port: parseInt(process.env.REDIS_PORT!, 10),
+      password: process.env.REDIS_PASSWORD,
     },
 
     mail: {
