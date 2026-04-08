@@ -133,7 +133,7 @@ export class EstablishmentEntity {
     type: 'varchar',
     nullable: true,
 
-    comment: '',
+    comment: 'Nombre comercial',
   })
   tradeName: string;
 

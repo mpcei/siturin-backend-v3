@@ -197,7 +197,7 @@ export class ProcessEntity {
     name: 'registered_at',
     type: 'timestamptz',
     nullable: true,
-    comment: 'Fecha de la solicitud del registro',
+    comment: 'Fecha de envió de la solicitud del registro',
   })
   registeredAt: Date;
 
@@ -205,7 +205,7 @@ export class ProcessEntity {
     name: 'attended_at',
     type: 'timestamptz',
     nullable: true,
-    comment: 'Fecha de atencion de la solicitud del registro',
+    comment: 'Fecha de atencion de la solicitud del registro (Finalización de la gestión de la solicitud)',
   })
   attendedAt: Date;
 
@@ -213,7 +213,7 @@ export class ProcessEntity {
     name: 'started_at',
     type: 'timestamptz',
     nullable: true,
-    comment: 'Fecha de inicio de la solicitud',
+    comment: 'Fecha de inicio de la creación de la solicitud',
   })
   startedAt: Date;
 
@@ -221,7 +221,7 @@ export class ProcessEntity {
     name: 'ended_at',
     type: 'timestamptz',
     nullable: true,
-    comment: 'Fecha de finalizacion de la solicitud',
+    comment: 'Fecha de finalizacion de la creación de la solicitud',
   })
   endedAt: Date;
 

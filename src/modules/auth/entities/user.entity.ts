@@ -289,6 +289,14 @@ export class UserEntity {
   securityQuestionAcceptedAt: Date | null;
 
   @Column({
+    name: 'has_disability',
+    type: 'boolean',
+    nullable: true,
+    comment: 'true: tiene discapacidad y False:no',
+  })
+  hasDisability: boolean;
+
+  @Column({
     name: 'id_temp',
     type: 'bigint',
     nullable: true,

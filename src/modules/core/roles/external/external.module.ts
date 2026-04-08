@@ -1,4 +1,4 @@
-import { Global, Module } from '@nestjs/common';
+import { Global, Module, ValidationPipe } from '@nestjs/common';
 import { CatalogueModule } from '@modules/common/catalogue/catalogue.module';
 import { FileModule } from '@modules/common/file/file.module';
 import { MailModule } from '@modules/common/mail/mail.module';
@@ -15,6 +15,9 @@ import { ProcessEventService } from '@modules/core/roles/external/services/proce
 import { ProcessFoodDrinkService } from '@modules/core/roles/external/services/process-food-drink.service';
 import { ProcessTransportService } from '@modules/core/roles/external/services/process-transport.service';
 import { HttpModule } from '@nestjs/axios';
+import { ProcessGuideService } from '@modules/core/roles/external/services/process-guide.service';
+import { buildValidationOptions } from '@utils/helpers/validation-pipe.helper';
+import { ParseFormPayloadJsonPipe } from '@utils/pipes';
 
 @Global()
 @Module({
@@ -30,6 +33,12 @@ import { HttpModule } from '@nestjs/axios';
     ProcessEventService,
     ProcessFoodDrinkService,
     ProcessTransportService,
+    ProcessGuideService,
+    ParseFormPayloadJsonPipe,
+    {
+      provide: ValidationPipe,
+      useFactory: () => new ValidationPipe(buildValidationOptions()),
+    },
   ],
   exports: [],
 })

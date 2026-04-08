@@ -1,18 +1,10 @@
 import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { NestExpressApplication } from '@nestjs/platform-express';
-import {
-  ClassSerializerInterceptor,
-  INestApplication,
-  UnprocessableEntityException,
-  ValidationError,
-  ValidationPipe,
-} from '@nestjs/common';
+import { ClassSerializerInterceptor, INestApplication, ValidationPipe } from '@nestjs/common';
 import { join } from 'path';
 import * as process from 'process';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { FIELD_LABEL_KEY } from '@utils/dto-validation';
-import { AllExceptionsFilter } from '@utils/exceptions';
 import { Client } from 'pg';
 
 import { ExpressAdapter } from '@bull-board/express';
@@ -20,6 +12,7 @@ import { createBullBoard } from '@bull-board/api';
 import { BullMQAdapter } from '@bull-board/api/bullMQAdapter';
 import { getQueueToken } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
+import { buildValidationOptions } from '@utils/helpers/validation-pipe.helper';
 
 async function createDatabaseIfNotExists() {
   const dbName = process.env.DB_NAME;
@@ -51,54 +44,7 @@ async function createDatabaseIfNotExists() {
 }
 
 export function setupValidationPipe(app: INestApplication) {
-  app.useGlobalPipes(
-    new ValidationPipe({
-      errorHttpStatusCode: 422,
-      stopAtFirstError: true,
-      whitelist: true,
-      forbidNonWhitelisted: true,
-      transformOptions: {
-        enableImplicitConversion: true,
-      },
-      exceptionFactory: (errors: ValidationError[]) => {
-        const formatErrorMessages = (errors: ValidationError[]) => {
-          const messages: string[] = [];
-
-          errors.forEach((error) => {
-            const label = error.target
-              ? (Reflect.getMetadata(
-                  FIELD_LABEL_KEY,
-                  error.target.constructor.prototype,
-                  error.property,
-                ) as string)
-              : null;
-
-            const propertyName = label || error.property;
-
-            if (error.constraints) {
-              Object.entries(error.constraints).forEach(([key, msg]) => {
-                if (key === 'whitelistValidation') {
-                  messages.push(`La propiedad ${error.property} no está permitida`);
-                } else {
-                  const modifiedMsg = msg.replace(error.property, propertyName);
-                  messages.push(modifiedMsg);
-                }
-              });
-            }
-          });
-
-          return messages;
-        };
-
-        const messages = formatErrorMessages(errors);
-
-        return new UnprocessableEntityException({
-          message: messages,
-          error: 'Unprocessable Entity',
-        });
-      },
-    }),
-  );
+  app.useGlobalPipes(new ValidationPipe(buildValidationOptions()));
 }
 
 export function setupBullBoard(app: INestApplication, queues: string[]) {

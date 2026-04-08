@@ -9,6 +9,7 @@ export function FieldLabel(label: string) {
     Reflect.defineMetadata(FIELD_LABEL_KEY, label, target, propertyKey);
   };
 }
+
 export function isStringValidationOptions(validationOptions?: ValidationOptions) {
   return {
     message: 'La propiedad $property debe ser una cadena',
