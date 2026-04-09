@@ -1,26 +1,27 @@
-import { IsNotEmpty, IsNumber, IsString, IsUUID } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsObject, IsString, IsUUID, ValidateNested } from 'class-validator';
 import {
   isNotEmptyValidationOptions,
   isNumberValidationOptions,
   isStringValidationOptions,
 } from '@utils/dto-validation';
+import { Type } from 'class-transformer';
 
 export class EstablishmentDto {
   @IsUUID()
   @IsNotEmpty(isNotEmptyValidationOptions())
   readonly id: string;
 
-  @IsUUID()
+  @IsObject()
   @IsNotEmpty(isNotEmptyValidationOptions())
-  readonly provinceId: string;
+  readonly province: any;
 
-  @IsUUID()
+  @IsObject()
   @IsNotEmpty(isNotEmptyValidationOptions())
-  readonly cantonId: string;
+  readonly canton: any;
 
-  @IsUUID()
+  @IsObject()
   @IsNotEmpty(isNotEmptyValidationOptions())
-  readonly parishId: string;
+  readonly parish: any;
 
   @IsString(isStringValidationOptions())
   @IsNotEmpty(isNotEmptyValidationOptions())

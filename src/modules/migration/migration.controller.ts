@@ -557,7 +557,7 @@ export class MigrationController {
       storage: memoryStorage(),
     }),
   )
-  @Post('guide-activities')
+  @Post('excel-guide-activities')
   async migrateGuideActivity(
     @UploadedFile() file: Express.Multer.File,
   ): Promise<ResponseHttpInterface> {

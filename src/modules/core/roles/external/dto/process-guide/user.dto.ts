@@ -1,4 +1,4 @@
-import { IsBoolean, IsNotEmpty, IsOptional, IsString, IsUUID } from 'class-validator';
+import { IsBoolean, IsNotEmpty, IsObject, IsOptional, IsString } from 'class-validator';
 import {
   isBooleanValidationOptions,
   isNotEmptyValidationOptions,
@@ -6,9 +6,9 @@ import {
 } from '@utils/dto-validation';
 
 export class UserDto {
-  @IsUUID()
+  @IsObject()
   @IsNotEmpty(isNotEmptyValidationOptions())
-  readonly bloodTypeId: string;
+  readonly bloodType: any;
 
   @IsBoolean(isBooleanValidationOptions())
   @IsNotEmpty(isNotEmptyValidationOptions())

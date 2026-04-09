@@ -61,9 +61,9 @@ export class ProcessGuideService {
       throw new NotFoundException();
     }
     establishment.id = payload.establishment.id;
-    establishment.provinceId = payload.establishment.provinceId;
-    establishment.cantonId = payload.establishment.cantonId;
-    establishment.parishId = payload.establishment.parishId;
+    establishment.provinceId = payload.establishment.province.id;
+    establishment.cantonId = payload.establishment.canton.id;
+    establishment.parishId = payload.establishment.parish.id;
     establishment.mainStreet = payload.establishment.mainStreet;
     establishment.numberStreet = payload.establishment.numberStreet;
     establishment.secondaryStreet = payload.establishment.secondaryStreet;
@@ -108,7 +108,7 @@ export class ProcessGuideService {
       throw new NotFoundException();
     }
     userUpdate.hasDisability = payload.user.hasDisability;
-    userUpdate.bloodTypeId = payload.user.bloodTypeId;
+    userUpdate.bloodTypeId = payload.user.bloodType.id;
 
     await userRepository.save(userUpdate);
 

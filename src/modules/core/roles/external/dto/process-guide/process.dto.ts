@@ -1,10 +1,22 @@
-import { IsDate, IsNotEmpty, IsUUID } from 'class-validator';
+import { IsDate, IsNotEmpty, IsObject } from 'class-validator';
 import { isDateValidationOptions, isNotEmptyValidationOptions } from '@utils/dto-validation';
 
 export class ProcessDto {
-  @IsUUID()
+  @IsObject()
   @IsNotEmpty(isNotEmptyValidationOptions())
-  readonly typeId: string;
+  readonly type: any;
+
+  @IsObject()
+  @IsNotEmpty(isNotEmptyValidationOptions())
+  readonly activity: any;
+
+  @IsObject()
+  @IsNotEmpty(isNotEmptyValidationOptions())
+  readonly classification: any;
+
+  @IsObject()
+  @IsNotEmpty(isNotEmptyValidationOptions())
+  readonly category: any;
 
   @IsDate(isDateValidationOptions())
   readonly startedAt: Date;
