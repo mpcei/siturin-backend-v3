@@ -8,7 +8,7 @@ export const buildValidationOptions = (): ValidationPipeOptions => ({
   forbidNonWhitelisted: true,
   transform: true,
   transformOptions: {
-    enableImplicitConversion: true,
+    enableImplicitConversion: false,
   },
   exceptionFactory: (errors: ValidationError[]) => {
     const formatErrorMessages = (errors: ValidationError[]): string[] => {

@@ -4,27 +4,29 @@ import {
   isPositiveValidationOptions,
   isStringValidationOptions,
 } from '../dto-validation';
-import { Transform } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 
 export class PaginationDto {
-  @IsNotEmpty(isNotEmptyValidationOptions())
+  @Type(() => Number)
   @IsPositive(isPositiveValidationOptions())
+  @IsNotEmpty(isNotEmptyValidationOptions())
   limit: number;
 
-  @IsNotEmpty(isNotEmptyValidationOptions())
+  @Type(() => Number)
   @IsPositive(isPositiveValidationOptions())
+  @IsNotEmpty(isNotEmptyValidationOptions())
   page: number;
 
-  @IsOptional()
   @IsString(isStringValidationOptions())
+  @IsOptional()
   search: string;
 
-  @IsOptional()
   @Transform(({ value }) => {
     if (typeof value === 'string') return value.split(',');
     if (Array.isArray(value)) return value.map(String);
     return [];
   })
+  @IsOptional()
   relations?: string[];
 
   static getOffset(limit: number, page: number): number {
