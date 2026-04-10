@@ -10,8 +10,6 @@ import {
 } from 'typeorm';
 import { ProcessEntity } from '@modules/core/entities/process.entity';
 import { CatalogueEntity } from '@modules/common/catalogue/catalogue.entity';
-import { DpaEntity } from '@modules/common/dpa/dpa.entity';
-import { ProfessionalTitleEntity } from '@modules/core/entities/professional-title.entity';
 
 @Entity('process_guides', { schema: 'core' })
 export class ProcessGuideEntity {
@@ -73,43 +71,25 @@ export class ProcessGuideEntity {
   })
   requirementId: string;
 
-  @ManyToOne(() => ProfessionalTitleEntity)
-  @JoinColumn({ name: 'professional_title_id' })
-  professionalTitle: ProfessionalTitleEntity;
-  @Column({
-    type: 'uuid',
-    name: 'professional_title_id',
-    comment: 'Titulo con el que aplica al tramite',
-  })
-  professionalTitleId: string;
-
-  @ManyToOne(() => DpaEntity)
-  @JoinColumn({ name: 'province_id' })
-  province: DpaEntity;
-  @Column({
-    type: 'uuid',
-    name: 'province_id',
-    nullable: true,
-    comment: 'Provincia de ubicacion relacionada al area protegida',
-  })
-  provinceId: string;
-
-  @ManyToOne(() => DpaEntity)
-  @JoinColumn({ name: 'canton_id' })
-  canton: DpaEntity;
-  @Column({
-    type: 'uuid',
-    name: 'canton_id',
-    nullable: true,
-    comment: 'Canton relacionado al curso de guia local',
-  })
-  cantonId: string;
-
   /** Columns **/
   @Column({
-    name: 'is_pane',
-    type: 'boolean',
-    comment: 'Tiene acceso al PANE true=si, false=no',
+    name: 'value',
+    type: 'text',
+    comment: 'Valor del requisito',
   })
-  isPane: boolean;
+  value: string;
+
+  @Column({
+    name: 'observation',
+    type: 'text',
+    comment: 'Observación el requisito',
+  })
+  observation: string;
+
+  @Column({
+    name: 'state',
+    type: 'boolean',
+    comment: 'Cumple el requisito si-no',
+  })
+  state: boolean;
 }

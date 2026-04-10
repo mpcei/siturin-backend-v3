@@ -10,6 +10,7 @@ import {
 } from 'typeorm';
 import { EstablishmentEntity } from '@modules/core/entities/establishment.entity';
 import { ProcessEntity } from '@modules/core/entities/process.entity';
+import { DpaEntity } from '@modules/common/dpa/dpa.entity';
 
 @Entity('protected_areas', { schema: 'guide' })
 export class ProtectedAreaEntity {
@@ -71,6 +72,28 @@ export class ProtectedAreaEntity {
     comment: 'Id del trámite',
   })
   processId: string;
+
+  @ManyToOne(() => DpaEntity)
+  @JoinColumn({ name: 'province_id' })
+  province: DpaEntity;
+  @Column({
+    type: 'uuid',
+    name: 'province_id',
+    nullable: true,
+    comment: 'Provincia de ubicacion relacionada al area protegida',
+  })
+  provinceId: string;
+
+  @ManyToOne(() => DpaEntity)
+  @JoinColumn({ name: 'canton_id' })
+  canton: DpaEntity;
+  @Column({
+    type: 'uuid',
+    name: 'canton_id',
+    nullable: true,
+    comment: 'Canton relacionado al curso de guia local',
+  })
+  cantonId: string;
 
   /** Columns **/
   @Column({

@@ -1,13 +1,15 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { DataSource, EntityManager } from 'typeorm';
 
-import { ConfigEnum } from '@utils/enums';
+import { CatalogueUsersSexEnum, ConfigEnum } from '@utils/enums';
 import { ResponseHttpInterface } from '@utils/interfaces';
-import { EstablishmentEntity } from '@modules/core/entities';
+import { EstablishmentEntity, ProcessEntity } from '@modules/core/entities';
 import { ProcessService } from '@modules/core/shared-core/services/process.service';
 import { UserEntity } from '@auth/entities';
 import { EmailService } from '@modules/core/shared-core/services/email.service';
 import { BaseProcessGuideDto } from '@modules/core/roles/external/dto/process-guide';
+import { ProcessGuideEntity } from '@modules/core/entities/process-guide.entity';
+import { CatalogueProcessGuidesCodeEnum } from '@modules/core/utils/enums';
 
 @Injectable()
 export class ProcessGuideService {
@@ -25,16 +27,8 @@ export class ProcessGuideService {
     return await this.dataSource.transaction(async (manager) => {
       const establishment = await this.saveEstablishment(manager, payload);
       const userUpdate = await this.saveUser(manager, payload, user);
-
-      //const responseSendEmail = await this.emailService.sendRegistrationCertificateEmail(cadastre);
-
-      // if (responseSendEmail) {
-      //   return {
-      //     data: cadastre,
-      //     title: responseSendEmail.title,
-      //     message: responseSendEmail.message,
-      //   };
-      // }
+      const process = await this.saveProcess(manager, payload, userUpdate);
+      const processGuide = await this.saveProcessGuide(manager, payload, process);
 
       return {
         data: null,
@@ -102,6 +96,7 @@ export class ProcessGuideService {
     // );
     const userUpdate = await userRepository.findOne({
       where: { id: user.id },
+      relations: { sex: true },
     });
 
     if (!userUpdate) {
@@ -120,6 +115,69 @@ export class ProcessGuideService {
 
     await establishmentContactPersonRepository.save(establishmentContactPerson);*/
 
-    return user;
+    return userUpdate;
+  }
+
+  private async saveProcess(
+    manager: EntityManager,
+    payload: BaseProcessGuideDto,
+    user: UserEntity,
+  ): Promise<ProcessEntity> {
+    const processRepository = manager.getRepository(ProcessEntity);
+
+    const process = processRepository.create();
+    process.activityId = payload.process.activity.id;
+    process.classificationId = payload.process.classification.id;
+    process.categoryId = payload.process.category.id;
+    process.establishmentId = payload.establishment.id;
+    process.type = payload.process.type.id;
+    process.registeredAt = new Date();
+    process.startedAt = payload.process.startedAt;
+    process.endedAt = payload.process.endedAt;
+    console.log(user);
+    if (user.sex.code === CatalogueUsersSexEnum.female) {
+      process.totalWomen = 1;
+      if (user.hasDisability) process.totalWomenDisability = 1;
+    }
+    process.totalMen = 1;
+    if (user.hasDisability) process.totalMenDisability = 1;
+
+    return await processRepository.save(process);
+  }
+
+  private async saveProcessGuide(
+    manager: EntityManager,
+    payload: BaseProcessGuideDto,
+    process: ProcessEntity,
+  ): Promise<boolean> {
+    const processGuideRepository = manager.getRepository(ProcessGuideEntity);
+
+    for (const item of payload.processGuides) {
+      const processGuide = processGuideRepository.create();
+      processGuide.processId = process.id;
+      processGuide.requirementId = item.requirement.id;
+      processGuide.value = item.value;
+      const processGuideSave = await processGuideRepository.save(processGuide);
+
+      //Guardar areas protegidas
+      if (item.requirement.code === CatalogueProcessGuidesCodeEnum.pane) {
+      }
+
+      //Guardar modalidades de aventura
+      if (item.requirement.code === CatalogueProcessGuidesCodeEnum.modality_aventure) {
+      }
+
+      //Guardar modalidades idioma
+      if (item.requirement.code === CatalogueProcessGuidesCodeEnum.certification_language) {
+      }
+
+      //Guardar modalidades
+      if (item.requirement.code === CatalogueProcessGuidesCodeEnum.modality_aventure_guide) {
+      }
+
+      //Guardar los files
+    }
+
+    return true;
   }
 }

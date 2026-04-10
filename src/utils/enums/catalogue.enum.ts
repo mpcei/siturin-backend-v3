@@ -9,6 +9,11 @@ export enum CatalogueTypeEnum {
   users_security_question = 'users_security_question',
 }
 
+export enum CatalogueUsersSexEnum {
+  female = 'f',
+  male = 'm',
+}
+
 export enum CatalogueStateEnum {
   enabled = 'enabled',
   disabled = 'disabled',

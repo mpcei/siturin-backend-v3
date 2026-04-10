@@ -167,3 +167,10 @@ export enum CatalogueEstablishmentsStateEnum {
   open = 'abierto',
   closed = 'cerrado',
 }
+
+export enum CatalogueProcessGuidesCodeEnum {
+  pane = 'pane',
+  modality_aventure = 'modality_aventure',
+  certification_language = 'certification_language',
+  modality_aventure_guide = 'modality_aventure_guide',
+}

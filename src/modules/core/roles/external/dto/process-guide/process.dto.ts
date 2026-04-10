@@ -19,8 +19,10 @@ export class ProcessDto {
   readonly category: any;
 
   @IsDate(isDateValidationOptions())
+  @IsNotEmpty(isNotEmptyValidationOptions())
   readonly startedAt: Date;
 
   @IsDate(isDateValidationOptions())
+  @IsNotEmpty(isNotEmptyValidationOptions())
   readonly endedAt: Date;
 }
