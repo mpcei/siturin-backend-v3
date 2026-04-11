@@ -10,12 +10,15 @@ import { EmailService } from '@modules/core/shared-core/services/email.service';
 import { BaseProcessGuideDto } from '@modules/core/roles/external/dto/process-guide';
 import { ProcessGuideEntity } from '@modules/core/entities/process-guide.entity';
 import { CatalogueProcessGuidesCodeEnum } from '@modules/core/utils/enums';
+import { FileEntity } from '@modules/common/file/file.entity';
+import { FileService } from '@modules/common/file/file.service';
 
 @Injectable()
 export class ProcessGuideService {
   constructor(
     @Inject(ConfigEnum.PG_DATA_SOURCE)
     private readonly dataSource: DataSource,
+    private readonly fileService: FileService,
     private readonly emailService: EmailService,
     private readonly processService: ProcessService,
   ) {}
@@ -23,12 +26,14 @@ export class ProcessGuideService {
   async createRegistration(
     payload: BaseProcessGuideDto,
     user: UserEntity,
+    files: Express.Multer.File[],
   ): Promise<ResponseHttpInterface> {
     return await this.dataSource.transaction(async (manager) => {
       const establishment = await this.saveEstablishment(manager, payload);
       const userUpdate = await this.saveUser(manager, payload, user);
       const process = await this.saveProcess(manager, payload, userUpdate);
       const processGuide = await this.saveProcessGuide(manager, payload, process);
+      await this.saveFiles(manager, user, files);
 
       return {
         data: null,
@@ -135,7 +140,7 @@ export class ProcessGuideService {
     process.startedAt = payload.process.startedAt;
     process.endedAt = payload.process.endedAt;
     console.log(user);
-    if (user.sex.code === CatalogueUsersSexEnum.female) {
+    if (user.sex?.code === CatalogueUsersSexEnum.female) {
       process.totalWomen = 1;
       if (user.hasDisability) process.totalWomenDisability = 1;
     }
@@ -176,6 +181,24 @@ export class ProcessGuideService {
       }
 
       //Guardar los files
+    }
+
+    return true;
+  }
+
+  private async saveFiles(
+    manager: EntityManager,
+    user: UserEntity,
+    files: Express.Multer.File[],
+  ): Promise<boolean> {
+    for (const item of files) {
+      await this.fileService.uploadFile({
+        file: item,
+        manager,
+        user,
+        modelId: item.filename,
+        folder: 'process',
+      });
     }
 
     return true;

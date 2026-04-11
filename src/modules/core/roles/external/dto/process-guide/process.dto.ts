@@ -1,4 +1,4 @@
-import { IsDate, IsNotEmpty, IsObject } from 'class-validator';
+import { IsDate, IsNotEmpty, IsObject, IsOptional } from 'class-validator';
 import { isDateValidationOptions, isNotEmptyValidationOptions } from '@utils/dto-validation';
 
 export class ProcessDto {
@@ -14,14 +14,21 @@ export class ProcessDto {
   @IsNotEmpty(isNotEmptyValidationOptions())
   readonly classification: any;
 
+  @IsOptional() //review
   @IsObject()
   @IsNotEmpty(isNotEmptyValidationOptions())
   readonly category: any;
 
+  @IsObject()
+  @IsNotEmpty(isNotEmptyValidationOptions())
+  readonly geographicArea: any;
+
+  @IsOptional() //review
   @IsDate(isDateValidationOptions())
   @IsNotEmpty(isNotEmptyValidationOptions())
   readonly startedAt: Date;
 
+  @IsOptional() //review
   @IsDate(isDateValidationOptions())
   @IsNotEmpty(isNotEmptyValidationOptions())
   readonly endedAt: Date;

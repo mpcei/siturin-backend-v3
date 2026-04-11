@@ -34,7 +34,8 @@ export class ProcessGuideController {
     @Body('payload') payload: BaseProcessGuideDto,
     @User() user: UserEntity,
   ): Promise<ResponseHttpInterface> {
-    const serviceResponse = await this.service.createRegistration(payload, user);
+    console.log(files);
+    const serviceResponse = await this.service.createRegistration(payload, user, files);
 
     return {
       data: serviceResponse.data,

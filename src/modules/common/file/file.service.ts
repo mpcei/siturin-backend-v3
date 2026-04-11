@@ -22,9 +22,11 @@ export class FileService {
     private readonly bucketService: BucketService,
   ) {}
 
-  async uploadFile({ file, user, modelId, typeId, folder }: CreateFileDto) {
+  async uploadFile({ file, user, modelId, typeId, folder, manager }: CreateFileDto) {
     const fileName = `${Date.now()}${path.extname(file.originalname)}`;
     const filePath = `${folder}/${format(new Date(), 'yyyy/MM')}/${fileName}`;
+
+    const repository = manager ? manager.getRepository(FileEntity) : this.repository;
 
     const payload = {
       modelId,
@@ -39,7 +41,7 @@ export class FileService {
       mimeType: file.mimetype,
     };
 
-    const newFile = this.repository.create(payload);
+    const newFile = repository.create(payload);
 
     // await this.minioService.uploadFile({
     //   filePath,
@@ -54,7 +56,7 @@ export class FileService {
       mimetype: file.mimetype,
     });
 
-    return await this.repository.save(newFile);
+    return await repository.save(newFile);
   }
 
   async uploadFiles(

@@ -82,6 +82,7 @@ export class ProcessGuideEntity {
   @Column({
     name: 'observation',
     type: 'text',
+    nullable: true,
     comment: 'Observación el requisito',
   })
   observation: string;
@@ -89,6 +90,7 @@ export class ProcessGuideEntity {
   @Column({
     name: 'state',
     type: 'boolean',
+    nullable: true,
     comment: 'Cumple el requisito si-no',
   })
   state: boolean;
