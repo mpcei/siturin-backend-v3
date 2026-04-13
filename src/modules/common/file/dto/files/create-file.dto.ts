@@ -9,3 +9,13 @@ export class CreateFileDto {
   folder: string;
   manager?: EntityManager;
 }
+
+export class CreateProcessFileDto {
+  file: Express.Multer.File;
+  modelId: string;
+  user: UserEntity;
+  typeId?: string;
+  activity: string;
+  manager?: EntityManager;
+  ruc: string;
+}

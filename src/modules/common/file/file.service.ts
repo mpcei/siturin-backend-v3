@@ -5,7 +5,7 @@ import { CommonRepositoryEnum } from '@utils/enums';
 import * as path from 'path';
 import { PaginationDto } from '@utils/pagination';
 import { ServiceResponseHttpInterface } from '@utils/interfaces';
-import { CreateFileDto, FilterFileDto } from './dto';
+import { CreateFileDto, CreateProcessFileDto, FilterFileDto } from './dto';
 import { format } from 'date-fns';
 import { FileDownloadLogEntity } from '@modules/common/file/file-download-log.entity';
 import { UserEntity } from '@auth/entities';
@@ -25,6 +25,51 @@ export class FileService {
   async uploadFile({ file, user, modelId, typeId, folder, manager }: CreateFileDto) {
     const fileName = `${Date.now()}${path.extname(file.originalname)}`;
     const filePath = `${folder}/${format(new Date(), 'yyyy/MM')}/${fileName}`;
+
+    const repository = manager ? manager.getRepository(FileEntity) : this.repository;
+
+    const payload = {
+      modelId,
+      userId: user?.id,
+      fileName,
+      name: file.originalname,
+      extension: path.extname(file.originalname),
+      originalName: file.originalname,
+      path: filePath,
+      size: file.size,
+      typeId: typeId,
+      mimeType: file.mimetype,
+    };
+
+    const newFile = repository.create(payload);
+
+    // await this.minioService.uploadFile({
+    //   filePath,
+    //   buffer: file.buffer,
+    //   size: file.size,
+    //   mimetype: file.mimetype,
+    // });
+
+    await this.bucketService.uploadFile({
+      filePath,
+      buffer: file.buffer,
+      mimetype: file.mimetype,
+    });
+
+    return await repository.save(newFile);
+  }
+
+  async uploadProcessFile({
+    file,
+    user,
+    modelId,
+    typeId,
+    activity,
+    manager,
+    ruc,
+  }: CreateProcessFileDto) {
+    const fileName = `${Date.now()}${path.extname(file.originalname)}`;
+    const filePath = `process/${ruc}/${activity}/${fileName}`;
 
     const repository = manager ? manager.getRepository(FileEntity) : this.repository;
 

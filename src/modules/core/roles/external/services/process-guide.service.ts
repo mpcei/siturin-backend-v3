@@ -10,8 +10,8 @@ import { EmailService } from '@modules/core/shared-core/services/email.service';
 import { BaseProcessGuideDto } from '@modules/core/roles/external/dto/process-guide';
 import { ProcessGuideEntity } from '@modules/core/entities/process-guide.entity';
 import { CatalogueProcessGuidesCodeEnum } from '@modules/core/utils/enums';
-import { FileEntity } from '@modules/common/file/file.entity';
 import { FileService } from '@modules/common/file/file.service';
+import { AdventureModalityEntity } from '@modules/core/entities/adventure-modality.entity';
 
 @Injectable()
 export class ProcessGuideService {
@@ -32,8 +32,8 @@ export class ProcessGuideService {
       const establishment = await this.saveEstablishment(manager, payload);
       const userUpdate = await this.saveUser(manager, payload, user);
       const process = await this.saveProcess(manager, payload, userUpdate);
-      const processGuide = await this.saveProcessGuide(manager, payload, process);
-      await this.saveFiles(manager, user, files);
+      const processGuide = await this.saveProcessGuide(manager, user, files, payload, process);
+      //await this.saveFiles(manager, user, files);
 
       return {
         data: null,
@@ -152,10 +152,13 @@ export class ProcessGuideService {
 
   private async saveProcessGuide(
     manager: EntityManager,
+    user: UserEntity,
+    files: Express.Multer.File[],
     payload: BaseProcessGuideDto,
     process: ProcessEntity,
   ): Promise<boolean> {
     const processGuideRepository = manager.getRepository(ProcessGuideEntity);
+    const AdventureModalityRepository = manager.getRepository(AdventureModalityEntity);
 
     for (const item of payload.processGuides) {
       const processGuide = processGuideRepository.create();
@@ -164,20 +167,56 @@ export class ProcessGuideService {
       processGuide.value = item.value;
       const processGuideSave = await processGuideRepository.save(processGuide);
 
+      await this.saveFile(
+        manager,
+        user,
+        files,
+        processGuideSave.id,
+        processGuideSave.requirementId,
+      );
+
       //Guardar areas protegidas
       if (item.requirement.code === CatalogueProcessGuidesCodeEnum.pane) {
       }
 
       //Guardar modalidades de aventura
-      if (item.requirement.code === CatalogueProcessGuidesCodeEnum.modality_aventure) {
+      if (
+        item.requirement.code === CatalogueProcessGuidesCodeEnum.modality_adventure &&
+        item.value === 'true'
+      ) {
+        for (const item of payload.adventureModalities) {
+          const adventureModality = AdventureModalityRepository.create();
+          adventureModality.processId = process.id;
+          adventureModality.establishmentId = payload.establishment.id;
+          adventureModality.modalityCode = item.modalityCode;
+          adventureModality.modalityName = item.modalityName;
+          adventureModality.modalityCertificateCode = item.modalityCertificateCode;
+          adventureModality.modalityCertificateName = item.modalityCertificateName;
+
+          const adventureModalitySave = await AdventureModalityRepository.save(adventureModality);
+
+          await this.saveFile(
+            manager,
+            user,
+            files,
+            adventureModalitySave.id,
+            adventureModalitySave.modalityCode,
+          );
+        }
       }
 
       //Guardar modalidades idioma
-      if (item.requirement.code === CatalogueProcessGuidesCodeEnum.certification_language) {
+      if (
+        item.requirement.code === CatalogueProcessGuidesCodeEnum.certification_language &&
+        item.value === 'true'
+      ) {
       }
 
       //Guardar modalidades
-      if (item.requirement.code === CatalogueProcessGuidesCodeEnum.modality_aventure_guide) {
+      if (
+        item.requirement.code === CatalogueProcessGuidesCodeEnum.modality_adventure_guide &&
+        item.value === 'true'
+      ) {
       }
 
       //Guardar los files
@@ -186,21 +225,25 @@ export class ProcessGuideService {
     return true;
   }
 
-  private async saveFiles(
+  private async saveFile(
     manager: EntityManager,
     user: UserEntity,
     files: Express.Multer.File[],
+    modelId: string,
+    id: string,
   ): Promise<boolean> {
-    for (const item of files) {
-      await this.fileService.uploadFile({
-        file: item,
-        manager,
-        user,
-        modelId: item.filename,
-        folder: 'process',
-      });
+    const file = files.find((item) => item.filename === id);
+    if (!file) {
+      return true;
     }
-
+    await this.fileService.uploadProcessFile({
+      file,
+      manager,
+      user,
+      modelId,
+      activity: 'guide',
+      ruc: user.identification,
+    });
     return true;
   }
 }
