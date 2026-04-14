@@ -12,6 +12,8 @@ import { ProcessGuideEntity } from '@modules/core/entities/process-guide.entity'
 import { CatalogueProcessGuidesCodeEnum } from '@modules/core/utils/enums';
 import { FileService } from '@modules/common/file/file.service';
 import { AdventureModalityEntity } from '@modules/core/entities/adventure-modality.entity';
+import { ProtectedAreaEntity } from '@modules/core/entities/protected-area.entity';
+import { LanguageEntity } from '@modules/core/entities/language.entity';
 
 @Injectable()
 export class ProcessGuideService {
@@ -39,7 +41,6 @@ export class ProcessGuideService {
         payload,
         process,
       );
-      //await this.saveFiles(manager, user, files);
 
       return {
         data: null,
@@ -163,6 +164,8 @@ export class ProcessGuideService {
   ): Promise<boolean> {
     const processGuideRepository = manager.getRepository(ProcessGuideEntity);
     const AdventureModalityRepository = manager.getRepository(AdventureModalityEntity);
+    const ProtectedAreaRepository = manager.getRepository(ProtectedAreaEntity);
+    const LanguageRepository = manager.getRepository(LanguageEntity);
 
     for (const item of payload.processGuides) {
       const processGuide = processGuideRepository.create();
@@ -181,11 +184,23 @@ export class ProcessGuideService {
 
       //Guardar areas protegidas
       if (item.requirement.code === CatalogueProcessGuidesCodeEnum.pane) {
+        for (const item of payload.protectedAreas) {
+          const protectedArea = ProtectedAreaRepository.create();
+          protectedArea.processId = process.id;
+          protectedArea.establishmentId = payload.establishment.id;
+          protectedArea.provinceId = item.province.id;
+          protectedArea.cantonId = item.canton.id;
+          protectedArea.protectedAreaCode = item.protectedAreaCode;
+          protectedArea.protectedAreaName = item.protectedAreaName;
+
+          const protectedAreaSave = await ProtectedAreaRepository.save(protectedArea);
+        }
       }
 
       //Guardar modalidades de aventura
       if (
-        item.requirement.code === CatalogueProcessGuidesCodeEnum.modality_adventure &&
+        (item.requirement.code === CatalogueProcessGuidesCodeEnum.modality_adventure_guide ||
+          item.requirement.code === CatalogueProcessGuidesCodeEnum.modality_adventure) &&
         item.value === 'true'
       ) {
         for (const item of payload.adventureModalities) {
@@ -214,16 +229,20 @@ export class ProcessGuideService {
         item.requirement.code === CatalogueProcessGuidesCodeEnum.certification_language &&
         item.value === 'true'
       ) {
-      }
+        for (const item of payload.languages) {
+          const language = LanguageRepository.create();
+          language.processId = process.id;
+          language.establishmentId = payload.establishment.id;
+          language.languageCode = item.languageCode;
+          language.languageName = item.languageName;
+          language.languageLevelCode = item.languageLevelCode;
+          language.languageLevelName = item.languageLevelName;
 
-      //Guardar modalidades
-      if (
-        item.requirement.code === CatalogueProcessGuidesCodeEnum.modality_adventure_guide &&
-        item.value === 'true'
-      ) {
-      }
+          const languageSave = await LanguageRepository.save(language);
 
-      //Guardar los files
+          await this.saveFile(manager, user, files, languageSave.id, languageSave.languageCode);
+        }
+      }
     }
 
     return true;
