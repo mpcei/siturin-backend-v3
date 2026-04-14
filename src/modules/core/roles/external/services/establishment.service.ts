@@ -67,6 +67,8 @@ export class EstablishmentService {
       .leftJoinAndSelect('e.process', 'process')
       .leftJoinAndSelect('e.state', 'establishmentState')
       .leftJoinAndSelect('process.cadastre', 'cadastre')
+      .leftJoinAndSelect('process.activity', 'activities')
+      .leftJoinAndSelect('process.classification', 'classifications')
       .leftJoinAndSelect('cadastre.cadastreState', 'cadastreState')
       .leftJoinAndSelect('cadastreState.state', 'state')
       .where('ruc.number = :ruc', { ruc })
