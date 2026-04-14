@@ -61,6 +61,9 @@ export class EstablishmentService {
     const [data, totalItems] = await this.repository
       .createQueryBuilder('e')
       .leftJoin('e.ruc', 'ruc')
+      .leftJoinAndSelect('e.province', 'provinces')
+      .leftJoinAndSelect('e.canton', 'cantons')
+      .leftJoinAndSelect('e.parish', 'parishes')
       .leftJoinAndSelect('e.process', 'process')
       .leftJoinAndSelect('e.state', 'establishmentState')
       .leftJoinAndSelect('process.cadastre', 'cadastre')

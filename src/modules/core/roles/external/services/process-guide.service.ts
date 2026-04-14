@@ -3,7 +3,12 @@ import { DataSource, EntityManager } from 'typeorm';
 
 import { CatalogueUsersSexEnum, ConfigEnum } from '@utils/enums';
 import { ResponseHttpInterface } from '@utils/interfaces';
-import { EstablishmentEntity, ProcessEntity } from '@modules/core/entities';
+import {
+  EstablishmentAddressEntity,
+  EstablishmentContactPersonEntity,
+  EstablishmentEntity,
+  ProcessEntity,
+} from '@modules/core/entities';
 import { ProcessService } from '@modules/core/shared-core/services/process.service';
 import { UserEntity } from '@auth/entities';
 import { EmailService } from '@modules/core/shared-core/services/email.service';
@@ -31,9 +36,9 @@ export class ProcessGuideService {
     files: Express.Multer.File[],
   ): Promise<ResponseHttpInterface> {
     return await this.dataSource.transaction(async (manager) => {
-      const establishment = await this.saveEstablishment(manager, payload);
       const userUpdate = await this.saveUser(manager, payload, user);
       const process = await this.saveProcess(manager, payload, userUpdate);
+      const establishment = await this.saveEstablishment(manager, payload, process.id);
       const processGuide = await this.saveProcessGuide(
         manager,
         userUpdate,
@@ -55,9 +60,13 @@ export class ProcessGuideService {
   private async saveEstablishment(
     manager: EntityManager,
     payload: BaseProcessGuideDto,
+    processId: string,
   ): Promise<EstablishmentEntity> {
     const establishmentRepository = manager.getRepository(EstablishmentEntity);
-    // const establishmentAddressRepository = manager.getRepository(EstablishmentAddressEntity);
+    const establishmentAddressRepository = manager.getRepository(EstablishmentAddressEntity);
+    const establishmentContactPersonRepository = manager.getRepository(
+      EstablishmentContactPersonEntity,
+    );
 
     const establishment = await establishmentRepository.findOne({
       where: { id: payload.establishment.id },
@@ -79,11 +88,12 @@ export class ProcessGuideService {
 
     await establishmentRepository.save(establishment);
 
-    /*const establishmentAddress = establishmentAddressRepository.create();
+    const establishmentAddress = establishmentAddressRepository.create();
     establishmentAddress.establishmentId = payload.establishment.id;
-    establishmentAddress.provinceId = payload.establishment.provinceId;
-    establishmentAddress.cantonId = payload.establishment.cantonId;
-    establishmentAddress.parishId = payload.establishment.parishId;
+    establishmentAddress.processId = processId;
+    establishmentAddress.provinceId = payload.establishment.province.id;
+    establishmentAddress.cantonId = payload.establishment.canton.id;
+    establishmentAddress.parishId = payload.establishment.parish.id;
     establishmentAddress.mainStreet = payload.establishment.mainStreet;
     establishmentAddress.numberStreet = payload.establishment.numberStreet;
     establishmentAddress.secondaryStreet = payload.establishment.secondaryStreet;
@@ -91,7 +101,16 @@ export class ProcessGuideService {
     establishmentAddress.latitude = payload.establishment.latitude;
     establishmentAddress.longitude = payload.establishment.longitude;
 
-    await establishmentAddressRepository.save(establishmentAddress);*/
+    await establishmentAddressRepository.save(establishmentAddress);
+
+    const establishmentContactPerson = establishmentContactPersonRepository.create();
+    establishmentContactPerson.establishmentId = payload.establishment.id;
+    establishmentContactPerson.processId = processId;
+    establishmentContactPerson.phone = payload.user.phone;
+    establishmentContactPerson.secondaryPhone = payload.user.secondaryPhone;
+    establishmentContactPerson.email = payload.user.email;
+
+    await establishmentContactPersonRepository.save(establishmentContactPerson);
 
     return establishment;
   }
@@ -102,9 +121,6 @@ export class ProcessGuideService {
     user: UserEntity,
   ): Promise<UserEntity> {
     const userRepository = manager.getRepository(UserEntity);
-    // const establishmentContactPersonRepository = manager.getRepository(
-    //   EstablishmentContactPersonEntity,
-    // );
     const userUpdate = await userRepository.findOne({
       where: { id: user.id },
       relations: { sex: true },
@@ -117,14 +133,6 @@ export class ProcessGuideService {
     userUpdate.bloodTypeId = payload.user.bloodType.id;
 
     await userRepository.save(userUpdate);
-
-    /*const establishmentContactPerson = establishmentContactPersonRepository.create();
-    establishmentContactPerson.establishmentId = payload.establishment.id;
-    establishmentContactPerson.phone = payload.user.phone;
-    establishmentContactPerson.secondaryPhone = payload.user.secondaryPhone;
-    establishmentContactPerson.email = payload.user.email;
-
-    await establishmentContactPersonRepository.save(establishmentContactPerson);*/
 
     return userUpdate;
   }
