@@ -32,7 +32,13 @@ export class ProcessGuideService {
       const establishment = await this.saveEstablishment(manager, payload);
       const userUpdate = await this.saveUser(manager, payload, user);
       const process = await this.saveProcess(manager, payload, userUpdate);
-      const processGuide = await this.saveProcessGuide(manager, user, files, payload, process);
+      const processGuide = await this.saveProcessGuide(
+        manager,
+        userUpdate,
+        files,
+        payload,
+        process,
+      );
       //await this.saveFiles(manager, user, files);
 
       return {
