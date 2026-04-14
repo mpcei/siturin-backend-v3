@@ -71,7 +71,6 @@ export class ProcessGuideService {
     establishment.longitude = payload.establishment.longitude;
 
     await establishmentRepository.save(establishment);
-    console.log(establishment);
 
     /*const establishmentAddress = establishmentAddressRepository.create();
     establishmentAddress.establishmentId = payload.establishment.id;
@@ -139,7 +138,6 @@ export class ProcessGuideService {
     process.registeredAt = new Date();
     process.startedAt = payload.process.startedAt;
     process.endedAt = payload.process.endedAt;
-    console.log(user);
     if (user.sex?.code === CatalogueUsersSexEnum.female) {
       process.totalWomen = 1;
       if (user.hasDisability) process.totalWomenDisability = 1;
@@ -232,7 +230,7 @@ export class ProcessGuideService {
     modelId: string,
     id: string,
   ): Promise<boolean> {
-    const file = files.find((item) => item.filename === id);
+    const file = files.find((item) => item.fieldname === id);
     if (!file) {
       return true;
     }
