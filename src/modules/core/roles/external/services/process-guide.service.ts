@@ -205,7 +205,7 @@ export class ProcessGuideService {
         }
       }
 
-      //Guardar modalidades idioma
+      //Guardar idioma
       if (
         item.requirement.code === CatalogueProcessGuidesCodeEnum.certification_language &&
         item.value === 'true'
