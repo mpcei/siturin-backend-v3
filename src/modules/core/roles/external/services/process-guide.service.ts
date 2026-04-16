@@ -198,8 +198,8 @@ export class ProcessGuideService {
           protectedArea.establishmentId = payload.establishment.id;
           protectedArea.provinceId = item.province.id;
           protectedArea.cantonId = item.canton.id;
-          protectedArea.protectedAreaCode = item.protectedAreaCode;
-          protectedArea.protectedAreaName = item.protectedAreaName;
+          protectedArea.areaCode = item.areaCode;
+          protectedArea.areaName = item.areaName;
 
           const protectedAreaSave = await ProtectedAreaRepository.save(protectedArea);
         }
@@ -243,8 +243,8 @@ export class ProcessGuideService {
           language.establishmentId = payload.establishment.id;
           language.languageCode = item.languageCode;
           language.languageName = item.languageName;
-          language.languageLevelCode = item.languageLevelCode;
-          language.languageLevelName = item.languageLevelName;
+          language.levelCode = item.levelCode;
+          language.levelName = item.levelName;
 
           const languageSave = await LanguageRepository.save(language);
 

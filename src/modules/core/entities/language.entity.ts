@@ -88,16 +88,16 @@ export class LanguageEntity {
   languageName: string;
 
   @Column({
-    name: 'language_level_code',
+    name: 'level_code',
     type: 'varchar',
     comment: 'Codigo del nivel de conocimiento del idioma. Proviene de catalago',
   })
-  languageLevelCode: string;
+  levelCode: string;
 
   @Column({
-    name: 'language_level_name',
+    name: 'level_name',
     type: 'varchar',
     comment: 'Nombre del nivel de conocimiento del idioma. Proviene de catalago.',
   })
-  languageLevelName: string;
+  levelName: string;
 }

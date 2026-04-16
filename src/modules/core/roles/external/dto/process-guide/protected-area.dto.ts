@@ -12,9 +12,9 @@ export class ProtectedAreaDto {
 
   @IsString(isStringValidationOptions())
   @IsNotEmpty(isNotEmptyValidationOptions())
-  readonly protectedAreaCode: string;
+  readonly areaCode: string;
 
   @IsString(isStringValidationOptions())
   @IsNotEmpty(isNotEmptyValidationOptions())
-  readonly protectedAreaName: string;
+  readonly areaName: string;
 }

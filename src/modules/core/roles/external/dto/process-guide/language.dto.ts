@@ -12,9 +12,9 @@ export class LanguageDto {
 
   @IsString(isStringValidationOptions())
   @IsNotEmpty(isNotEmptyValidationOptions())
-  readonly languageLevelCode: string;
+  readonly levelCode: string;
 
   @IsString(isStringValidationOptions())
   @IsNotEmpty(isNotEmptyValidationOptions())
-  readonly languageLevelName: string;
+  readonly levelName: string;
 }
