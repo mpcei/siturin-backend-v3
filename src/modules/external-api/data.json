@@ -2268,5 +2268,34 @@
       "summary": "CONEXI�N EXITOSA REGISTRO CIVIL",
       "detail": ""
     }
+  },
+  "minedec": {
+    "data": [{"cedula": "1234567890", "titulos": [
+      {
+        "nombre": "Técnico en Comercio y Administración",
+        "numeroRegistro": "41728",
+        "fechaRegistro": "2004-08-13",
+        "institucion": "VICTORIA VASCONEZ CUVI",
+        "nivel": "Bachiller"
+      },
+      {
+        "nombre": "INGENIERA EN ADMINISTRACION DE EMPRESAS",
+        "numeroRegistro": "1005-13-1200709",
+        "fechaRegistro": "2013-03-11",
+        "institucion": "UNIVERSIDAD CENTRAL DEL ECUADOR",
+        "nivel": "Tercer Nivel o Pregrado"
+      },
+      {
+        "nombre": "MAGISTER EN GERENCIA PARA EL DESARROLLO",
+        "numeroRegistro": "1022-2022-2427271",
+        "fechaRegistro": "2022-03-03",
+        "institucion": "UNIVERSIDAD ANDINA SIMON BOLIVAR",
+        "nivel": "Cuarto Nivel o Posgrado"
+      }]}
+    ],
+    "msg": {
+      "summary": "CONEXION EXITOSA MINEDEC",
+      "detail": ""
+    }
   }
 }

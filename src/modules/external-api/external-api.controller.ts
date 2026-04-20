@@ -53,6 +53,24 @@ export class ExternalApiController {
   }
 
   @PublicRoute()
+  @Get('minedec/:cedula')
+  ministerioEducacion(@Param('cedula') cedula: string): any {
+    const dataMinedec = data.minedec.data.find((x) => x.cedula === cedula);
+    if (!dataMinedec) {
+      return {
+        data: [],
+        message: `Registros Consultados`,
+        title: `Consultados`,
+      };
+    }
+    return {
+      data: dataMinedec.titulos,
+      message: `Registros Consultados`,
+      title: `Consultados`,
+    };
+  }
+
+  @PublicRoute()
   @Get(':correo/:clave')
   ldap(): any {
     return {
