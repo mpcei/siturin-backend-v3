@@ -5,4 +5,5 @@ export enum CacheEnum {
   CATEGORIES = 'categories',
   CATALOGUES = 'catalogues',
   DPA = 'dpa',
+  MODEL_CATALOGUES = 'model_catalogues',
 }

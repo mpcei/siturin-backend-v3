@@ -32,7 +32,6 @@ import {
   InternalUserEntity,
   InternalZonalUserEntity,
   LandTransportEntity,
-  ModelCatalogueEntity,
   PaymentEntity,
   ProcessAccommodationEntity,
   ProcessAgencyEntity,
@@ -68,6 +67,7 @@ import * as fs from 'node:fs';
 import { format } from 'date-fns';
 import { BucketService } from '@modules/common/bucket/bucket.service';
 import { RequirementConfigurationEntity } from '@modules/core/entities/requirement-configuration.entity';
+import { ModelCatalogueEntity } from '@modules/common/catalogue/model-catalogue.entity';
 
 @Injectable()
 export class MigrationService {
@@ -164,7 +164,7 @@ export class MigrationService {
     private readonly complementaryServiceRegulationRepository: Repository<ComplementaryServiceRegulationEntity>,
     @Inject(CoreRepositoryEnum.SALES_REPRESENTATIVE_REPOSITORY)
     private readonly salesRepresentativeRepository: Repository<SalesRepresentativeEntity>,
-    @Inject(CoreRepositoryEnum.MODEL_CATALOGUE_REPOSITORY)
+    @Inject(CommonRepositoryEnum.MODEL_CATALOGUE_REPOSITORY)
     private readonly modelCatalogueRepository: Repository<ModelCatalogueEntity>,
     @Inject(CoreRepositoryEnum.REGULATION_SECTION_REPOSITORY)
     private readonly regulationSectionRepository: Repository<RegulationSectionEntity>,

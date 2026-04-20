@@ -109,4 +109,19 @@ export class CatalogueController {
       title: `Eliminado`,
     };
   }
+
+  @PublicRoute()
+  @ApiOperation({ summary: 'Find Model Catalogues' })
+  @Get('model-catalogues/:modelId')
+  async findCataloguesByModel(
+    @Param('modelId', ParseUUIDPipe) modelId: string,
+  ): Promise<ResponseHttpInterface> {
+    const serviceResponse = await this.catalogueService.findCataloguesByModel(modelId);
+
+    return {
+      data: serviceResponse,
+      message: `Model Catalogues`,
+      title: `Find`,
+    };
+  }
 }

@@ -9,6 +9,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { ModelCatalogueEntity } from '@modules/common/catalogue/model-catalogue.entity';
 
 @Entity('catalogues', { schema: 'common' })
 export class CatalogueEntity {

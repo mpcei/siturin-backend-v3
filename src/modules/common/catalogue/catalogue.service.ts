@@ -7,6 +7,7 @@ import { ServiceResponseHttpInterface } from '@utils/interfaces';
 import { Cache } from 'cache-manager';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { PaginateFilterService, PaginationDto } from '@utils/pagination';
+import { ModelCatalogueEntity } from '@modules/common/catalogue/model-catalogue.entity';
 
 @Injectable()
 export class CataloguesService {
@@ -16,9 +17,34 @@ export class CataloguesService {
   constructor(
     @Inject(CommonRepositoryEnum.CATALOGUE_REPOSITORY)
     private repository: Repository<CatalogueEntity>,
+    @Inject(CommonRepositoryEnum.MODEL_CATALOGUE_REPOSITORY)
+    private modelCatalogueRepository: Repository<ModelCatalogueEntity>,
     @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
   ) {
     this.paginateFilterService = new PaginateFilterService(this.repository);
+  }
+
+  async findCataloguesByModel(modelId: string): Promise<CatalogueEntity[]> {
+    const modelCatalogues = await this.modelCatalogueRepository
+      .createQueryBuilder('mc')
+      .leftJoin('mc.catalogue', 'catalogue')
+      .select([
+        'catalogue.id', // o los campos que necesites de la entidad principal
+        'mc.id', // o los campos que necesites de la entidad principal
+        'catalogue.name',
+        'catalogue.code',
+        'catalogue.type',
+        'catalogue.enabled',
+        'catalogue.parentId',
+        'catalogue.acronym',
+        'catalogue.required',
+      ])
+      .where('mc.modelId = :modelId', { modelId })
+      .getMany();
+
+    return modelCatalogues.map((item) => {
+      return item.catalogue;
+    });
   }
 
   async create(payload: CreateCatalogueDto): Promise<CatalogueEntity> {

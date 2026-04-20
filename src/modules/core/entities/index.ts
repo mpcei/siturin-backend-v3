@@ -20,7 +20,6 @@ export { InternalDpaUserEntity } from './internal-dpa-user.entity';
 export { InternalUserEntity } from './internal-user.entity';
 export { InternalZonalUserEntity } from './internal-zonal-user.entity';
 export { LandTransportEntity } from './land-transport.entity';
-export { ModelCatalogueEntity } from './model-catalogue.entity';
 export { ObservationEntity } from './observation.entity';
 export { PaymentEntity } from './payment.entity';
 export { ProcessEntity } from './process.entity';
@@ -67,7 +66,6 @@ import { InternalDpaUserEntity } from './internal-dpa-user.entity';
 import { InternalUserEntity } from './internal-user.entity';
 import { InternalZonalUserEntity } from './internal-zonal-user.entity';
 import { LandTransportEntity } from './land-transport.entity';
-import { ModelCatalogueEntity } from './model-catalogue.entity';
 import { ObservationEntity } from './observation.entity';
 import { PaymentEntity } from './payment.entity';
 import { ProcessEntity } from './process.entity';
@@ -115,7 +113,6 @@ export const entities = [
   InternalUserEntity,
   InternalZonalUserEntity,
   LandTransportEntity,
-  ModelCatalogueEntity,
   ObservationEntity,
   PaymentEntity,
   ProcessEntity,

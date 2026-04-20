@@ -24,7 +24,6 @@ import {
   InternalUserEntity,
   InternalZonalUserEntity,
   LandTransportEntity,
-  ModelCatalogueEntity,
   ObservationEntity,
   PaymentEntity,
   ProcessAccommodationEntity,
@@ -173,11 +172,6 @@ export const coreProviders = [
     inject: [ConfigEnum.PG_DATA_SOURCE],
   },
   {
-    provide: CoreRepositoryEnum.MODEL_CATALOGUE_REPOSITORY,
-    useFactory: (dataSource: DataSource) => dataSource.getRepository(ModelCatalogueEntity),
-    inject: [ConfigEnum.PG_DATA_SOURCE],
-  },
-  {
     provide: CoreRepositoryEnum.PAYMENT_REPOSITORY,
     useFactory: (dataSource: DataSource) => dataSource.getRepository(PaymentEntity),
     inject: [ConfigEnum.PG_DATA_SOURCE],
@@ -299,7 +293,8 @@ export const coreProviders = [
   },
   {
     provide: GuideRepositoryEnum.REQUIREMENT_CONFIGURATION_REPOSITORY,
-    useFactory: (dataSource: DataSource) => dataSource.getRepository(RequirementConfigurationEntity),
+    useFactory: (dataSource: DataSource) =>
+      dataSource.getRepository(RequirementConfigurationEntity),
     inject: [ConfigEnum.PG_DATA_SOURCE],
   },
 ];

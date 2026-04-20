@@ -8,7 +8,7 @@ import { CacheModule } from '@nestjs/cache-manager';
 @Module({
   imports: [CacheModule.register()],
   controllers: [CatalogueController],
-  providers: [catalogueProvider, CataloguesService],
-  exports: [catalogueProvider, CataloguesService],
+  providers: [...catalogueProvider, CataloguesService],
+  exports: [...catalogueProvider, CataloguesService],
 })
 export class CatalogueModule {}
