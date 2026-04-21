@@ -97,4 +97,16 @@ export class EstablishmentController {
       title: `Eliminado`,
     };
   }
+
+  @ApiOperation({ summary: 'Find Degrees' })
+  @Get('minedec/:cedula')
+  async findDegreesByCedula(@Param('cedula') cedula: string): Promise<ResponseHttpInterface> {
+    const serviceResponse = await this.service.findDegreesByCedula(cedula);
+
+    return {
+      data: serviceResponse,
+      message: `Registro Consultado`,
+      title: `Consultado`,
+    };
+  }
 }

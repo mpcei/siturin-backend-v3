@@ -11,7 +11,7 @@ import { CreateCadastreDto, UpdateCadastreDto } from '@modules/core/roles/extern
 import { PaginationDto } from '@utils/pagination';
 import { PaginateFilterService } from '@utils/pagination/paginate-filter.service';
 import { HttpService } from '@nestjs/axios';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, lastValueFrom } from 'rxjs';
 import { envConfig } from '@config';
 import { ConfigType } from '@nestjs/config';
 import { CataloguesService } from '@modules/common/catalogue/catalogue.service';
@@ -181,5 +181,21 @@ export class EstablishmentService {
     }
 
     return { data: await this.repository.softRemove(entity) };
+  }
+
+  async findDegreesByCedula(cedula: string): Promise<any> {
+    const url = `${this.configService.externalApis.urlDinardap}/minedec/${cedula}`;
+
+    const response = await lastValueFrom(this.httpService.get(url));
+
+    return response.data.data.map((item) => {
+      return {
+        registered: item.fechaRegistro,
+        institution: item.institucion,
+        level: item.nivel,
+        name: item.nombre,
+        registerNumber: item.numeroRegistro,
+      };
+    });
   }
 }

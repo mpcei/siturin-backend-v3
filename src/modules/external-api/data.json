@@ -7,7 +7,7 @@
     }
   },
   "sri": {
-    "data":[
+    "data": [
       {
         "ruc": "1234567890001",
         "razonSocial": "NOMBRES PERSONA NATURAL",
@@ -1021,7 +1021,7 @@
         ]
       },
       {
-        "ruc": "1234567890002",
+        "ruc": "1234567891001",
         "razonSocial": "NOMBRES PERSONA JURIDICA",
         "actividadEconomicaPrincipal": "ACTIVIDAD PRINCIPAL - PERSONA JURIDICA",
         "tipoContribuyente": "SCD",
@@ -2033,7 +2033,7 @@
         ]
       },
       {
-        "ruc": "1234567890003",
+        "ruc": "1234567892001",
         "razonSocial": "NOMBRES PERSONA NATURAL PASIVO",
         "actividadEconomicaPrincipal": "ACTIVIDAD PRINCIPAL - PERSONA NATURAL",
         "tipoContribuyente": "PNL",
@@ -2085,7 +2085,7 @@
         ]
       },
       {
-        "ruc": "1234567890004",
+        "ruc": "1234567893001",
         "razonSocial": "NOMBRES PERSONA NATURAL PASIVO",
         "actividadEconomicaPrincipal": "ACTIVIDAD PRINCIPAL - PERSONA NATURAL",
         "tipoContribuyente": "PNL",
@@ -2137,7 +2137,7 @@
         ]
       },
       {
-        "ruc": "1234567890005",
+        "ruc": "1234567894001",
         "razonSocial": "NOMBRES PERSONA JURIDICA PASIVO",
         "actividadEconomicaPrincipal": "ACTIVIDAD PRINCIPAL - PERSONA JURIDICA",
         "tipoContribuyente": "SCD",
@@ -2189,7 +2189,7 @@
         ]
       },
       {
-        "ruc": "1234567890006",
+        "ruc": "1234567895001",
         "razonSocial": "NOMBRES PERSONA JURIDICA PASIVO",
         "actividadEconomicaPrincipal": "ACTIVIDAD PRINCIPAL - PERSONA JURIDICA",
         "tipoContribuyente": "SCD",
@@ -2270,28 +2270,33 @@
     }
   },
   "minedec": {
-    "data": [{"cedula": "1234567890", "titulos": [
+    "data": [
       {
-        "nombre": "Técnico en Comercio y Administración",
-        "numeroRegistro": "41728",
-        "fechaRegistro": "2004-08-13",
-        "institucion": "VICTORIA VASCONEZ CUVI",
-        "nivel": "Bachiller"
-      },
-      {
-        "nombre": "INGENIERA EN ADMINISTRACION DE EMPRESAS",
-        "numeroRegistro": "1005-13-1200709",
-        "fechaRegistro": "2013-03-11",
-        "institucion": "UNIVERSIDAD CENTRAL DEL ECUADOR",
-        "nivel": "Tercer Nivel o Pregrado"
-      },
-      {
-        "nombre": "MAGISTER EN GERENCIA PARA EL DESARROLLO",
-        "numeroRegistro": "1022-2022-2427271",
-        "fechaRegistro": "2022-03-03",
-        "institucion": "UNIVERSIDAD ANDINA SIMON BOLIVAR",
-        "nivel": "Cuarto Nivel o Posgrado"
-      }]}
+        "cedula": "1234567890",
+        "titulos": [
+          {
+            "nombre": "Técnico en Comercio y Administración",
+            "numeroRegistro": "41728",
+            "fechaRegistro": "2004-08-13",
+            "institucion": "VICTORIA VASCONEZ CUVI",
+            "nivel": "Bachiller"
+          },
+          {
+            "nombre": "INGENIERA EN ADMINISTRACION DE EMPRESAS",
+            "numeroRegistro": "1005-13-1200709",
+            "fechaRegistro": "2013-03-11",
+            "institucion": "UNIVERSIDAD CENTRAL DEL ECUADOR",
+            "nivel": "Tercer Nivel o Pregrado"
+          },
+          {
+            "nombre": "MAGISTER EN GERENCIA PARA EL DESARROLLO",
+            "numeroRegistro": "1022-2022-2427271",
+            "fechaRegistro": "2022-03-03",
+            "institucion": "UNIVERSIDAD ANDINA SIMON BOLIVAR",
+            "nivel": "Cuarto Nivel o Posgrado"
+          }
+        ]
+      }
     ],
     "msg": {
       "summary": "CONEXION EXITOSA MINEDEC",
