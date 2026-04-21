@@ -7,7 +7,7 @@
     }
   },
   "sri": {
-    "data":[
+    "data": [
       {
         "ruc": "1234567890001",
         "razonSocial": "NOMBRES PERSONA NATURAL",
@@ -2270,7 +2270,7 @@
     }
   },
   "minedec": {
-    "data": [{"cedula": "1234567890", "titulos": [
+    "data": [{"cedula": "1234567891", "titulos": [
       {
         "nombre": "Técnico en Comercio y Administración",
         "numeroRegistro": "41728",
@@ -2279,7 +2279,7 @@
         "nivel": "Bachiller"
       },
       {
-        "nombre": "INGENIERA EN ADMINISTRACION DE EMPRESAS",
+        "nombre": "INGENIERA EN ADMINISTRACION DE EMPRESAS TURISTICAS",
         "numeroRegistro": "1005-13-1200709",
         "fechaRegistro": "2013-03-11",
         "institucion": "UNIVERSIDAD CENTRAL DEL ECUADOR",
@@ -2291,7 +2291,22 @@
         "fechaRegistro": "2022-03-03",
         "institucion": "UNIVERSIDAD ANDINA SIMON BOLIVAR",
         "nivel": "Cuarto Nivel o Posgrado"
-      }]}
+      }]},
+      {"cedula": "1234567890", "titulos": [
+        {
+          "nombre": "Ciencias",
+          "numeroRegistro": "74967",
+          "fechaRegistro": "2001-09-17",
+          "institucion": "THEODORE W  ANDERSON",
+          "nivel": "Bachiller"
+        },
+        {
+          "nombre": "GUIA DE TURISMO NACIONAL CON EL GRADO DE LICENCIATURA.",
+          "numeroRegistro": "1053-14-1262908",
+          "fechaRegistro": "2014-01-31",
+          "institucion": "UNIVERSIDAD DE ESPECIALIDADES TURISTICAS",
+          "nivel": "Tercer Nivel o Pregrado"
+        }]}
     ],
     "msg": {
       "summary": "CONEXION EXITOSA MINEDEC",
