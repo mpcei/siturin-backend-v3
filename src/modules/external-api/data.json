@@ -2270,43 +2270,109 @@
     }
   },
   "minedec": {
-    "data": [{"cedula": "1234567891", "titulos": [
+    "data": [
       {
-        "nombre": "Técnico en Comercio y Administración",
-        "numeroRegistro": "41728",
-        "fechaRegistro": "2004-08-13",
-        "institucion": "VICTORIA VASCONEZ CUVI",
-        "nivel": "Bachiller"
+        "cedula": "1234567890",
+        "titulos": [
+          {
+            "nombre": "Ciencias",
+            "numeroRegistro": "74967",
+            "fechaRegistro": "2001-09-17",
+            "institucion": "THEODORE W  ANDERSON",
+            "nivel": "Bachiller"
+          },
+          {
+            "nombre": "GUIA DE TURISMO NACIONAL CON EL GRADO DE LICENCIATURA.",
+            "numeroRegistro": "1053-14-1262908",
+            "fechaRegistro": "2014-01-31",
+            "institucion": "UNIVERSIDAD DE ESPECIALIDADES TURISTICAS",
+            "nivel": "Tercer Nivel o Pregrado"
+          }
+        ]
       },
       {
-        "nombre": "INGENIERA EN ADMINISTRACION DE EMPRESAS TURISTICAS",
-        "numeroRegistro": "1005-13-1200709",
-        "fechaRegistro": "2013-03-11",
-        "institucion": "UNIVERSIDAD CENTRAL DEL ECUADOR",
-        "nivel": "Tercer Nivel o Pregrado"
+        "cedula": "1234567891",
+        "titulos": [
+          {
+            "nombre": "Técnico en Comercio y Administración",
+            "numeroRegistro": "41728",
+            "fechaRegistro": "2004-08-13",
+            "institucion": "VICTORIA VASCONEZ CUVI",
+            "nivel": "Bachiller"
+          },
+          {
+            "nombre": "INGENIERA EN ADMINISTRACION DE EMPRESAS TURISTICAS",
+            "numeroRegistro": "1005-13-1200709",
+            "fechaRegistro": "2013-03-11",
+            "institucion": "UNIVERSIDAD CENTRAL DEL ECUADOR",
+            "nivel": "Tercer Nivel o Pregrado"
+          },
+          {
+            "nombre": "MAGISTER EN GERENCIA PARA EL DESARROLLO",
+            "numeroRegistro": "1022-2022-2427271",
+            "fechaRegistro": "2022-03-03",
+            "institucion": "UNIVERSIDAD ANDINA SIMON BOLIVAR",
+            "nivel": "Cuarto Nivel o Posgrado"
+          }
+        ]
       },
       {
-        "nombre": "MAGISTER EN GERENCIA PARA EL DESARROLLO",
-        "numeroRegistro": "1022-2022-2427271",
-        "fechaRegistro": "2022-03-03",
-        "institucion": "UNIVERSIDAD ANDINA SIMON BOLIVAR",
-        "nivel": "Cuarto Nivel o Posgrado"
-      }]},
-      {"cedula": "1234567890", "titulos": [
-        {
-          "nombre": "Ciencias",
-          "numeroRegistro": "74967",
-          "fechaRegistro": "2001-09-17",
-          "institucion": "THEODORE W  ANDERSON",
-          "nivel": "Bachiller"
-        },
-        {
-          "nombre": "GUIA DE TURISMO NACIONAL CON EL GRADO DE LICENCIATURA.",
-          "numeroRegistro": "1053-14-1262908",
-          "fechaRegistro": "2014-01-31",
-          "institucion": "UNIVERSIDAD DE ESPECIALIDADES TURISTICAS",
-          "nivel": "Tercer Nivel o Pregrado"
-        }]}
+        "cedula": "1234567892",
+        "titulos": [
+          {
+            "nombre": "Ciencias",
+            "numeroRegistro": "168421",
+            "fechaRegistro": "2004-08-07",
+            "institucion": "CONSEJO PROVINCIAL DE PICHINCHA",
+            "nivel": "Bachiller"
+          },
+          {
+            "nombre": "INGENIERA INFORMATICA",
+            "numeroRegistro": "1005-12-1177538",
+            "fechaRegistro": "2012-11-19",
+            "institucion": "UNIVERSIDAD CENTRAL DEL ECUADOR",
+            "nivel": "Tercer Nivel o Pregrado"
+          }
+        ]
+      },
+      {
+        "cedula": "1234567893",
+        "titulos": [
+          {
+            "nombre": "Ciencias",
+            "numeroRegistro": "18399",
+            "fechaRegistro": "2009-02-06",
+            "institucion": "UNIDAD EDUCATIVA JULIO MORENO ESPINOSA",
+            "nivel": "Bachiller"
+          },
+          {
+            "nombre": "INGENIERO DE SISTEMAS Y COMPUTACION",
+            "numeroRegistro": "1027-15-1371891",
+            "fechaRegistro": "2015-06-10",
+            "institucion": "PONTIFICIA UNIVERSIDAD CATOLICA DEL ECUADOR",
+            "nivel": "Tercer Nivel o Pregrado"
+          },
+          {
+            "nombre": "MASTER UNIVERSITARIO EN INGENIERIA DE SOFTWARE Y SISTEMAS INFORMATICOS",
+            "numeroRegistro": "7241191233",
+            "fechaRegistro": "2022-01-11",
+            "institucion": "UNIVERSIDAD INTERNACIONAL DE LA RIOJA",
+            "nivel": "CUARTO_NIVEL"
+          }
+        ]
+      },
+      {
+        "cedula": "1234567894",
+        "titulos": [
+          {
+            "nombre": "Ciencias",
+            "numeroRegistro": "18399",
+            "fechaRegistro": "2009-02-06",
+            "institucion": "UNIDAD EDUCATIVA JUAN MATOVELLE",
+            "nivel": "Bachiller"
+          }
+        ]
+      }
     ],
     "msg": {
       "summary": "CONEXION EXITOSA MINEDEC",
