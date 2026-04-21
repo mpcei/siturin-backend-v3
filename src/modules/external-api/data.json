@@ -1021,7 +1021,7 @@
         ]
       },
       {
-        "ruc": "1234567891001",
+        "ruc": "1234567890002",
         "razonSocial": "NOMBRES PERSONA JURIDICA",
         "actividadEconomicaPrincipal": "ACTIVIDAD PRINCIPAL - PERSONA JURIDICA",
         "tipoContribuyente": "SCD",
@@ -2033,7 +2033,7 @@
         ]
       },
       {
-        "ruc": "1234567892001",
+        "ruc": "1234567890003",
         "razonSocial": "NOMBRES PERSONA NATURAL PASIVO",
         "actividadEconomicaPrincipal": "ACTIVIDAD PRINCIPAL - PERSONA NATURAL",
         "tipoContribuyente": "PNL",
@@ -2085,7 +2085,7 @@
         ]
       },
       {
-        "ruc": "1234567893001",
+        "ruc": "1234567890004",
         "razonSocial": "NOMBRES PERSONA NATURAL PASIVO",
         "actividadEconomicaPrincipal": "ACTIVIDAD PRINCIPAL - PERSONA NATURAL",
         "tipoContribuyente": "PNL",
@@ -2137,7 +2137,7 @@
         ]
       },
       {
-        "ruc": "1234567894001",
+        "ruc": "1234567890005",
         "razonSocial": "NOMBRES PERSONA JURIDICA PASIVO",
         "actividadEconomicaPrincipal": "ACTIVIDAD PRINCIPAL - PERSONA JURIDICA",
         "tipoContribuyente": "SCD",
@@ -2189,7 +2189,7 @@
         ]
       },
       {
-        "ruc": "1234567895001",
+        "ruc": "1234567890006",
         "razonSocial": "NOMBRES PERSONA JURIDICA PASIVO",
         "actividadEconomicaPrincipal": "ACTIVIDAD PRINCIPAL - PERSONA JURIDICA",
         "tipoContribuyente": "SCD",
@@ -2270,33 +2270,43 @@
     }
   },
   "minedec": {
-    "data": [
+    "data": [{"cedula": "1234567891", "titulos": [
       {
-        "cedula": "1234567890",
-        "titulos": [
-          {
-            "nombre": "Técnico en Comercio y Administración",
-            "numeroRegistro": "41728",
-            "fechaRegistro": "2004-08-13",
-            "institucion": "VICTORIA VASCONEZ CUVI",
-            "nivel": "Bachiller"
-          },
-          {
-            "nombre": "INGENIERA EN ADMINISTRACION DE EMPRESAS",
-            "numeroRegistro": "1005-13-1200709",
-            "fechaRegistro": "2013-03-11",
-            "institucion": "UNIVERSIDAD CENTRAL DEL ECUADOR",
-            "nivel": "Tercer Nivel o Pregrado"
-          },
-          {
-            "nombre": "MAGISTER EN GERENCIA PARA EL DESARROLLO",
-            "numeroRegistro": "1022-2022-2427271",
-            "fechaRegistro": "2022-03-03",
-            "institucion": "UNIVERSIDAD ANDINA SIMON BOLIVAR",
-            "nivel": "Cuarto Nivel o Posgrado"
-          }
-        ]
-      }
+        "nombre": "Técnico en Comercio y Administración",
+        "numeroRegistro": "41728",
+        "fechaRegistro": "2004-08-13",
+        "institucion": "VICTORIA VASCONEZ CUVI",
+        "nivel": "Bachiller"
+      },
+      {
+        "nombre": "INGENIERA EN ADMINISTRACION DE EMPRESAS TURISTICAS",
+        "numeroRegistro": "1005-13-1200709",
+        "fechaRegistro": "2013-03-11",
+        "institucion": "UNIVERSIDAD CENTRAL DEL ECUADOR",
+        "nivel": "Tercer Nivel o Pregrado"
+      },
+      {
+        "nombre": "MAGISTER EN GERENCIA PARA EL DESARROLLO",
+        "numeroRegistro": "1022-2022-2427271",
+        "fechaRegistro": "2022-03-03",
+        "institucion": "UNIVERSIDAD ANDINA SIMON BOLIVAR",
+        "nivel": "Cuarto Nivel o Posgrado"
+      }]},
+      {"cedula": "1234567890", "titulos": [
+        {
+          "nombre": "Ciencias",
+          "numeroRegistro": "74967",
+          "fechaRegistro": "2001-09-17",
+          "institucion": "THEODORE W  ANDERSON",
+          "nivel": "Bachiller"
+        },
+        {
+          "nombre": "GUIA DE TURISMO NACIONAL CON EL GRADO DE LICENCIATURA.",
+          "numeroRegistro": "1053-14-1262908",
+          "fechaRegistro": "2014-01-31",
+          "institucion": "UNIVERSIDAD DE ESPECIALIDADES TURISTICAS",
+          "nivel": "Tercer Nivel o Pregrado"
+        }]}
     ],
     "msg": {
       "summary": "CONEXION EXITOSA MINEDEC",
