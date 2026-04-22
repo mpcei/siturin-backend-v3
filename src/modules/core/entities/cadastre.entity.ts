@@ -6,12 +6,14 @@ import {
   DeleteDateColumn,
   Entity,
   JoinColumn,
+  ManyToOne,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { CadastreStateEntity, ProcessEntity } from '@modules/core/entities';
+import { CatalogueEntity } from '@modules/common/catalogue/catalogue.entity';
 
 @Entity('cadastres', { schema: 'core' })
 export class CadastreEntity {
@@ -57,7 +59,7 @@ export class CadastreEntity {
   @OneToOne(() => CadastreStateEntity, (entity) => entity.cadastre)
   cadastreState: CadastreStateEntity;
 
-  /** Foreign Keys **/
+  /** Inverse Relationship **/
   @OneToOne(() => ProcessEntity, { nullable: true })
   @JoinColumn({ name: 'process_id' })
   process: ProcessEntity;
@@ -68,6 +70,18 @@ export class CadastreEntity {
     comment: '',
   })
   processId: string;
+
+  /** Foreign Keys **/
+  @ManyToOne(() => CatalogueEntity, { nullable: true })
+  @JoinColumn({ name: 'state_id' })
+  state: CatalogueEntity;
+  @Column({
+    type: 'uuid',
+    name: 'state_id',
+    nullable: true,
+    comment: '',
+  })
+  stateId: string;
 
   /** Columns **/
   @Column({

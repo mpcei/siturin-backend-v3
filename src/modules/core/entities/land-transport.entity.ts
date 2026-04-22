@@ -89,6 +89,14 @@ export class LandTransportEntity {
   plate: string;
 
   @Column({
+    name: 'year',
+    type: 'integer',
+    nullable: true,
+    comment: 'Año',
+  })
+  year: number;
+
+  @Column({
     name: 'registration',
     type: 'varchar',
     comment: 'Matricula',

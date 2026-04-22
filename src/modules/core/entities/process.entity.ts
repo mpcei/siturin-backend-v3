@@ -205,7 +205,8 @@ export class ProcessEntity {
     name: 'attended_at',
     type: 'timestamptz',
     nullable: true,
-    comment: 'Fecha de atencion de la solicitud del registro (Finalización de la gestión de la solicitud)',
+    comment:
+      'Fecha de atencion de la solicitud del registro (Finalización de la gestión de la solicitud)',
   })
   attendedAt: Date;
 
@@ -296,6 +297,14 @@ export class ProcessEntity {
     comment: '',
   })
   totalWomenDisability: number;
+
+  @Column({
+    type: 'varchar',
+    name: 'driver_license',
+    nullable: true,
+    comment: 'Licencia de conducir guia',
+  })
+  driverLicense: string;
 
   @Column({
     name: 'has_land_use',
