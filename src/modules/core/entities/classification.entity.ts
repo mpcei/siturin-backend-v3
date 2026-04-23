@@ -78,6 +78,14 @@ export class ClassificationEntity {
   code: string;
 
   @Column({
+    name: 'acronym',
+    type: 'varchar',
+    nullable: true,
+    comment: 'Siglas',
+  })
+  acronym: string;
+
+  @Column({
     name: 'is_complementary_service',
     type: 'boolean',
     comment: '',

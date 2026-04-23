@@ -23,6 +23,7 @@ import { InactivationCauseEntity } from '@modules/core/entities/inactivation-cau
 import { AssignmentEntity } from '@modules/core/entities/assignment.entity';
 import { ProcessStateEntity } from '@modules/core/entities/process-state.entity';
 import { ProcessGuideEntity } from '@modules/core/entities/process-guide.entity';
+import { ProfessionalTitleEntity } from '@modules/core/entities/professional-title.entity';
 
 @Entity('processes', { schema: 'core' })
 export class ProcessEntity {
@@ -191,6 +192,17 @@ export class ProcessEntity {
     comment: '',
   })
   stateId: string;
+
+  @ManyToOne(() => ProfessionalTitleEntity, { nullable: true })
+  @JoinColumn({ name: 'professional_title_id' })
+  professionalTitle: ProfessionalTitleEntity;
+  @Column({
+    type: 'uuid',
+    name: 'professional_title_id',
+    nullable: true,
+    comment: '',
+  })
+  professionalTitleId: string;
 
   /** Columns **/
   @Column({

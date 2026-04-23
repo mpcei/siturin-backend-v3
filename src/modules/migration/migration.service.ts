@@ -1967,6 +1967,7 @@ export class MigrationService {
           code: data['code'],
           name: data['name'],
           sort: data['sort'],
+          acronym: data['acronym'],
           hasRegulation: true,
           isComplementaryService: false,
           hasCategorization: false,
