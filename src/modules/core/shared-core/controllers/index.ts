@@ -4,6 +4,7 @@ import { ActivityController } from '@modules/core/shared-core/controllers/activi
 import { RegulationSectionController } from '@modules/core/shared-core/controllers/regulation-section.controller';
 import { RoomTypeController } from '@modules/core/shared-core/controllers/room-type.controller';
 import { CategoryConfigurationsController } from '@modules/core/shared-core/controllers/category-configurations.controller';
+import { GuiaSieteController } from '@modules/core/shared-core/controllers/guia-siete.controller';
 
 export const controllers = [
   ActivityController,
@@ -12,4 +13,5 @@ export const controllers = [
   RegulationSectionController,
   RoomTypeController,
   CategoryConfigurationsController,
+  GuiaSieteController,
 ];

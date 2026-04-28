@@ -10,6 +10,7 @@ import { RegulationSectionService } from '@modules/core/shared-core/services/reg
 import { RegulationResponsesService } from '@modules/core/shared-core/services/regulation-responses.service';
 import { RoomTypeService } from '@modules/core/shared-core/services/room-type.service';
 import { CategoryConfigurationsService } from '@modules/core/shared-core/services/category-configurations.service';
+import { GuiaSieteService } from '@modules/core/shared-core/services/guia-siete.service';
 
 @Global()
 @Module({
@@ -25,6 +26,7 @@ import { CategoryConfigurationsService } from '@modules/core/shared-core/service
     RegulationResponsesService,
     RoomTypeService,
     CategoryConfigurationsService,
+    GuiaSieteService
   ],
   exports: [ProcessService, EmailService],
 })
