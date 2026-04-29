@@ -4,6 +4,7 @@ import {
   isNotEmptyValidationOptions,
   isStringValidationOptions,
 } from '@utils/dto-validation';
+import { Type } from 'class-transformer';
 
 export class ProcessDto {
   @IsObject()
@@ -35,12 +36,12 @@ export class ProcessDto {
   @IsNotEmpty(isNotEmptyValidationOptions())
   readonly professionalTitle: any;
 
-  @IsOptional() //review
+  @Type(() => Date)
   @IsDate(isDateValidationOptions())
   @IsNotEmpty(isNotEmptyValidationOptions())
   readonly startedAt: Date;
 
-  @IsOptional() //review
+  @Type(() => Date)
   @IsDate(isDateValidationOptions())
   @IsNotEmpty(isNotEmptyValidationOptions())
   readonly endedAt: Date;
