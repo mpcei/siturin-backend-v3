@@ -7,6 +7,7 @@ import {
   EstablishmentAddressEntity,
   EstablishmentContactPersonEntity,
   EstablishmentEntity,
+  LandTransportEntity,
   ProcessEntity,
 } from '@modules/core/entities';
 import { ProcessService } from '@modules/core/shared-core/services/process.service';
@@ -211,14 +212,14 @@ export class ProcessGuideService {
           item.requirement.code === CatalogueProcessGuidesCodeEnum.modality_adventure) &&
         item.value === 'true'
       ) {
-        for (const item of payload.adventureModalities) {
+        for (const item2 of payload.adventureModalities) {
           const adventureModality = AdventureModalityRepository.create();
           adventureModality.processId = process.id;
           adventureModality.establishmentId = payload.establishment.id;
-          adventureModality.modalityCode = item.modalityCode;
-          adventureModality.modalityName = item.modalityName;
-          adventureModality.modalityCertificateCode = item.modalityCertificateCode;
-          adventureModality.modalityCertificateName = item.modalityCertificateName;
+          adventureModality.modalityCode = item2.modalityCode;
+          adventureModality.modalityName = item2.modalityName;
+          adventureModality.modalityCertificateCode = item2.modalityCertificateCode;
+          adventureModality.modalityCertificateName = item2.modalityCertificateName;
 
           const adventureModalitySave = await AdventureModalityRepository.save(adventureModality);
 
@@ -229,6 +230,13 @@ export class ProcessGuideService {
             adventureModalitySave.id,
             adventureModalitySave.modalityCode,
           );
+          if (
+            item.requirement.code === CatalogueProcessGuidesCodeEnum.modality_adventure_guide &&
+            (item2.modalityCode === CatalogueProcessGuidesCodeEnum.high_mountain ||
+              item2.modalityCode === CatalogueProcessGuidesCodeEnum.mid_mountain)
+          ) {
+            await this.saveLandTransport(manager, payload, process);
+          }
         }
       }
 
@@ -253,6 +261,27 @@ export class ProcessGuideService {
       }
     }
 
+    return true;
+  }
+
+  private async saveLandTransport(
+    manager: EntityManager,
+    payload: BaseProcessGuideDto,
+    process: ProcessEntity,
+  ): Promise<boolean> {
+    const landTransportRepository = manager.getRepository(LandTransportEntity);
+
+    for (const item of payload.landTransports) {
+      const landTransport = landTransportRepository.create();
+      landTransport.processId = process.id;
+      landTransport.typeId = item.type.id;
+      landTransport.registration = item.registration;
+      landTransport.registrationAt = item.registrationAt;
+      landTransport.registrationExpirationAt = item.registrationExpirationAt;
+      landTransport.plate = item.plate;
+      landTransport.year = item.year;
+      await landTransportRepository.save(landTransport);
+    }
     return true;
   }
 

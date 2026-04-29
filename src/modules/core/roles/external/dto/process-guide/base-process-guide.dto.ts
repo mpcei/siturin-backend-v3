@@ -9,6 +9,7 @@ import {
   ProtectedAreaDto,
   UserDto,
 } from '@modules/core/roles/external/dto/process-guide';
+import { LandTransportDto } from '@modules/core/roles/external/dto/process-guide/land_transport.dto';
 
 export class BaseProcessGuideDto {
   @IsObject()
@@ -49,5 +50,9 @@ export class BaseProcessGuideDto {
   @Type(() => AdventureModalityDto)
   readonly adventureModalities: AdventureModalityDto[];
 
-  //LandTransportDto
+  @IsArray()
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => LandTransportDto)
+  readonly landTransports: LandTransportDto[];
 }

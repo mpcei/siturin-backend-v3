@@ -173,4 +173,6 @@ export enum CatalogueProcessGuidesCodeEnum {
   modality_adventure = 'modality_aventure',
   certification_language = 'certification_language',
   modality_adventure_guide = 'modality_aventure_guide',
+  high_mountain = 'alm',
+  mid_mountain = 'mem',
 }
