@@ -49,10 +49,8 @@ export class ProcessGuideService {
 
       return {
         data: null,
-        title:
-          'El certificado de registro de turismo ha sido enviado a la cuenta de correo electrónico registrado y en la plataforma SITURIN, en la sección de descargas.',
-        message:
-          'Recuerde que puede solicitar la primera inspección, ingresando al sistema SITURIN antes de los 84 días calendario, contados a partir de la emisión del certificado de registro',
+        title: 'Solicitud enviada',
+        message: 'Recuerde revisar su correo electronico de manera permanente',
       };
     });
   }
@@ -148,8 +146,10 @@ export class ProcessGuideService {
     process.activityId = payload.process.activity.id;
     process.classificationId = payload.process.classification.id;
     process.categoryId = payload.process.category.id;
+    process.professionalTitleId = payload.process.professionalTitle.id;
     process.establishmentId = payload.establishment.id;
     process.type = payload.process.type.id;
+    process.driverLicense = payload.process.driverLicense;
     process.registeredAt = new Date();
     process.startedAt = payload.process.startedAt;
     process.endedAt = payload.process.endedAt;

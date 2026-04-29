@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsObject, IsString } from 'class-validator';
+import { IsNotEmpty, IsObject, IsOptional, IsString } from 'class-validator';
 import { isNotEmptyValidationOptions, isStringValidationOptions } from '@utils/dto-validation';
 
 export class ProtectedAreaDto {
@@ -10,11 +10,11 @@ export class ProtectedAreaDto {
   @IsNotEmpty(isNotEmptyValidationOptions())
   readonly canton: any;
 
+  @IsOptional()
   @IsString(isStringValidationOptions())
-  @IsNotEmpty(isNotEmptyValidationOptions())
   readonly areaCode: string;
 
+  @IsOptional()
   @IsString(isStringValidationOptions())
-  @IsNotEmpty(isNotEmptyValidationOptions())
   readonly areaName: string;
 }

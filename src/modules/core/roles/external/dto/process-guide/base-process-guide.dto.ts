@@ -48,4 +48,6 @@ export class BaseProcessGuideDto {
   @ValidateNested()
   @Type(() => AdventureModalityDto)
   readonly adventureModalities: AdventureModalityDto[];
+
+  //LandTransportDto
 }

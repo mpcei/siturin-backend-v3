@@ -1,5 +1,9 @@
-import { IsDate, IsNotEmpty, IsObject, IsOptional } from 'class-validator';
-import { isDateValidationOptions, isNotEmptyValidationOptions } from '@utils/dto-validation';
+import { IsDate, IsNotEmpty, IsObject, IsOptional, IsString } from 'class-validator';
+import {
+  isDateValidationOptions,
+  isNotEmptyValidationOptions,
+  isStringValidationOptions,
+} from '@utils/dto-validation';
 
 export class ProcessDto {
   @IsObject()
@@ -22,6 +26,14 @@ export class ProcessDto {
   @IsObject()
   @IsNotEmpty(isNotEmptyValidationOptions())
   readonly geographicArea: any;
+
+  @IsOptional()
+  @IsString(isStringValidationOptions())
+  readonly driverLicense: string;
+
+  @IsObject()
+  @IsNotEmpty(isNotEmptyValidationOptions())
+  readonly professionalTitle: any;
 
   @IsOptional() //review
   @IsDate(isDateValidationOptions())

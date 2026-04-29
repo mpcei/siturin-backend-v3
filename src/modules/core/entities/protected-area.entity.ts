@@ -99,6 +99,7 @@ export class ProtectedAreaEntity {
   @Column({
     name: 'area_code',
     type: 'varchar',
+    nullable: true,
     comment: 'Codigo del area protegida. Proviene de catalago',
   })
   areaCode: string;
@@ -106,6 +107,7 @@ export class ProtectedAreaEntity {
   @Column({
     name: 'area_name',
     type: 'varchar',
+    nullable: true,
     comment: 'Nombre del area protegida. Proviene de catalago. Ejemplo: PN. Cotopaxi',
   })
   areaName: string;
