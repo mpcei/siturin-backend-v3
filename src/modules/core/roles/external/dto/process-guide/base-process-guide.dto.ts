@@ -9,7 +9,7 @@ import {
   ProtectedAreaDto,
   UserDto,
 } from '@modules/core/roles/external/dto/process-guide';
-import { LandTransportDto } from '@modules/core/roles/external/dto/process-guide/land_transport.dto';
+import { LandTransportDto } from '@modules/core/roles/external/dto/process-guide/land-transport.dto';
 
 export class BaseProcessGuideDto {
   @IsObject()
