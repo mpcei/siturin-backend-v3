@@ -15,11 +15,13 @@ import { UserEntity } from '@auth/entities';
 import { EmailService } from '@modules/core/shared-core/services/email.service';
 import { BaseProcessGuideDto } from '@modules/core/roles/external/dto/process-guide';
 import { ProcessGuideEntity } from '@modules/core/entities/process-guide.entity';
-import { CatalogueProcessGuidesCodeEnum } from '@modules/core/utils/enums';
+import { CatalogueProcessGuidesCodeEnum, CoreCatalogueTypeEnum } from '@modules/core/utils/enums';
 import { FileService } from '@modules/common/file/file.service';
 import { AdventureModalityEntity } from '@modules/core/entities/adventure-modality.entity';
 import { ProtectedAreaEntity } from '@modules/core/entities/protected-area.entity';
 import { LanguageEntity } from '@modules/core/entities/language.entity';
+import { CataloguesService } from '@modules/common/catalogue/catalogue.service';
+import { CatalogueEntity } from '@modules/common/catalogue/catalogue.entity';
 
 @Injectable()
 export class ProcessGuideService {
@@ -29,6 +31,7 @@ export class ProcessGuideService {
     private readonly fileService: FileService,
     private readonly emailService: EmailService,
     private readonly processService: ProcessService,
+    private readonly catalogueService: CataloguesService,
   ) {}
 
   async createRegistration(
@@ -235,7 +238,7 @@ export class ProcessGuideService {
             (item2.modalityCode === CatalogueProcessGuidesCodeEnum.high_mountain ||
               item2.modalityCode === CatalogueProcessGuidesCodeEnum.mid_mountain)
           ) {
-            await this.saveLandTransport(manager, payload, process);
+            await this.saveLandTransport(manager, user, files, payload, process);
           }
         }
       }
@@ -266,11 +269,14 @@ export class ProcessGuideService {
 
   private async saveLandTransport(
     manager: EntityManager,
+    user: UserEntity,
+    files: Express.Multer.File[],
     payload: BaseProcessGuideDto,
     process: ProcessEntity,
   ): Promise<boolean> {
     const landTransportRepository = manager.getRepository(LandTransportEntity);
 
+    let i = 0;
     for (const item of payload.landTransports) {
       const landTransport = landTransportRepository.create();
       landTransport.processId = process.id;
@@ -280,7 +286,50 @@ export class ProcessGuideService {
       landTransport.registrationExpirationAt = item.registrationExpirationAt;
       landTransport.plate = item.plate;
       landTransport.year = item.year;
-      await landTransportRepository.save(landTransport);
+      const landTransportSave = await landTransportRepository.save(landTransport);
+
+      const typeVehicleRegistration = (await this.catalogueService.findCache()).find(
+        (item) =>
+          item.code === CatalogueProcessGuidesCodeEnum.vehicle_registration &&
+          item.type === CoreCatalogueTypeEnum.requirement_item,
+      );
+      await this.saveFile(
+        manager,
+        user,
+        files,
+        landTransportSave.id,
+        CatalogueProcessGuidesCodeEnum.vehicle_registration + i,
+        typeVehicleRegistration?.id,
+      );
+
+      const typeDocumentVehicleInspection = (await this.catalogueService.findCache()).find(
+        (item) =>
+          item.code === CatalogueProcessGuidesCodeEnum.document_vehicle_inspection &&
+          item.type === CoreCatalogueTypeEnum.requirement_item,
+      );
+      await this.saveFile(
+        manager,
+        user,
+        files,
+        landTransportSave.id,
+        CatalogueProcessGuidesCodeEnum.document_vehicle_inspection + i,
+        typeDocumentVehicleInspection?.id,
+      );
+
+      const typeAccidentPolicy = (await this.catalogueService.findCache()).find(
+        (item) =>
+          item.code === CatalogueProcessGuidesCodeEnum.accident_policy &&
+          item.type === CoreCatalogueTypeEnum.requirement_item,
+      );
+      await this.saveFile(
+        manager,
+        user,
+        files,
+        landTransportSave.id,
+        CatalogueProcessGuidesCodeEnum.accident_policy + i,
+        typeAccidentPolicy?.id,
+      );
+      i++;
     }
     return true;
   }
@@ -291,6 +340,7 @@ export class ProcessGuideService {
     files: Express.Multer.File[],
     modelId: string,
     id: string,
+    typeId: undefined | string = undefined,
   ): Promise<boolean> {
     const file = files.find((item) => item.fieldname === id);
     if (!file) {
@@ -301,6 +351,7 @@ export class ProcessGuideService {
       manager,
       user,
       modelId,
+      typeId,
       activity: 'guide',
       ruc: user.identification,
     });

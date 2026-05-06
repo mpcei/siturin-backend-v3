@@ -31,6 +31,7 @@ export enum CoreCatalogueTypeEnum {
   service_types_continent = 'service_types_continent',
   transporte_tipo_vehiculos = 'transporte_tipo_vehiculos',
   process_transport_airline_type = 'process_transport_airline_type',
+  requirement_item = 'requirement_item',
 }
 
 export enum CatalogueInspectionsStateEnum {
@@ -175,4 +176,7 @@ export enum CatalogueProcessGuidesCodeEnum {
   modality_adventure_guide = 'modality_aventure_guide',
   high_mountain = 'alm',
   mid_mountain = 'mem',
+  vehicle_registration = 'vehicle_registration',
+  document_vehicle_inspection = 'document_vehicle_inspection',
+  accident_policy = 'accident_policy',
 }
