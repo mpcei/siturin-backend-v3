@@ -153,7 +153,7 @@ export class ProcessGuideService {
     process.professionalTitleId = payload.process.professionalTitle.id;
     process.establishmentId = payload.establishment.id;
     process.type = payload.process.type.id;
-    process.driverLicense = payload.process.driverLicense;
+    process.driverLicenseId = payload.process.driverLicense.id;
     process.registeredAt = new Date();
     process.startedAt = payload.process.startedAt;
     process.endedAt = payload.process.endedAt;

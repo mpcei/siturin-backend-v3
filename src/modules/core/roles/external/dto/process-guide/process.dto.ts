@@ -29,8 +29,9 @@ export class ProcessDto {
   readonly geographicArea: any;
 
   @IsOptional()
-  @IsString(isStringValidationOptions())
-  readonly driverLicense: string;
+  @IsObject()
+  @IsNotEmpty(isNotEmptyValidationOptions())
+  readonly driverLicense: any;
 
   @IsObject()
   @IsNotEmpty(isNotEmptyValidationOptions())

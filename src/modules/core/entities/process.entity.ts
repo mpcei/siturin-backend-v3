@@ -204,6 +204,17 @@ export class ProcessEntity {
   })
   professionalTitleId: string;
 
+  @ManyToOne(() => CatalogueEntity, { nullable: true })
+  @JoinColumn({ name: 'driver_license_id' })
+  driverLicense: CatalogueEntity;
+  @Column({
+    type: 'uuid',
+    name: 'driver_license_id',
+    nullable: true,
+    comment: 'Licencia de conducir guia',
+  })
+  driverLicenseId: string;
+
   /** Columns **/
   @Column({
     name: 'registered_at',
@@ -309,14 +320,6 @@ export class ProcessEntity {
     comment: '',
   })
   totalWomenDisability: number;
-
-  @Column({
-    type: 'varchar',
-    name: 'driver_license',
-    nullable: true,
-    comment: 'Licencia de conducir guia',
-  })
-  driverLicense: string;
 
   @Column({
     name: 'has_land_use',
