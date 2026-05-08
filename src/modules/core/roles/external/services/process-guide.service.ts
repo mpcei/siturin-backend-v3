@@ -281,9 +281,9 @@ export class ProcessGuideService {
       const landTransport = landTransportRepository.create();
       landTransport.processId = process.id;
       landTransport.typeId = item.type.id;
-      landTransport.registration = item.registration;
-      landTransport.registrationAt = item.registrationAt;
-      landTransport.registrationExpirationAt = item.registrationExpirationAt;
+      // landTransport.registration = item.registration;
+      // landTransport.registrationAt = item.registrationAt;
+      // landTransport.registrationExpirationAt = item.registrationExpirationAt;
       landTransport.plate = item.plate;
       landTransport.year = item.year;
       const landTransportSave = await landTransportRepository.save(landTransport);

@@ -11,17 +11,17 @@ export class LandTransportDto {
   @IsNotEmpty(isNotEmptyValidationOptions())
   readonly type: any;
 
-  @IsString(isStringValidationOptions())
-  @IsNotEmpty(isNotEmptyValidationOptions())
-  readonly registration: string;
+  // @IsString(isStringValidationOptions())
+  // @IsNotEmpty(isNotEmptyValidationOptions())
+  // readonly registration: string;
 
-  @IsDate(isDateValidationOptions())
-  @IsNotEmpty(isNotEmptyValidationOptions())
-  readonly registrationAt: Date;
+  // @IsDate(isDateValidationOptions())
+  // @IsNotEmpty(isNotEmptyValidationOptions())
+  // readonly registrationAt: Date;
 
-  @IsDate(isDateValidationOptions())
-  @IsNotEmpty(isNotEmptyValidationOptions())
-  readonly registrationExpirationAt: Date;
+  // @IsDate(isDateValidationOptions())
+  // @IsNotEmpty(isNotEmptyValidationOptions())
+  // readonly registrationExpirationAt: Date;
 
   @IsString(isStringValidationOptions())
   @IsNotEmpty(isNotEmptyValidationOptions())
