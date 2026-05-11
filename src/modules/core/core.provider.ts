@@ -51,6 +51,7 @@ import {
 import { KitchenTypeEntity } from '@modules/core/entities/kitchen-type.entity';
 import { ServiceTypeEntity } from '@modules/core/entities/service-type.entity';
 import { RequirementConfigurationEntity } from '@modules/core/entities/requirement-configuration.entity';
+import { ProfessionalTitleEntity } from '@modules/core/entities/professional-title.entity';
 
 export const coreProviders = [
   {
@@ -214,6 +215,11 @@ export const coreProviders = [
   {
     provide: CoreRepositoryEnum.PROCESS_TRANSPORT_REPOSITORY,
     useFactory: (dataSource: DataSource) => dataSource.getRepository(ProcessTransportEntity),
+    inject: [ConfigEnum.PG_DATA_SOURCE],
+  },
+  {
+    provide: CoreRepositoryEnum.PROFESSIONAL_TITLE_REPOSITORY,
+    useFactory: (dataSource: DataSource) => dataSource.getRepository(ProfessionalTitleEntity),
     inject: [ConfigEnum.PG_DATA_SOURCE],
   },
   {

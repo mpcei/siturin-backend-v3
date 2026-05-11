@@ -2,13 +2,13 @@ import { Controller, Get, Query } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Auth, PublicRoute } from '@auth/decorators';
 import { ResponseHttpInterface } from '@utils/interfaces';
-import { GuiaSieteService } from '@modules/core/shared-core/services/guia-siete.service';
+import { GuiaService } from '@modules/core/shared-core/services/guia.service';
 
 @ApiTags('Activity')
 @Auth()
 @Controller('core/shared/guias-siete')
-export class GuiaSieteController {
-  constructor(private service: GuiaSieteService) {}
+export class GuiaController {
+  constructor(private service: GuiaService) {}
 
   @PublicRoute()
   @ApiOperation({ summary: 'Find Catastro Guias Siete' })
