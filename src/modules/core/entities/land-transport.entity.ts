@@ -99,6 +99,7 @@ export class LandTransportEntity {
   @Column({
     name: 'registration',
     type: 'varchar',
+    nullable: true,
     comment: 'Matricula',
   })
   registration: string;
@@ -106,6 +107,7 @@ export class LandTransportEntity {
   @Column({
     name: 'registration_at',
     type: 'timestamptz',
+    nullable: true,
     comment: 'Fecha de Matricula',
   })
   registrationAt: Date;
@@ -113,6 +115,7 @@ export class LandTransportEntity {
   @Column({
     name: 'registration_expiration_at',
     type: 'timestamptz',
+    nullable: true,
     comment: 'Fecha de caducidad de Matricula',
   })
   registrationExpirationAt: Date;
