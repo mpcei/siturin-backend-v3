@@ -110,8 +110,6 @@ export class AuthService {
         suspendedAt: true,
         emailVerifiedAt: true,
         username: true,
-        nationality: true,
-        sex: true,
         birthdate: true,
         securityQuestionAcceptedAt: true,
         passwordChanged: true,
@@ -122,6 +120,8 @@ export class AuthService {
       },
       relations: {
         roles: true,
+        nationality: true,
+        sex: true,
       },
     });
 
