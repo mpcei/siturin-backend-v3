@@ -4,13 +4,20 @@ import { ConfigEnum } from '@utils/enums';
 import { ServiceResponseHttpInterface } from '@utils/interfaces';
 import { firstValueFrom } from 'rxjs';
 import { retry } from 'rxjs/operators';
-import { isEqual } from 'date-fns';
-import { CatalogueEstablishmentsStateEnum, CoreCatalogueTypeEnum, CoreRepositoryEnum } from '@modules/core/utils/enums';
+import { CoreRepositoryEnum } from '@modules/core/utils/enums';
 import { envConfig } from '@config';
 import { ConfigType } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
-import { RucEntity } from '@modules/core/entities';
 import { ProfessionalTitleEntity } from '@modules/core/entities/professional-title.entity';
+
+interface minedecProfessionalTitle {
+  nombre: string;
+  numeroRegistro: string;
+  fechaRegistro: string;
+  institucion: string;
+  tipoNivel: string;
+  nivel: string;
+}
 
 @Injectable()
 export class GuiaService {
@@ -33,12 +40,43 @@ export class GuiaService {
     };
   }
 
-  async findMINEDECProfessionalTitles(cedula: string): Promise<ServiceResponseHttpInterface> {
+  async createMINEDECProfessionalTitles(cedula: string, establishmentId: string): Promise<boolean> {
     const url = `${this.configService.externalApis.urlDinardap}/minedec/${cedula}`;
 
     const response = await firstValueFrom(this.httpService.get(url).pipe(retry(3)));
 
+    if (response.data) {
+      return false;
+    }
 
-    return { data: null };
+    const minedecProfessionalTitles: minedecProfessionalTitle[] = response.data.data;
+
+    for (const minedecProfessionalTitle of minedecProfessionalTitles) {
+      let professionalTitle = await this.professionalTitleRepository.findOne({
+        where: { establishmentId, registerNumber: minedecProfessionalTitle.numeroRegistro },
+      });
+
+      if (!professionalTitle) {
+        professionalTitle = this.professionalTitleRepository.create();
+        professionalTitle.establishmentId = establishmentId;
+        professionalTitle.name = minedecProfessionalTitle.nombre;
+        professionalTitle.institutionName = minedecProfessionalTitle.institucion;
+        professionalTitle.levelCode = minedecProfessionalTitle.tipoNivel;
+        professionalTitle.levelName = minedecProfessionalTitle.nivel;
+        professionalTitle.registerNumber = minedecProfessionalTitle.numeroRegistro;
+        professionalTitle.registerDate = new Date(minedecProfessionalTitle.fechaRegistro);
+        await this.professionalTitleRepository.save(professionalTitle);
+      }
+    }
+
+    return true;
+  }
+
+  async findProfessionalTitleByIdentification(
+    establishmentId: string,
+  ): Promise<ProfessionalTitleEntity[]> {
+    return await this.professionalTitleRepository.find({
+      where: { establishmentId },
+    });
   }
 }

@@ -1,4 +1,4 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Auth, PublicRoute } from '@auth/decorators';
 import { ResponseHttpInterface } from '@utils/interfaces';
@@ -19,6 +19,40 @@ export class GuiaController {
     return {
       ...serviceResponse,
       message: `Cache de Actividades, Clasificaciones y Categorias Consultadas`,
+      title: `Consultados`,
+    };
+  }
+
+  @PublicRoute()
+  @ApiOperation({ summary: 'Create Professional Title' })
+  @Post()
+  async createProfessionalTitleByIdentification(
+    @Body('cedula') cedula: string,
+    @Body('establishmentId') establishmentId: string,
+  ): Promise<ResponseHttpInterface> {
+    const serviceResponse = await this.service.createMINEDECProfessionalTitles(
+      cedula,
+      establishmentId,
+    );
+
+    return {
+      data: serviceResponse,
+      message: `Títulos profesionales guardados con éxito`,
+      title: `Creados`,
+    };
+  }
+
+  @ApiOperation({ summary: 'Find Professional Title' })
+  @Get(':establishmentId')
+  async findProfessionalTitleByIdentification(
+    @Param('establishmentId') establishmentId: string,
+  ): Promise<ResponseHttpInterface> {
+    const serviceResponse =
+      await this.service.findProfessionalTitleByIdentification(establishmentId);
+
+    return {
+      data: serviceResponse,
+      message: `Títulos profesionales consultados`,
       title: `Consultados`,
     };
   }

@@ -180,3 +180,10 @@ export enum CatalogueProcessGuidesCodeEnum {
   document_vehicle_inspection = 'document_vehicle_inspection',
   accident_policy = 'accident_policy',
 }
+
+export enum CatalogueProfessionalTitlesLevelEnum {
+  bachiller = 'bachiller',
+  tercer_nivel = 'tercer_nivel',
+  cuarto_nivel = 'cuarto_nivel',
+  phd = 'phd',
+}
