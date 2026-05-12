@@ -1,8 +1,9 @@
 import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { Auth, PublicRoute } from '@auth/decorators';
+import { Auth, PublicRoute, User } from '@auth/decorators';
 import { ResponseHttpInterface } from '@utils/interfaces';
 import { GuideService } from '../services/guide.service';
+import { UserEntity } from '@auth/entities';
 
 @ApiTags('Activity')
 @Auth()
@@ -23,7 +24,6 @@ export class GuideController {
     };
   }
 
-  @PublicRoute()
   @ApiOperation({ summary: 'Create Professional Title' })
   @Post('professional-titles')
   async createProfessionalTitleByIdentification(
@@ -54,6 +54,18 @@ export class GuideController {
       data: serviceResponse,
       message: `Títulos profesionales consultados`,
       title: `Consultados`,
+    };
+  }
+
+  @ApiOperation({ summary: 'Update Guide Information' })
+  @Post('information')
+  async updateGuideInformation(@User() user: UserEntity): Promise<ResponseHttpInterface> {
+    const serviceResponse = await this.service.updateGuideInformation(user);
+
+    return {
+      data: serviceResponse,
+      message: `Títulos profesionales guardados con éxito`,
+      title: `Creados`,
     };
   }
 }

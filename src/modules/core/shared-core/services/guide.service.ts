@@ -9,6 +9,7 @@ import { envConfig } from '@config';
 import { ConfigType } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
 import { ProfessionalTitleEntity } from '@modules/core/entities/professional-title.entity';
+import { UserEntity } from '@auth/entities';
 
 interface minedecProfessionalTitle {
   nombre: string;
@@ -45,7 +46,7 @@ export class GuideService {
 
     const response = await firstValueFrom(this.httpService.get(url).pipe(retry(3)));
 
-    if (response.data) {
+    if (!response.data) {
       throw new NotFoundException({
         message: 'Error al servicio consultar MINEDEC:',
         error: 'Error MINEDEC',
@@ -81,5 +82,22 @@ export class GuideService {
     return await this.professionalTitleRepository.find({
       where: { establishmentId },
     });
+  }
+
+  async updateGuideInformation(user: UserEntity) {
+    const url = `${this.configService.externalApis.urlDinardap}/minedec/${user.identification}`;
+
+    const response = await firstValueFrom(this.httpService.get(url).pipe(retry(3)));
+
+    console.log(response.data);
+
+    if (!response.data) {
+      throw new NotFoundException({
+        message: 'Error al servicio consultar MINEDEC:',
+        error: 'Error MINEDEC',
+      });
+    }
+
+    return null;
   }
 }
