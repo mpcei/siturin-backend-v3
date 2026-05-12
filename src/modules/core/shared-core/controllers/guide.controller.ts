@@ -2,13 +2,13 @@ import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Auth, PublicRoute } from '@auth/decorators';
 import { ResponseHttpInterface } from '@utils/interfaces';
-import { GuiaService } from '@modules/core/shared-core/services/guia.service';
+import { GuideService } from '../services/guide.service';
 
 @ApiTags('Activity')
 @Auth()
-@Controller('core/shared/guias-siete')
-export class GuiaController {
-  constructor(private service: GuiaService) {}
+@Controller('core/shared/guides')
+export class GuideController {
+  constructor(private service: GuideService) {}
 
   @PublicRoute()
   @ApiOperation({ summary: 'Find Catastro Guias Siete' })
@@ -25,7 +25,7 @@ export class GuiaController {
 
   @PublicRoute()
   @ApiOperation({ summary: 'Create Professional Title' })
-  @Post()
+  @Post('professional-titles')
   async createProfessionalTitleByIdentification(
     @Body('cedula') cedula: string,
     @Body('establishmentId') establishmentId: string,
@@ -43,7 +43,7 @@ export class GuiaController {
   }
 
   @ApiOperation({ summary: 'Find Professional Title' })
-  @Get(':establishmentId')
+  @Get('professional-titles/:establishmentId')
   async findProfessionalTitleByIdentification(
     @Param('establishmentId') establishmentId: string,
   ): Promise<ResponseHttpInterface> {

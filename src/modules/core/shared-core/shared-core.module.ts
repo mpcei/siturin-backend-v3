@@ -10,7 +10,7 @@ import { RegulationSectionService } from '@modules/core/shared-core/services/reg
 import { RegulationResponsesService } from '@modules/core/shared-core/services/regulation-responses.service';
 import { RoomTypeService } from '@modules/core/shared-core/services/room-type.service';
 import { CategoryConfigurationsService } from '@modules/core/shared-core/services/category-configurations.service';
-import { GuiaService } from '@modules/core/shared-core/services/guia.service';
+import { GuideService } from './services/guide.service';
 import { HttpModule } from '@nestjs/axios';
 
 @Global()
@@ -27,7 +27,7 @@ import { HttpModule } from '@nestjs/axios';
     RegulationResponsesService,
     RoomTypeService,
     CategoryConfigurationsService,
-    GuiaService,
+    GuideService,
   ],
   exports: [ProcessService, EmailService],
 })

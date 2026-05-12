@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { ConfigEnum } from '@utils/enums';
 import { ServiceResponseHttpInterface } from '@utils/interfaces';
@@ -20,7 +20,7 @@ interface minedecProfessionalTitle {
 }
 
 @Injectable()
-export class GuiaService {
+export class GuideService {
   constructor(
     @Inject(ConfigEnum.PG_DATA_SOURCE) private readonly dataSource: DataSource,
     @Inject(envConfig.KEY) private configService: ConfigType<typeof envConfig>,
@@ -46,7 +46,10 @@ export class GuiaService {
     const response = await firstValueFrom(this.httpService.get(url).pipe(retry(3)));
 
     if (response.data) {
-      return false;
+      throw new NotFoundException({
+        message: 'Error al servicio consultar MINEDEC:',
+        error: 'Error MINEDEC',
+      });
     }
 
     const minedecProfessionalTitles: minedecProfessionalTitle[] = response.data.data;
