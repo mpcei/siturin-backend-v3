@@ -56,6 +56,7 @@ export class GuideService {
     const minedecProfessionalTitles: minedecProfessionalTitle[] = response.data.data;
 
     for (const minedecProfessionalTitle of minedecProfessionalTitles) {
+      console.log(minedecProfessionalTitle);
       let professionalTitle = await this.professionalTitleRepository.findOne({
         where: { establishmentId, registerNumber: minedecProfessionalTitle.numeroRegistro },
       });
@@ -68,7 +69,7 @@ export class GuideService {
         if (!minedecProfessionalTitle.tipoNivel) {
           throw new NotFoundException({
             error: 'MINEDEC: Nivel de estudio no encontrado',
-            message: minedecProfessionalTitle.nivel,
+            message: minedecProfessionalTitle.nombre,
           });
         }
         professionalTitle.levelCode = minedecProfessionalTitle.tipoNivel;
