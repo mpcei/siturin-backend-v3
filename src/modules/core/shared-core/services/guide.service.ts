@@ -65,6 +65,12 @@ export class GuideService {
         professionalTitle.establishmentId = establishmentId;
         professionalTitle.name = minedecProfessionalTitle.nombre;
         professionalTitle.institutionName = minedecProfessionalTitle.institucion;
+        if (!minedecProfessionalTitle.tipoNivel) {
+          throw new NotFoundException({
+            error: 'MINEDEC: Nivel de estudio no encontrado',
+            message: minedecProfessionalTitle.nivel,
+          });
+        }
         professionalTitle.levelCode = minedecProfessionalTitle.tipoNivel;
         professionalTitle.levelName = minedecProfessionalTitle.nivel;
         professionalTitle.registerNumber = minedecProfessionalTitle.numeroRegistro;
