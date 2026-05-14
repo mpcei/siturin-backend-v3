@@ -12,5 +12,7 @@ export class UpdateProfileDto extends PickType(UserDto, [
   'personalEmail',
   'cellPhone',
   'phone',
+  'nationality',
+  'sex',
   'username',
 ]) {}

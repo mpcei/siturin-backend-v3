@@ -18,6 +18,7 @@ import {
   minLengthValidationOptions,
 } from '@utils/dto-validation';
 import { CatalogueEntity } from '@modules/common/catalogue/catalogue.entity';
+import { Type } from 'class-transformer';
 
 export class UserDto {
   @IsOptional()
@@ -35,16 +36,16 @@ export class UserDto {
   @IsOptional()
   readonly maritalStatus: CatalogueEntity;
 
-  @IsOptional()
+  @IsNotEmpty(isNotEmptyValidationOptions())
   readonly sex: CatalogueEntity;
 
-  @IsOptional()
+  @IsNotEmpty(isNotEmptyValidationOptions())
   readonly nationality: CatalogueEntity;
 
   @IsOptional()
   readonly avatar: string;
 
-  @IsOptional()
+  @Type(() => Date)
   @IsDate(isDateValidationOptions())
   readonly birthdate: Date;
 
@@ -52,23 +53,21 @@ export class UserDto {
   @MaxLength(10, maxLengthValidationOptions())
   readonly cellPhone: string;
 
-  // @IsNotEmpty(isNotEmptyValidationOptions())
-  @IsOptional()
   @IsString(isStringValidationOptions())
   readonly identification: string;
 
-  @IsNotEmpty(isNotEmptyValidationOptions())
   @IsEmail({}, isEmailValidationOptions())
   @MaxLength(150, maxLengthValidationOptions())
+  @IsNotEmpty(isNotEmptyValidationOptions())
   readonly email: string;
 
-  @IsNotEmpty(isNotEmptyValidationOptions())
   @IsEmail({}, isEmailValidationOptions())
   @MaxLength(150, maxLengthValidationOptions())
+  @IsNotEmpty(isNotEmptyValidationOptions())
   readonly emailVerifiedAt: Date;
 
-  @IsNotEmpty(isNotEmptyValidationOptions())
   @IsString(isStringValidationOptions())
+  @IsNotEmpty(isNotEmptyValidationOptions())
   readonly lastname: string;
 
   @IsNotEmpty(isNotEmptyValidationOptions())
