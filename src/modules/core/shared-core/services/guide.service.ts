@@ -46,10 +46,11 @@ export class GuideService {
 
     const response = await firstValueFrom(this.httpService.get(url).pipe(retry(3)));
 
-    if (!response.data) {
+    console.log(response.data);
+    if (Array.isArray(response.data?.data) && response.data?.data?.length === 0) {
       throw new NotFoundException({
-        message: 'Error al servicio consultar MINEDEC:',
-        error: 'Error MINEDEC',
+        message: response.data?.msg?.detail,
+        error: response.data?.msg?.summary,
       });
     }
 
