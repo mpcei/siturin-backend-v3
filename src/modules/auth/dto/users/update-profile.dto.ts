@@ -1,12 +1,13 @@
 import { PickType } from '@nestjs/swagger';
 import { UserDto } from '@auth/dto';
+import { IsOptional, IsString } from 'class-validator';
+import { isStringValidationOptions } from '@utils/dto-validation';
 
 export class UpdateProfileDto extends PickType(UserDto, [
   'avatar',
   'identificationType',
   'birthdate',
   'identification',
-  'lastname',
   'name',
   'email',
   'personalEmail',
@@ -15,4 +16,8 @@ export class UpdateProfileDto extends PickType(UserDto, [
   'nationality',
   'sex',
   'username',
-]) {}
+]) {
+  @IsOptional()
+  @IsString(isStringValidationOptions())
+  readonly lastname: string;
+}
