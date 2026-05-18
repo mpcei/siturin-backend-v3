@@ -2039,8 +2039,17 @@ export class MigrationService {
     const sheetName = workbook.SheetNames[3];
     const dataExcel: any[] = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
 
+    let i = 0;
     for (const data of dataExcel) {
-      const requirement = requirements.find((x) => x.code == data['code_requirement'] && x.type == data['type_requirement']);
+      i++;
+      console.log(i);
+      const requirement = requirements.find(
+        (x) => x.code == data['code_requirement'] && x.type == data['type_requirement'],
+      );
+      console.log("data['code_requirement']", data['code_requirement']);
+      console.log("data['type_requirement']", data['type_requirement']);
+      console.log(requirement);
+
       const guideTitle = guideTitles.find((x) => x.code == data['code_title']);
       const classification = classifications.find((x) => x.code == data['code_classification']);
       const requirementConfiguration = this.requirementConfigurationRepository.create({
@@ -2060,7 +2069,6 @@ export class MigrationService {
         sortExpiredCredential: data['sort_expired_credential'],
         enabledExpiredCredential: data['enabled_expired_credential'],
         requiredExpiredCredential: data['required_expired_credential'],
-
       });
       await this.requirementConfigurationRepository.save(requirementConfiguration);
     }

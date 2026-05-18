@@ -1,0 +1,29 @@
+create table guias
+(
+    id                       serial
+        primary key,
+    cedula                   varchar(10),
+    apellidos_nombres        varchar(100),
+    tipo_guia                text,
+    numero_credencial        varchar(50),
+    ambito_aplicacion        varchar(50),
+    provincia                varchar(255),
+    canton                   varchar(255),
+    parroquia                varchar(255),
+    nacionalidad             varchar(50),
+    sexo                     varchar(50),
+    tipo_sangre              varchar(10),
+    lugar_nacimiento         varchar(100),
+    canton_residencia_actual varchar(255),
+    fecha_emision_licencia   date,
+    fecha_caducidad_licencia date,
+    idiomas                  text,
+    telefono_convencional    varchar(9),
+    telefono_celular         varchar(10),
+    correo_electronico       varchar(100),
+    acceso_area_protegida    text,
+    modalidad                text
+);
+
+alter table guias
+    owner to postgres;
