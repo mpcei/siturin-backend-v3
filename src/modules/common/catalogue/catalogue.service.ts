@@ -24,13 +24,22 @@ export class CataloguesService {
     this.paginateFilterService = new PaginateFilterService(this.repository);
   }
 
-  async findCataloguesByModel(modelId: string): Promise<CatalogueEntity[]> {
-    const modelCatalogues = await this.modelCatalogueRepository
+  async findCacheModelCatalogues(): Promise<ModelCatalogueEntity[]> {
+    // Recuperar del cache
+    const cached = await this.cacheManager.get<ModelCatalogueEntity[]>(CacheEnum.MODEL_CATALOGUES);
+
+    if (cached?.length) {
+      return cached;
+    }
+
+    // Si no hay cache, consultar la BD
+    const catalogues = await this.modelCatalogueRepository
       .createQueryBuilder('mc')
       .leftJoin('mc.catalogue', 'catalogue')
       .select([
-        'catalogue.id', // o los campos que necesites de la entidad principal
         'mc.id', // o los campos que necesites de la entidad principal
+        'mc.modelId', // o los campos que necesites de la entidad principal
+        'catalogue.id', // o los campos que necesites de la entidad principal
         'catalogue.name',
         'catalogue.code',
         'catalogue.type',
@@ -39,12 +48,39 @@ export class CataloguesService {
         'catalogue.acronym',
         'catalogue.required',
       ])
-      .where('mc.modelId = :modelId', { modelId })
       .getMany();
 
-    return modelCatalogues.map((item) => {
-      return item.catalogue;
-    });
+    // Guardar en cache con TTL opcional
+    await this.cacheManager.set(CacheEnum.CATALOGUES, catalogues, 300);
+
+    return catalogues;
+  }
+
+  async loadCacheModelCatalogues(): Promise<boolean> {
+    const catalogues = await this.modelCatalogueRepository
+      .createQueryBuilder('mc')
+      .leftJoin('mc.catalogue', 'catalogue')
+      .select([
+        'mc.id', // o los campos que necesites de la entidad principal
+        'mc.modelId', // o los campos que necesites de la entidad principal
+        'catalogue.id', // o los campos que necesites de la entidad principal
+        'catalogue.name',
+        'catalogue.code',
+        'catalogue.type',
+        'catalogue.enabled',
+        'catalogue.parentId',
+        'catalogue.acronym',
+        'catalogue.required',
+      ])
+      .getMany();
+
+    await this.cacheManager.set<ModelCatalogueEntity[]>(
+      CacheEnum.MODEL_CATALOGUES,
+      catalogues,
+      300,
+    );
+
+    return true;
   }
 
   async create(payload: CreateCatalogueDto): Promise<CatalogueEntity> {

@@ -112,16 +112,26 @@ export class CatalogueController {
 
   @PublicRoute()
   @ApiOperation({ summary: 'Find Model Catalogues' })
-  @Get('model-catalogues/:modelId')
-  async findCataloguesByModel(
-    @Param('modelId', ParseUUIDPipe) modelId: string,
-  ): Promise<ResponseHttpInterface> {
-    const serviceResponse = await this.catalogueService.findCataloguesByModel(modelId);
+  @Get('model-catalogues/cache')
+  async findCacheModelCatalogues(): Promise<ResponseHttpInterface> {
+    const serviceResponse = await this.catalogueService.findCacheModelCatalogues();
 
     return {
       data: serviceResponse,
       message: `Model Catalogues`,
       title: `Find`,
+    };
+  }
+
+  @ApiOperation({ summary: 'Load Cache' })
+  @Patch('model-catalogues/cache')
+  async loadCacheModelCatalogues(): Promise<ResponseHttpInterface> {
+    const serviceResponse = await this.catalogueService.loadCacheModelCatalogues();
+
+    return {
+      data: serviceResponse,
+      message: `Cache Model Catalogues Cargada`,
+      title: `Cargada`,
     };
   }
 }
