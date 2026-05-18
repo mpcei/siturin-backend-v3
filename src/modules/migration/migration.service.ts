@@ -2026,6 +2026,20 @@ export class MigrationService {
         });
         await this.modelCatalogueRepository.save(modelCatalogue);
       }
+
+      if (data['type'] == 'adventure_modalities_certificate') {
+        const catalogue = catalogues.find(
+          (x) => x.code == data['code_catalogue'] && x.type == data['type'],
+        );
+        const model = catalogues.find(
+          (x) => x.code == data['code_model'] && x.type == 'adventure_tourism_modalities_name',
+        );
+        const modelCatalogue = this.modelCatalogueRepository.create({
+          catalogueId: catalogue?.id,
+          modelId: model?.id,
+        });
+        await this.modelCatalogueRepository.save(modelCatalogue);
+      }
     }
     return null;
   }
@@ -2039,16 +2053,10 @@ export class MigrationService {
     const sheetName = workbook.SheetNames[3];
     const dataExcel: any[] = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
 
-    let i = 0;
     for (const data of dataExcel) {
-      i++;
-      console.log(i);
       const requirement = requirements.find(
         (x) => x.code == data['code_requirement'] && x.type == data['type_requirement'],
       );
-      console.log("data['code_requirement']", data['code_requirement']);
-      console.log("data['type_requirement']", data['type_requirement']);
-      console.log(requirement);
 
       const guideTitle = guideTitles.find((x) => x.code == data['code_title']);
       const classification = classifications.find((x) => x.code == data['code_classification']);
