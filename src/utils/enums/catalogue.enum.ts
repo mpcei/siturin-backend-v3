@@ -14,6 +14,11 @@ export enum CatalogueUsersSexEnum {
   male = 'm',
 }
 
+export enum CatalogueUsersIdentificationTypeEnum {
+  ruc = '1',
+  cedula = '2',
+}
+
 export enum CatalogueStateEnum {
   enabled = 'enabled',
   disabled = 'disabled',

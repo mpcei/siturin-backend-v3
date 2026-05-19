@@ -17,7 +17,15 @@ import {
   UserEntity,
 } from '@auth/entities';
 import { PayloadTokenInterface, TokenInterface } from 'src/modules/auth/interfaces';
-import { AuthRepositoryEnum, ConfigEnum, MailSubjectEnum, MailTemplateEnum } from '@utils/enums';
+import {
+  AuthRepositoryEnum,
+  CatalogueTypeEnum,
+  CatalogueUsersIdentificationTypeEnum,
+  CatalogueUsersSexEnum,
+  ConfigEnum,
+  MailSubjectEnum,
+  MailTemplateEnum,
+} from '@utils/enums';
 import { PasswordChangedDto, SignInDto, SignUpExternalDto, TermsDto } from '@auth/dto';
 import { ServiceResponseHttpInterface } from '@utils/interfaces';
 import { MailService } from '@modules/common/mail/mail.service';
@@ -228,6 +236,12 @@ export class AuthService {
       }),
     );
 
+    const identificationType = (await this.cataloguesService.findCache()).find(
+      (item) =>
+        item.code === CatalogueUsersIdentificationTypeEnum.ruc &&
+        item.type === CatalogueTypeEnum.users_identification_type,
+    );
+
     const entity = this.repository.create({
       ...payload,
       passwordChanged: true,
@@ -235,6 +249,7 @@ export class AuthService {
       termsAcceptedAt: new Date(),
       securityQuestionAcceptedAt: new Date(),
       roles: [role!],
+      identificationTypeId: identificationType?.id,
       securityQuestions,
     });
 
