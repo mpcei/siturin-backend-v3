@@ -16,6 +16,7 @@ export class UpdateProfileDto extends PickType(UserDto, [
   'nationality',
   'sex',
   'username',
+  'emailVerifiedAt',
 ]) {
   @IsOptional()
   @IsString(isStringValidationOptions())

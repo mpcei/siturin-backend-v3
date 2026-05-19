@@ -61,9 +61,8 @@ export class UserDto {
   @IsNotEmpty(isNotEmptyValidationOptions())
   readonly email: string;
 
-  @IsEmail({}, isEmailValidationOptions())
-  @MaxLength(150, maxLengthValidationOptions())
-  @IsNotEmpty(isNotEmptyValidationOptions())
+  @Type(() => Date)
+  @IsDate(isDateValidationOptions())
   readonly emailVerifiedAt: Date;
 
   @IsString(isStringValidationOptions())

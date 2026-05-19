@@ -16,6 +16,8 @@ import { MailDataInterface } from '@modules/common/mail/interfaces/mail-data.int
 import { MailService } from '@modules/common/mail/mail.service';
 import { createHash, randomUUID } from 'node:crypto';
 import { RoleEnum } from '@auth/enums';
+import { firstValueFrom, lastValueFrom } from 'rxjs';
+import { HttpService } from '@nestjs/axios';
 
 @Injectable()
 export class UsersService {
@@ -28,6 +30,7 @@ export class UsersService {
     private emailVerificationRepository: Repository<EmailVerificationsEntity>,
     @Inject(envConfig.KEY) private configService: ConfigType<typeof envConfig>,
     private readonly mailService: MailService,
+    private readonly httpService: HttpService,
   ) {
     this.paginateFilterService = new PaginateFilterService(this.repository);
   }
@@ -242,6 +245,25 @@ export class UsersService {
     entity.avatar = `avatars/${file.filename}`;
 
     return await this.repository.save(entity);
+  }
+
+  async findRegistroCivilByCedula(cedula: string): Promise<any> {
+    const url = `${this.configService.externalApis.urlDinardap}/registro-civil/${cedula}`;
+
+    const response = await firstValueFrom(this.httpService.get(url));
+
+    const item = response.data.data;
+
+    return {
+      identification: item.cedula,
+      name: item.nombre,
+      nationality: item.nacionalidad,
+      sex: item.sexo,
+      birthdate: item.fechaNacimiento,
+      deathAt: item.fechaDefuncion,
+      issueAt: item.fechaExpedicion,
+      expirationAt: item.fechaExpiracion,
+    };
   }
 
   private generateEmailVerificationToken() {

@@ -216,4 +216,17 @@ export class UsersController {
       title: 'Perfil Actualizado',
     };
   }
+
+  @Auth()
+  @ApiOperation({ summary: 'Find Registro Civil' })
+  @Get('registro-civil/:cedula')
+  async findRegistroCivil(@Param('cedula') cedula: string): Promise<ResponseHttpInterface> {
+    const serviceResponse = await this.service.findRegistroCivilByCedula(cedula);
+
+    return {
+      data: serviceResponse,
+      message: `find one ${cedula}`,
+      title: `Success`,
+    };
+  }
 }
