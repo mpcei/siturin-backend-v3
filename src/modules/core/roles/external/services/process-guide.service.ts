@@ -159,9 +159,10 @@ export class ProcessGuideService {
     if (user.sex?.code === CatalogueUsersSexEnum.female) {
       process.totalWomen = 1;
       if (user.hasDisability) process.totalWomenDisability = 1;
+    } else {
+      process.totalMen = 1;
+      if (user.hasDisability) process.totalMenDisability = 1;
     }
-    process.totalMen = 1;
-    if (user.hasDisability) process.totalMenDisability = 1;
 
     return await processRepository.save(process);
   }
