@@ -1,6 +1,6 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
-import { ConfigEnum } from '@utils/enums';
+import { AuthRepositoryEnum, ConfigEnum } from '@utils/enums';
 import { ServiceResponseHttpInterface } from '@utils/interfaces';
 import { firstValueFrom } from 'rxjs';
 import { retry } from 'rxjs/operators';
@@ -10,6 +10,7 @@ import { ConfigType } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
 import { ProfessionalTitleEntity } from '@modules/core/entities/professional-title.entity';
 import { UserEntity } from '@auth/entities';
+import { CataloguesService } from '@modules/common/catalogue/catalogue.service';
 
 interface minedecProfessionalTitle {
   nombre: string;
@@ -24,6 +25,9 @@ interface minedecProfessionalTitle {
 export class GuideService {
   constructor(
     @Inject(ConfigEnum.PG_DATA_SOURCE) private readonly dataSource: DataSource,
+    @Inject(AuthRepositoryEnum.USER_REPOSITORY)
+    private readonly userRepository: Repository<UserEntity>,
+    private readonly catalogueService: CataloguesService,
     @Inject(envConfig.KEY) private configService: ConfigType<typeof envConfig>,
     @Inject(CoreRepositoryEnum.PROFESSIONAL_TITLE_REPOSITORY)
     private readonly professionalTitleRepository: Repository<ProfessionalTitleEntity>,
@@ -41,7 +45,8 @@ export class GuideService {
     };
   }
 
-  async createMINEDECProfessionalTitles(cedula: string, establishmentId: string): Promise<boolean> {
+  async createMINEDECProfessionalTitles(ruc: string, establishmentId: string): Promise<boolean> {
+    const cedula = ruc.substring(0, 10);
     const url = `${this.configService.externalApis.urlDinardap}/minedec/${cedula}`;
 
     const response = await firstValueFrom(this.httpService.get(url).pipe(retry(3)));
@@ -92,20 +97,36 @@ export class GuideService {
     });
   }
 
-  async updateGuideInformation(user: UserEntity) {
-    const url = `${this.configService.externalApis.urlDinardap}/minedec/${user.identification}`;
+  async updateGuideInformation(ruc: string): Promise<any> {
+    const cedula = ruc.substring(0, 10);
+    const url = `${this.configService.externalApis.urlDinardap}/registro-civil/${cedula}`;
 
-    const response = await firstValueFrom(this.httpService.get(url).pipe(retry(3)));
+    const response = await firstValueFrom(this.httpService.get(url));
 
-    console.log(response.data);
+    const data = response.data.data;
 
-    if (!response.data) {
-      throw new NotFoundException({
-        message: 'Error al servicio consultar MINEDEC:',
-        error: 'Error MINEDEC',
-      });
+    const user = await this.userRepository.findOne({ where: { identification: ruc } });
+
+    if (!user) {
+      throw new NotFoundException('Usuario no encontrado');
     }
 
-    return null;
+    const catalogues = await this.catalogueService.findCache();
+
+    const nationality = catalogues.find(
+      (item) => item.name?.trim().toLowerCase() === data.nacionalidad?.trim().toLowerCase(),
+    );
+    const sex = catalogues.find(
+      (item) => item.name?.trim().toLowerCase() === data.sexo?.trim().toLowerCase(),
+    );
+
+    if (sex?.id) user.sex = sex;
+    if (nationality?.id) user.nationality = nationality;
+
+    const [day, month, year] = data.fechaNacimiento.split('/').map(Number);
+
+    user.birthdate = new Date(year, month - 1, day);
+
+    return await this.userRepository.save(user);
   }
 }

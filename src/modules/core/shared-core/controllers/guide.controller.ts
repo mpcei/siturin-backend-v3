@@ -1,9 +1,8 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { Auth, PublicRoute, User } from '@auth/decorators';
+import { Auth, PublicRoute } from '@auth/decorators';
 import { ResponseHttpInterface } from '@utils/interfaces';
 import { GuideService } from '../services/guide.service';
-import { UserEntity } from '@auth/entities';
 
 @ApiTags('Activity')
 @Auth()
@@ -27,11 +26,11 @@ export class GuideController {
   @ApiOperation({ summary: 'Create Professional Title' })
   @Post('professional-titles')
   async createProfessionalTitleByIdentification(
-    @Body('cedula') cedula: string,
+    @Body('ruc') ruc: string,
     @Body('establishmentId') establishmentId: string,
   ): Promise<ResponseHttpInterface> {
     const serviceResponse = await this.service.createMINEDECProfessionalTitles(
-      cedula,
+      ruc,
       establishmentId,
     );
 
@@ -58,14 +57,14 @@ export class GuideController {
   }
 
   @ApiOperation({ summary: 'Update Guide Information' })
-  @Post('information')
-  async updateGuideInformation(@User() user: UserEntity): Promise<ResponseHttpInterface> {
-    const serviceResponse = await this.service.updateGuideInformation(user);
+  @Patch('registro-civil/:ruc')
+  async updateGuideInformation(@Param('ruc') ruc: string): Promise<ResponseHttpInterface> {
+    const serviceResponse = await this.service.updateGuideInformation(ruc);
 
     return {
       data: serviceResponse,
-      message: `Títulos profesionales guardados con éxito`,
-      title: `Creados`,
+      message: `Información Actualizada`,
+      title: `Actualizado`,
     };
   }
 }

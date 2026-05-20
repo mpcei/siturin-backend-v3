@@ -201,8 +201,8 @@ export class UsersController {
     };
   }
 
-  @ApiOperation({ summary: 'Update Additional Information' })
   @Auth()
+  @ApiOperation({ summary: 'Update Additional Information' })
   @Patch(':id/additional-information')
   async updateAdditionalInformation(
     @Param('id', ParseUUIDPipe) id: string,
@@ -214,19 +214,6 @@ export class UsersController {
       data: serviceResponse,
       message: 'El perfil fue actualizado correctamente',
       title: 'Perfil Actualizado',
-    };
-  }
-
-  @Auth()
-  @ApiOperation({ summary: 'Find Registro Civil' })
-  @Get('registro-civil/:cedula')
-  async findRegistroCivil(@Param('cedula') cedula: string): Promise<ResponseHttpInterface> {
-    const serviceResponse = await this.service.findRegistroCivilByCedula(cedula);
-
-    return {
-      data: serviceResponse,
-      message: `find one ${cedula}`,
-      title: `Success`,
     };
   }
 }
