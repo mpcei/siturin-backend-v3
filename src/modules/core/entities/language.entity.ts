@@ -100,4 +100,12 @@ export class LanguageEntity {
     comment: 'Nombre del nivel de conocimiento del idioma. Proviene de catalago.',
   })
   levelName: string;
+
+  @Column({
+    name: 'mother_language',
+    type: 'boolean',
+    nullable: true,
+    comment: 'Declaracion lengua materna',
+  })
+  motherLanguage: boolean;
 }

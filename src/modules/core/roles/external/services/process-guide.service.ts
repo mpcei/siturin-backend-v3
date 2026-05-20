@@ -21,7 +21,6 @@ import { AdventureModalityEntity } from '@modules/core/entities/adventure-modali
 import { ProtectedAreaEntity } from '@modules/core/entities/protected-area.entity';
 import { LanguageEntity } from '@modules/core/entities/language.entity';
 import { CataloguesService } from '@modules/common/catalogue/catalogue.service';
-import { CatalogueEntity } from '@modules/common/catalogue/catalogue.entity';
 
 @Injectable()
 export class ProcessGuideService {
@@ -256,6 +255,7 @@ export class ProcessGuideService {
           language.languageName = item.languageName;
           language.levelCode = item.levelCode;
           language.levelName = item.levelName;
+          language.motherLanguage = item.motherLanguage;
 
           const languageSave = await LanguageRepository.save(language);
 

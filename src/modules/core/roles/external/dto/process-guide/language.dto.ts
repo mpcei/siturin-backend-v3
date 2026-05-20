@@ -1,5 +1,9 @@
-import { IsNotEmpty, IsString } from 'class-validator';
-import { isNotEmptyValidationOptions, isStringValidationOptions } from '@utils/dto-validation';
+import { IsBoolean, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import {
+  isBooleanValidationOptions,
+  isNotEmptyValidationOptions,
+  isStringValidationOptions,
+} from '@utils/dto-validation';
 
 export class LanguageDto {
   @IsString(isStringValidationOptions())
@@ -17,4 +21,8 @@ export class LanguageDto {
   @IsString(isStringValidationOptions())
   @IsNotEmpty(isNotEmptyValidationOptions())
   readonly levelName: string;
+
+  @IsBoolean(isBooleanValidationOptions())
+  @IsOptional()
+  readonly motherLanguage: boolean;
 }
