@@ -77,6 +77,7 @@ export class LandTransportEntity {
   @Column({
     name: 'capacity',
     type: 'integer',
+    nullable: true,
     comment: 'Capacidad',
   })
   capacity: number;
@@ -123,6 +124,7 @@ export class LandTransportEntity {
   @Column({
     name: 'id_temp',
     type: 'bigint',
+    nullable: true,
     comment: 'Codigo de la tabla migrada',
   })
   idTemp: number;

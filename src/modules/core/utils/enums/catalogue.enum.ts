@@ -171,9 +171,9 @@ export enum CatalogueEstablishmentsStateEnum {
 
 export enum CatalogueProcessGuidesCodeEnum {
   pane = 'pane',
-  modality_adventure = 'modality_aventure',
+  modality_adventure = 'modality_adventure',
   certification_language = 'certification_language',
-  modality_adventure_guide = 'modality_aventure_guide',
+  modality_adventure_guide = 'modality_adventure_guide',
   high_mountain = 'alm',
   mid_mountain = 'mem',
   vehicle_registration = 'vehicle_registration',
