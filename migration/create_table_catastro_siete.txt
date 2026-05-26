@@ -5,6 +5,8 @@ create table guias
     cedula                   varchar(10),
     apellidos_nombres        varchar(100),
     tipo_guia                text,
+    name_clasification       varchar(50),
+    code_clasification       varchar(50),
     numero_credencial        varchar(50),
     ambito_aplicacion        varchar(50),
     provincia                varchar(255),
