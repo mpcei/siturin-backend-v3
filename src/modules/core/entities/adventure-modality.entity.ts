@@ -90,6 +90,7 @@ export class AdventureModalityEntity {
   @Column({
     name: 'modality_certificate_code',
     type: 'varchar',
+    nullable: true,
     comment: 'Codigo de la institucion certificadora de la modalidad. Proviene de catalago',
   })
   modalityCertificateCode: string;
@@ -97,6 +98,7 @@ export class AdventureModalityEntity {
   @Column({
     name: 'modality_certificate_name',
     type: 'varchar',
+    nullable: true,
     comment: 'Nombre de la institucion certificadora de la modalidad. Proviene de catalago.',
   })
   modalityCertificateName: string;
