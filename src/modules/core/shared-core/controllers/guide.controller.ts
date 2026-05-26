@@ -12,9 +12,9 @@ export class GuideController {
 
   @PublicRoute()
   @ApiOperation({ summary: 'Find Catastro Guias Siete' })
-  @Get(':cedula')
-  async findGuideByIdentification(@Query('cedula') cedula: string): Promise<ResponseHttpInterface> {
-    const serviceResponse = await this.service.findGuideByIdentification(cedula);
+  @Get(':ruc')
+  async findGuideByIdentification(@Query('ruc') ruc: string): Promise<ResponseHttpInterface> {
+    const serviceResponse = await this.service.findGuideByIdentification(ruc);
 
     return {
       ...serviceResponse,

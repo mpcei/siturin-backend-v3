@@ -34,12 +34,11 @@ export class GuideService {
     private readonly httpService: HttpService,
   ) {}
 
-  async findGuideByIdentification(cedula: string): Promise<ServiceResponseHttpInterface> {
-    const result = await this.dataSource.query(`SELECT * FROM guias WHERE cedula = $1`, [
-      '2400313033',
+  async findGuideByIdentification(ruc: string): Promise<ServiceResponseHttpInterface> {
+    const result = await this.dataSource.query(`SELECT * FROM public.guias WHERE cedula = $1`, [
+      ruc,
     ]);
 
-    console.log(result);
     return {
       data: result,
     };
