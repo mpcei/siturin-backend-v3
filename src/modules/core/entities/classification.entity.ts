@@ -6,6 +6,7 @@ import {
   JoinColumn,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -53,6 +54,9 @@ export class ClassificationEntity {
   /** Inverse Relationship **/
   @OneToMany(() => CategoryEntity, (entity) => entity.classification)
   categories: CategoryEntity[];
+
+  @OneToOne(() => CategoryEntity, (entity) => entity.classification)
+  category: CategoryEntity;
 
   @OneToMany(() => ObservationEntity, (entity) => entity.modelId)
   observations: ObservationEntity[];

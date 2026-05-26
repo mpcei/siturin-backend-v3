@@ -90,6 +90,7 @@ export class LanguageEntity {
   @Column({
     name: 'level_code',
     type: 'varchar',
+    nullable: true,
     comment: 'Codigo del nivel de conocimiento del idioma. Proviene de catalago',
   })
   levelCode: string;
@@ -97,6 +98,7 @@ export class LanguageEntity {
   @Column({
     name: 'level_name',
     type: 'varchar',
+    nullable: true,
     comment: 'Nombre del nivel de conocimiento del idioma. Proviene de catalago.',
   })
   levelName: string;

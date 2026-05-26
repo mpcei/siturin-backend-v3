@@ -15,6 +15,9 @@ import { BaseProcessGuideDto } from '@modules/core/roles/external/dto/process-gu
 import { ParseFormPayloadJsonPipe } from '@utils/pipes';
 import { UserEntity } from '@auth/entities';
 import { ParseMultipartInterceptor } from '@utils/interceptors';
+import {
+  BaseCurrentProcessGuideDto
+} from '@modules/core/roles/external/dto/process-guide/base-current-process-guide.dto';
 
 @ApiTags('Process Guide')
 @Auth()
@@ -36,6 +39,24 @@ export class ProcessGuideController {
   ): Promise<ResponseHttpInterface> {
     console.log(payload);
     const serviceResponse = await this.service.createRegistration(payload, user, files);
+
+    return {
+      data: serviceResponse.data,
+      message: serviceResponse.message,
+      title: serviceResponse.title,
+    };
+  }
+
+  @ApiOperation({ summary: 'Registration Process Current Credential' })
+  @UseInterceptors(AnyFilesInterceptor(), ParseMultipartInterceptor)
+  @Post('current-registrations')
+  async createCurrentRegistration(
+    @UploadedFiles() files: Express.Multer.File[],
+    @Body('payload') payload: BaseCurrentProcessGuideDto,
+    @User() user: UserEntity,
+  ): Promise<ResponseHttpInterface> {
+    console.log(payload);
+    const serviceResponse = await this.service.createCurrentRegistration(payload, user, files);
 
     return {
       data: serviceResponse.data,

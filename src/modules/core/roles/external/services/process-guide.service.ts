@@ -1,9 +1,10 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { DataSource, EntityManager } from 'typeorm';
+import { DataSource, EntityManager, In } from 'typeorm';
 
 import { CatalogueUsersSexEnum, ConfigEnum } from '@utils/enums';
 import { ResponseHttpInterface } from '@utils/interfaces';
 import {
+  ClassificationEntity,
   EstablishmentAddressEntity,
   EstablishmentContactPersonEntity,
   EstablishmentEntity,
@@ -13,7 +14,11 @@ import {
 import { ProcessService } from '@modules/core/shared-core/services/process.service';
 import { UserEntity } from '@auth/entities';
 import { EmailService } from '@modules/core/shared-core/services/email.service';
-import { BaseProcessGuideDto } from '@modules/core/roles/external/dto/process-guide';
+import {
+  BaseProcessGuideDto,
+  EstablishmentDto,
+  UserDto,
+} from '@modules/core/roles/external/dto/process-guide';
 import { ProcessGuideEntity } from '@modules/core/entities/process-guide.entity';
 import { CatalogueProcessGuidesCodeEnum, CoreCatalogueTypeEnum } from '@modules/core/utils/enums';
 import { FileService } from '@modules/common/file/file.service';
@@ -21,6 +26,9 @@ import { AdventureModalityEntity } from '@modules/core/entities/adventure-modali
 import { ProtectedAreaEntity } from '@modules/core/entities/protected-area.entity';
 import { LanguageEntity } from '@modules/core/entities/language.entity';
 import { CataloguesService } from '@modules/common/catalogue/catalogue.service';
+import { BaseCurrentProcessGuideDto } from '@modules/core/roles/external/dto/process-guide/base-current-process-guide.dto';
+import { CredentialEntity } from '@modules/core/entities/credential.entity';
+import { CatalogueEntity } from '@modules/common/catalogue/catalogue.entity';
 
 @Injectable()
 export class ProcessGuideService {
@@ -39,9 +47,14 @@ export class ProcessGuideService {
     files: Express.Multer.File[],
   ): Promise<ResponseHttpInterface> {
     return await this.dataSource.transaction(async (manager) => {
-      const userUpdate = await this.saveUser(manager, payload, user);
+      const userUpdate = await this.saveUser(manager, payload.user, user);
       const process = await this.saveProcess(manager, payload, userUpdate);
-      const establishment = await this.saveEstablishment(manager, payload, process.id);
+      const establishment = await this.saveEstablishment(
+        manager,
+        payload.establishment,
+        payload.user,
+        process.id,
+      );
       const processGuide = await this.saveProcessGuide(
         manager,
         userUpdate,
@@ -60,7 +73,8 @@ export class ProcessGuideService {
 
   private async saveEstablishment(
     manager: EntityManager,
-    payload: BaseProcessGuideDto,
+    establishmentLoad: EstablishmentDto,
+    user: UserDto,
     processId: string,
   ): Promise<EstablishmentEntity> {
     const establishmentRepository = manager.getRepository(EstablishmentEntity);
@@ -70,46 +84,46 @@ export class ProcessGuideService {
     );
 
     const establishment = await establishmentRepository.findOne({
-      where: { id: payload.establishment.id },
+      where: { id: establishmentLoad.id },
     });
 
     if (!establishment) {
       throw new NotFoundException();
     }
-    establishment.id = payload.establishment.id;
-    establishment.provinceId = payload.establishment.province.id;
-    establishment.cantonId = payload.establishment.canton.id;
-    establishment.parishId = payload.establishment.parish.id;
-    establishment.mainStreet = payload.establishment.mainStreet;
-    establishment.numberStreet = payload.establishment.numberStreet;
-    establishment.secondaryStreet = payload.establishment.secondaryStreet;
-    establishment.referenceStreet = payload.establishment.referenceStreet;
-    establishment.latitude = payload.establishment.latitude;
-    establishment.longitude = payload.establishment.longitude;
+    establishment.id = establishmentLoad.id;
+    establishment.provinceId = establishmentLoad.province.id;
+    establishment.cantonId = establishmentLoad.canton.id;
+    establishment.parishId = establishmentLoad.parish.id;
+    establishment.mainStreet = establishmentLoad.mainStreet;
+    establishment.numberStreet = establishmentLoad.numberStreet;
+    establishment.secondaryStreet = establishmentLoad.secondaryStreet;
+    establishment.referenceStreet = establishmentLoad.referenceStreet;
+    establishment.latitude = establishmentLoad.latitude;
+    establishment.longitude = establishmentLoad.longitude;
 
     await establishmentRepository.save(establishment);
 
     const establishmentAddress = establishmentAddressRepository.create();
-    establishmentAddress.establishmentId = payload.establishment.id;
+    establishmentAddress.establishmentId = establishmentLoad.id;
     establishmentAddress.processId = processId;
-    establishmentAddress.provinceId = payload.establishment.province.id;
-    establishmentAddress.cantonId = payload.establishment.canton.id;
-    establishmentAddress.parishId = payload.establishment.parish.id;
-    establishmentAddress.mainStreet = payload.establishment.mainStreet;
-    establishmentAddress.numberStreet = payload.establishment.numberStreet;
-    establishmentAddress.secondaryStreet = payload.establishment.secondaryStreet;
-    establishmentAddress.referenceStreet = payload.establishment.referenceStreet;
-    establishmentAddress.latitude = payload.establishment.latitude;
-    establishmentAddress.longitude = payload.establishment.longitude;
+    establishmentAddress.provinceId = establishmentLoad.province.id;
+    establishmentAddress.cantonId = establishmentLoad.canton.id;
+    establishmentAddress.parishId = establishmentLoad.parish.id;
+    establishmentAddress.mainStreet = establishmentLoad.mainStreet;
+    establishmentAddress.numberStreet = establishmentLoad.numberStreet;
+    establishmentAddress.secondaryStreet = establishmentLoad.secondaryStreet;
+    establishmentAddress.referenceStreet = establishmentLoad.referenceStreet;
+    establishmentAddress.latitude = establishmentLoad.latitude;
+    establishmentAddress.longitude = establishmentLoad.longitude;
 
     await establishmentAddressRepository.save(establishmentAddress);
 
     const establishmentContactPerson = establishmentContactPersonRepository.create();
-    establishmentContactPerson.establishmentId = payload.establishment.id;
+    establishmentContactPerson.establishmentId = establishmentLoad.id;
     establishmentContactPerson.processId = processId;
-    establishmentContactPerson.phone = payload.user.phone;
-    establishmentContactPerson.secondaryPhone = payload.user.secondaryPhone;
-    establishmentContactPerson.email = payload.user.email;
+    establishmentContactPerson.phone = user.phone;
+    establishmentContactPerson.secondaryPhone = user.secondaryPhone;
+    establishmentContactPerson.email = user.email;
 
     await establishmentContactPersonRepository.save(establishmentContactPerson);
 
@@ -118,7 +132,7 @@ export class ProcessGuideService {
 
   private async saveUser(
     manager: EntityManager,
-    payload: BaseProcessGuideDto,
+    payload: UserDto,
     user: UserEntity,
   ): Promise<UserEntity> {
     const userRepository = manager.getRepository(UserEntity);
@@ -130,8 +144,8 @@ export class ProcessGuideService {
     if (!userUpdate) {
       throw new NotFoundException();
     }
-    userUpdate.hasDisability = payload.user.hasDisability;
-    userUpdate.bloodTypeId = payload.user.bloodType.id;
+    userUpdate.hasDisability = payload.hasDisability;
+    userUpdate.bloodTypeId = payload.bloodType.id;
 
     await userRepository.save(userUpdate);
 
@@ -353,6 +367,175 @@ export class ProcessGuideService {
       activity: 'guide',
       ruc: user.identification,
     });
+    return true;
+  }
+
+  async createCurrentRegistration(
+    payload: BaseCurrentProcessGuideDto,
+    user: UserEntity,
+    files: Express.Multer.File[],
+  ): Promise<ResponseHttpInterface> {
+    return await this.dataSource.transaction(async (manager) => {
+      const userUpdate = await this.saveUser(manager, payload.user, user);
+      const process = await this.saveCurrentProcess(manager, payload, userUpdate);
+      const establishment = await this.saveEstablishment(
+        manager,
+        payload.establishment,
+        payload.user,
+        process.id,
+      );
+      const processGuide = await this.saveCurrentProcessGuide(
+        manager,
+        userUpdate,
+        files,
+        payload,
+        process,
+      );
+
+      const credential = await this.saveCredential(manager, payload, process);
+
+      return {
+        data: null,
+        title: 'Solicitud enviada',
+        message: 'Recuerde revisar su correo electronico de manera permanente',
+      };
+    });
+  }
+
+  private async saveCurrentProcess(
+    manager: EntityManager,
+    payload: BaseCurrentProcessGuideDto,
+    user: UserEntity,
+  ): Promise<ProcessEntity> {
+    const processRepository = manager.getRepository(ProcessEntity);
+
+    const process = processRepository.create();
+    process.activityId = payload.currentProcess.activity.id;
+    process.establishmentId = payload.establishment.id;
+    process.type = payload.currentProcess.type.id;
+    process.registeredAt = new Date();
+    process.startedAt = payload.currentProcess.startedAt;
+    process.endedAt = payload.currentProcess.endedAt;
+    if (user.sex?.code === CatalogueUsersSexEnum.female) {
+      process.totalWomen = 1;
+      if (user.hasDisability) process.totalWomenDisability = 1;
+    } else {
+      process.totalMen = 1;
+      if (user.hasDisability) process.totalMenDisability = 1;
+    }
+
+    return await processRepository.save(process);
+  }
+
+  private async saveCurrentProcessGuide(
+    manager: EntityManager,
+    user: UserEntity,
+    files: Express.Multer.File[],
+    payload: BaseCurrentProcessGuideDto,
+    process: ProcessEntity,
+  ): Promise<boolean> {
+    const processGuideRepository = manager.getRepository(ProcessGuideEntity);
+    for (const item of payload.processGuides) {
+      const processGuide = processGuideRepository.create();
+      processGuide.processId = process.id;
+      processGuide.requirementId = item.requirement.id;
+      processGuide.value = item.value;
+      const processGuideSave = await processGuideRepository.save(processGuide);
+
+      await this.saveFile(
+        manager,
+        user,
+        files,
+        processGuideSave.id,
+        processGuideSave.requirementId,
+      );
+    }
+
+    return true;
+  }
+
+  private async saveCredential(
+    manager: EntityManager,
+    payload: BaseCurrentProcessGuideDto,
+    process: ProcessEntity,
+  ): Promise<boolean> {
+    const credentialRepository = manager.getRepository(CredentialEntity);
+    const classificationRepository = manager.getRepository(ClassificationEntity);
+    const catalogueRepository = manager.getRepository(CatalogueEntity);
+    const languageRepository = manager.getRepository(LanguageEntity);
+    const modalityRepository = manager.getRepository(AdventureModalityEntity);
+    const protectedAreaRepository = manager.getRepository(ProtectedAreaEntity);
+
+    for (const item of payload.credentials) {
+      const credential = credentialRepository.create();
+
+      const classification = await classificationRepository.findOne({
+        where: { code: item.classificationCode },
+        relations: { category: true },
+      });
+      if (classification) {
+        credential.classificationId = classification?.id;
+        credential.categoryId = classification?.category.id;
+      }
+      credential.startedAt = new Date(item.startedAt);
+      credential.endedAt = new Date(item.endedAt);
+      credential.processId = process.id;
+      credential.establishmentId = payload.establishment.id;
+
+      await credentialRepository.save(credential);
+
+      if (item.languages) {
+        const languagesString = item.languages.split(',').map((i) => i.trim());
+        const languagesDB = await catalogueRepository.find({
+          where: { name: In(languagesString) },
+        });
+        if (languagesDB) {
+          for (const language of languagesDB) {
+            const languageSave = languageRepository.create();
+            languageSave.processId = process.id;
+            languageSave.establishmentId = payload.establishment.id;
+            languageSave.languageCode = language.code;
+            languageSave.languageName = language.name;
+            await languageRepository.save(languageSave);
+          }
+        }
+      }
+
+      if (item.modalities) {
+        const modalitiesString = item.modalities.split(',').map((i) => i.trim());
+        const modalitiesDB = await catalogueRepository.find({
+          where: { name: In(modalitiesString) },
+        });
+        if (modalitiesDB) {
+          for (const modality of modalitiesDB) {
+            const modalitySave = modalityRepository.create();
+            modalitySave.processId = process.id;
+            modalitySave.establishmentId = payload.establishment.id;
+            modalitySave.modalityCode = modality.code;
+            modalitySave.modalityName = modality.name;
+            await modalityRepository.save(modalitySave);
+          }
+        }
+      }
+
+      if (item.protectedAreas) {
+        const protectedAreasString = item.protectedAreas.split(',').map((i) => i.trim());
+        const protectedAreasDB = await catalogueRepository.find({
+          where: { name: In(protectedAreasString) },
+        });
+        if (protectedAreasDB) {
+          for (const area of protectedAreasDB) {
+            const areaSave = protectedAreaRepository.create();
+            areaSave.processId = process.id;
+            areaSave.establishmentId = payload.establishment.id;
+            areaSave.areaCode = area.code;
+            areaSave.areaName = area.name;
+            await protectedAreaRepository.save(areaSave);
+          }
+        }
+      }
+    }
+
     return true;
   }
 }
