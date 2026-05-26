@@ -10,19 +10,6 @@ import { GuideService } from '../services/guide.service';
 export class GuideController {
   constructor(private service: GuideService) {}
 
-  @PublicRoute()
-  @ApiOperation({ summary: 'Find Catastro Guias Siete' })
-  @Get(':ruc')
-  async findGuideByIdentification(@Query('ruc') ruc: string): Promise<ResponseHttpInterface> {
-    const serviceResponse = await this.service.findGuideByIdentification(ruc);
-
-    return {
-      ...serviceResponse,
-      message: `Cache de Actividades, Clasificaciones y Categorias Consultadas`,
-      title: `Consultados`,
-    };
-  }
-
   @ApiOperation({ summary: 'Create Professional Title' })
   @Post('professional-titles')
   async createProfessionalTitleByIdentification(
@@ -65,6 +52,19 @@ export class GuideController {
       data: serviceResponse,
       message: `Información Actualizada`,
       title: `Actualizado`,
+    };
+  }
+
+  @PublicRoute()
+  @ApiOperation({ summary: 'Find Catastro Guias Siete' })
+  @Get(':ruc')
+  async findGuideByIdentification(@Param('ruc') ruc: string): Promise<ResponseHttpInterface> {
+    const serviceResponse = await this.service.findGuideByIdentification(ruc);
+
+    return {
+      ...serviceResponse,
+      message: `Cache de Actividades, Clasificaciones y Categorias Consultadas`,
+      title: `Consultados`,
     };
   }
 }

@@ -35,8 +35,9 @@ export class GuideService {
   ) {}
 
   async findGuideByIdentification(ruc: string): Promise<ServiceResponseHttpInterface> {
+    const cedula = ruc.substring(0,10);
     const result = await this.dataSource.query(`SELECT * FROM public.guias WHERE cedula = $1`, [
-      ruc,
+      cedula,
     ]);
 
     return {
