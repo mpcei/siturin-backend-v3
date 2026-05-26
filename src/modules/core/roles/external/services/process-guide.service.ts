@@ -410,12 +410,12 @@ export class ProcessGuideService {
     const processRepository = manager.getRepository(ProcessEntity);
 
     const process = processRepository.create();
-    process.activityId = payload.currentProcess.activity.id;
+    process.activityId = payload.process.activity.id;
     process.establishmentId = payload.establishment.id;
-    process.type = payload.currentProcess.type.id;
+    process.type = payload.process.type.id;
     process.registeredAt = new Date();
-    process.startedAt = payload.currentProcess.startedAt;
-    process.endedAt = payload.currentProcess.endedAt;
+    process.startedAt = payload.process.startedAt;
+    process.endedAt = payload.process.endedAt;
     if (user.sex?.code === CatalogueUsersSexEnum.female) {
       process.totalWomen = 1;
       if (user.hasDisability) process.totalWomenDisability = 1;

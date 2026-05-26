@@ -22,7 +22,7 @@ export class BaseCurrentProcessGuideDto {
   @IsObject()
   @ValidateNested()
   @Type(() => CurrentProcessDto)
-  readonly currentProcess: CurrentProcessDto;
+  readonly process: CurrentProcessDto;
 
   @IsArray()
   @ValidateNested()

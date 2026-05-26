@@ -114,6 +114,7 @@ export class CredentialEntity {
   @Column({
     name: 'state_code',
     type: 'varchar',
+    nullable: true,
     comment: 'Codigo del estado de la credencial. Proviene de catalago',
   })
   stateCode: string;
@@ -121,6 +122,7 @@ export class CredentialEntity {
   @Column({
     name: 'state_name',
     type: 'varchar',
+    nullable: true,
     comment: 'Nombre del de la credencial. Proviene de catalago. Ejemplo: Caducado Inactivo',
   })
   stateName: string;
