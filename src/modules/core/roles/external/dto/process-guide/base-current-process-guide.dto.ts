@@ -7,6 +7,7 @@ import {
 } from '@modules/core/roles/external/dto/process-guide';
 import { CurrentProcessDto } from '@modules/core/roles/external/dto/process-guide/current-process.dto';
 import { CredentialDto } from '@modules/core/roles/external/dto/process-guide/credential.dto';
+import { GuideOriginDto } from '@modules/core/roles/external/dto/process-guide/guide-origin.dto';
 
 export class BaseCurrentProcessGuideDto {
   @IsObject()
@@ -23,6 +24,11 @@ export class BaseCurrentProcessGuideDto {
   @ValidateNested()
   @Type(() => CurrentProcessDto)
   readonly process: CurrentProcessDto;
+
+  @IsObject()
+  @ValidateNested()
+  @Type(() => GuideOriginDto)
+  readonly guideOrigin: GuideOriginDto;
 
   @IsArray()
   @ValidateNested()

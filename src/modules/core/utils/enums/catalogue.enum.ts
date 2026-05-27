@@ -179,6 +179,7 @@ export enum CatalogueProcessGuidesCodeEnum {
   vehicle_registration = 'vehicle_registration',
   document_vehicle_inspection = 'document_vehicle_inspection',
   accident_policy = 'accident_policy',
+  guide_local = 'guide_local',
 }
 
 export enum CatalogueProfessionalTitlesLevelEnum {

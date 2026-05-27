@@ -1,5 +1,5 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { DataSource, EntityManager, In } from 'typeorm';
+import { DataSource, EntityManager, ILike, In } from 'typeorm';
 
 import { CatalogueUsersSexEnum, ConfigEnum } from '@utils/enums';
 import { ResponseHttpInterface } from '@utils/interfaces';
@@ -29,6 +29,7 @@ import { CataloguesService } from '@modules/common/catalogue/catalogue.service';
 import { BaseCurrentProcessGuideDto } from '@modules/core/roles/external/dto/process-guide/base-current-process-guide.dto';
 import { CredentialEntity } from '@modules/core/entities/credential.entity';
 import { CatalogueEntity } from '@modules/common/catalogue/catalogue.entity';
+import { DpaEntity } from '@modules/common/dpa/dpa.entity';
 
 @Injectable()
 export class ProcessGuideService {
@@ -465,6 +466,24 @@ export class ProcessGuideService {
     const languageRepository = manager.getRepository(LanguageEntity);
     const modalityRepository = manager.getRepository(AdventureModalityEntity);
     const protectedAreaRepository = manager.getRepository(ProtectedAreaEntity);
+    const dpaRepository = manager.getRepository(DpaEntity);
+
+    if (payload.guideOrigin.languages) {
+      const languagesString = payload.guideOrigin.languages.split(',').map((i) => i.trim());
+      const languagesDB = await catalogueRepository.find({
+        where: { name: In(languagesString) },
+      });
+      if (languagesDB) {
+        for (const language of languagesDB) {
+          const languageSave = languageRepository.create();
+          languageSave.processId = process.id;
+          languageSave.establishmentId = payload.establishment.id;
+          languageSave.languageCode = language.code;
+          languageSave.languageName = language.name;
+          await languageRepository.save(languageSave);
+        }
+      }
+    }
 
     for (const item of payload.credentials) {
       const credential = credentialRepository.create();
@@ -473,34 +492,52 @@ export class ProcessGuideService {
         where: { code: item.classificationCode },
         relations: { category: true },
       });
-      if (classification) {
-        credential.classificationId = classification?.id;
-        credential.categoryId = classification?.category.id;
+      if (!classification) {
+        throw new NotFoundException({
+          error: 'Clasificación no homologada',
+          message: 'Comunicarse con la Dirección de Acreditación y Control',
+        });
       }
+      credential.classificationId = classification?.id;
+      credential.categoryId = classification?.category.id;
       credential.startedAt = new Date(item.startedAt);
       credential.endedAt = new Date(item.endedAt);
       credential.processId = process.id;
       credential.establishmentId = payload.establishment.id;
-
       await credentialRepository.save(credential);
 
-      if (item.languages) {
-        const languagesString = item.languages.split(',').map((i) => i.trim());
-        const languagesDB = await catalogueRepository.find({
-          where: { name: In(languagesString) },
-        });
-        if (languagesDB) {
-          for (const language of languagesDB) {
-            const languageSave = languageRepository.create();
-            languageSave.processId = process.id;
-            languageSave.establishmentId = payload.establishment.id;
-            languageSave.languageCode = language.code;
-            languageSave.languageName = language.name;
-            await languageRepository.save(languageSave);
+      if (CatalogueProcessGuidesCodeEnum.guide_local === classification?.code) {
+        if (item.protectedAreas) {
+          const protectedAreasString = item.protectedAreas.split(',').map((i) => i.trim());
+          const protectedAreasDB = await catalogueRepository.find({
+            where: { name: In(protectedAreasString) },
+          });
+          if (protectedAreasDB) {
+            for (const area of protectedAreasDB) {
+              const areaSave = protectedAreaRepository.create();
+              areaSave.processId = process.id;
+              areaSave.establishmentId = payload.establishment.id;
+              areaSave.areaCode = area.code;
+              areaSave.areaName = area.name;
+              await protectedAreaRepository.save(areaSave);
+            }
+          }
+        } else {
+          const areaSave = protectedAreaRepository.create();
+          const dpa = await dpaRepository.findOne({
+            where: {
+              name: ILike(payload.guideOrigin.canton),
+              parent: { name: ILike(payload.guideOrigin.province) },
+            },
+          });
+          if (dpa) {
+            areaSave.processId = process.id;
+            areaSave.establishmentId = payload.establishment.id;
+            areaSave.cantonId = dpa?.id;
+            areaSave.provinceId = dpa.parentId;
           }
         }
       }
-
       if (item.modalities) {
         const modalitiesString = item.modalities.split(',').map((i) => i.trim());
         const modalitiesDB = await catalogueRepository.find({
@@ -514,23 +551,6 @@ export class ProcessGuideService {
             modalitySave.modalityCode = modality.code;
             modalitySave.modalityName = modality.name;
             await modalityRepository.save(modalitySave);
-          }
-        }
-      }
-
-      if (item.protectedAreas) {
-        const protectedAreasString = item.protectedAreas.split(',').map((i) => i.trim());
-        const protectedAreasDB = await catalogueRepository.find({
-          where: { name: In(protectedAreasString) },
-        });
-        if (protectedAreasDB) {
-          for (const area of protectedAreasDB) {
-            const areaSave = protectedAreaRepository.create();
-            areaSave.processId = process.id;
-            areaSave.establishmentId = payload.establishment.id;
-            areaSave.areaCode = area.code;
-            areaSave.areaName = area.name;
-            await protectedAreaRepository.save(areaSave);
           }
         }
       }
