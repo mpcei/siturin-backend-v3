@@ -1,6 +1,6 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
-import { AuthRepositoryEnum, ConfigEnum } from '@utils/enums';
+import { AuthRepositoryEnum, ConfigEnum, GuideRepositoryEnum } from '@utils/enums';
 import { ServiceResponseHttpInterface } from '@utils/interfaces';
 import { firstValueFrom } from 'rxjs';
 import { retry } from 'rxjs/operators';
@@ -11,6 +11,7 @@ import { HttpService } from '@nestjs/axios';
 import { ProfessionalTitleEntity } from '@modules/core/entities/professional-title.entity';
 import { UserEntity } from '@auth/entities';
 import { CataloguesService } from '@modules/common/catalogue/catalogue.service';
+import { RequirementConfigurationEntity } from '@modules/core/entities/requirement-configuration.entity';
 
 interface minedecProfessionalTitle {
   nombre: string;
@@ -31,14 +32,34 @@ export class GuideService {
     @Inject(envConfig.KEY) private configService: ConfigType<typeof envConfig>,
     @Inject(CoreRepositoryEnum.PROFESSIONAL_TITLE_REPOSITORY)
     private readonly professionalTitleRepository: Repository<ProfessionalTitleEntity>,
+    @Inject(GuideRepositoryEnum.REQUIREMENT_CONFIGURATION_REPOSITORY)
+    private readonly requirementConfigurationRepository: Repository<RequirementConfigurationEntity>,
     private readonly httpService: HttpService,
   ) {}
 
   async findGuideByIdentification(ruc: string): Promise<ServiceResponseHttpInterface> {
-    const cedula = ruc.substring(0,10);
+    const cedula = ruc.substring(0, 10);
     const result = await this.dataSource.query(`SELECT * FROM public.guias WHERE cedula = $1`, [
       cedula,
     ]);
+
+    return {
+      data: result,
+    };
+  }
+
+  async findRequirementConfiguration(
+    classificationId: string,
+    professionalTypeCode: string,
+  ): Promise<ServiceResponseHttpInterface> {
+    const result = await this.requirementConfigurationRepository.find({
+      where: {
+        classificationId: classificationId,
+        professionalTypeCode: professionalTypeCode,
+        enabledRegister: true,
+      },
+      order: { sortRegister: 'ASC' },
+    });
 
     return {
       data: result,

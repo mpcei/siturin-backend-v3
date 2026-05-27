@@ -67,4 +67,23 @@ export class GuideController {
       title: `Consultados`,
     };
   }
+
+  @PublicRoute()
+  @ApiOperation({ summary: 'Buscar lo requisitos por clasificación' })
+  @Get('requirement-configurations')
+  async findRequirementConfigurations(
+    @Query('classificationId') classificationId: string,
+    @Query('professionalTypeCode') professionalTypeCode: string,
+  ): Promise<ResponseHttpInterface> {
+    const serviceResponse = await this.service.findRequirementConfiguration(
+      classificationId,
+      professionalTypeCode,
+    );
+
+    return {
+      ...serviceResponse,
+      message: `Requisitos normativos por Clasificación`,
+      title: `Consultados`,
+    };
+  }
 }
