@@ -10,6 +10,27 @@ import { GuideService } from '../services/guide.service';
 export class GuideController {
   constructor(private service: GuideService) {}
 
+  @PublicRoute()
+  @ApiOperation({ summary: 'Buscar lo requisitos por clasificación' })
+  @Get('requirement-configurations')
+  async findRequirementConfigurations(
+    @Query('classificationId') classificationId: string,
+    @Query('professionalTypeCode') professionalTypeCode: string,
+  ): Promise<ResponseHttpInterface> {
+    console.log('classificationId' + classificationId);
+    console.log('professionalTypeCode' + professionalTypeCode);
+    const serviceResponse = await this.service.findRequirementConfiguration(
+      classificationId,
+      professionalTypeCode,
+    );
+
+    return {
+      ...serviceResponse,
+      message: `Requisitos normativos por Clasificación`,
+      title: `Consultados`,
+    };
+  }
+
   @ApiOperation({ summary: 'Create Professional Title' })
   @Post('professional-titles')
   async createProfessionalTitleByIdentification(
@@ -64,25 +85,6 @@ export class GuideController {
     return {
       ...serviceResponse,
       message: `Cache de Actividades, Clasificaciones y Categorias Consultadas`,
-      title: `Consultados`,
-    };
-  }
-
-  @PublicRoute()
-  @ApiOperation({ summary: 'Buscar lo requisitos por clasificación' })
-  @Get('requirement-configurations')
-  async findRequirementConfigurations(
-    @Query('classificationId') classificationId: string,
-    @Query('professionalTypeCode') professionalTypeCode: string,
-  ): Promise<ResponseHttpInterface> {
-    const serviceResponse = await this.service.findRequirementConfiguration(
-      classificationId,
-      professionalTypeCode,
-    );
-
-    return {
-      ...serviceResponse,
-      message: `Requisitos normativos por Clasificación`,
       title: `Consultados`,
     };
   }
