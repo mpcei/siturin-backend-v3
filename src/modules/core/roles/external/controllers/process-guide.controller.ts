@@ -64,4 +64,22 @@ export class ProcessGuideController {
       title: serviceResponse.title,
     };
   }
+
+  @ApiOperation({ summary: 'Registration Process Current Credential' })
+  @UseInterceptors(AnyFilesInterceptor(), ParseMultipartInterceptor)
+  @Post('current-registrations')
+  async createExpiredRegistration(
+    @UploadedFiles() files: Express.Multer.File[],
+    @Body('payload') payload: BaseCurrentProcessGuideDto,
+    @User() user: UserEntity,
+  ): Promise<ResponseHttpInterface> {
+    console.log(payload);
+    const serviceResponse = await this.service.createExpiredRegistration(payload, user, files);
+
+    return {
+      data: serviceResponse.data,
+      message: serviceResponse.message,
+      title: serviceResponse.title,
+    };
+  }
 }

@@ -58,6 +58,7 @@ export class GuideService {
         professionalTypeCode: professionalTypeCode,
         enabledRegister: true,
       },
+      relations: { requirement: true },
       order: { sortRegister: 'ASC' },
     });
 

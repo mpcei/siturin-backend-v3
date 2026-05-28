@@ -558,4 +558,36 @@ export class ProcessGuideService {
 
     return true;
   }
+
+  async createExpiredRegistration(
+    payload: BaseCurrentProcessGuideDto,
+    user: UserEntity,
+    files: Express.Multer.File[],
+  ): Promise<ResponseHttpInterface> {
+    return await this.dataSource.transaction(async (manager) => {
+      const userUpdate = await this.saveUser(manager, payload.user, user);
+      const process = await this.saveCurrentProcess(manager, payload, userUpdate);
+      const establishment = await this.saveEstablishment(
+        manager,
+        payload.establishment,
+        payload.user,
+        process.id,
+      );
+      const processGuide = await this.saveCurrentProcessGuide(
+        manager,
+        userUpdate,
+        files,
+        payload,
+        process,
+      );
+
+      const credential = await this.saveCredential(manager, payload, process);
+
+      return {
+        data: null,
+        title: 'Solicitud enviada',
+        message: 'Recuerde revisar su correo electronico de manera permanente',
+      };
+    });
+  }
 }
