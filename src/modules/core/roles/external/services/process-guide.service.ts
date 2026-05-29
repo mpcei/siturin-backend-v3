@@ -26,10 +26,10 @@ import { AdventureModalityEntity } from '@modules/core/entities/adventure-modali
 import { ProtectedAreaEntity } from '@modules/core/entities/protected-area.entity';
 import { LanguageEntity } from '@modules/core/entities/language.entity';
 import { CataloguesService } from '@modules/common/catalogue/catalogue.service';
-import { BaseCurrentProcessGuideDto } from '@modules/core/roles/external/dto/process-guide/base-current-process-guide.dto';
 import { CredentialEntity } from '@modules/core/entities/credential.entity';
 import { CatalogueEntity } from '@modules/common/catalogue/catalogue.entity';
 import { DpaEntity } from '@modules/common/dpa/dpa.entity';
+import { BaseWithOriginProcessGuideDto } from '@modules/core/roles/external/dto/process-guide/base-with-origin-process-guide.dto';
 
 @Injectable()
 export class ProcessGuideService {
@@ -159,11 +159,10 @@ export class ProcessGuideService {
     user: UserEntity,
   ): Promise<ProcessEntity> {
     const processRepository = manager.getRepository(ProcessEntity);
+    const credentialRepository = manager.getRepository(CredentialEntity);
 
     const process = processRepository.create();
     process.activityId = payload.process.activity.id;
-    process.classificationId = payload.process.classification.id;
-    process.categoryId = payload.process.category.id;
     process.professionalTitleId = payload.process.professionalTitle.id;
     process.establishmentId = payload.establishment.id;
     process.type = payload.process.type.id;
@@ -178,8 +177,16 @@ export class ProcessGuideService {
       process.totalMen = 1;
       if (user.hasDisability) process.totalMenDisability = 1;
     }
+    const saveProcess = await processRepository.save(process);
 
-    return await processRepository.save(process);
+    const credential = credentialRepository.create();
+    credential.classificationId = payload.process.classification.id;
+    credential.categoryId = payload.process.category.id;
+    credential.processId = saveProcess.id;
+    credential.establishmentId = payload.establishment.id;
+    await credentialRepository.save(credential);
+
+    return saveProcess;
   }
 
   private async saveProcessGuide(
@@ -211,6 +218,11 @@ export class ProcessGuideService {
 
       //Guardar areas protegidas
       if (item.requirement.code === CatalogueProcessGuidesCodeEnum.pane) {
+        console.log('pane', item.value == 'true');
+        const processRepository = manager.getRepository(ProcessEntity);
+        process.isProtectedArea = item.value == 'true';
+        await processRepository.save(process);
+
         for (const item of payload.protectedAreas) {
           const protectedArea = ProtectedAreaRepository.create();
           protectedArea.processId = process.id;
@@ -372,20 +384,20 @@ export class ProcessGuideService {
   }
 
   async createCurrentRegistration(
-    payload: BaseCurrentProcessGuideDto,
+    payload: BaseWithOriginProcessGuideDto,
     user: UserEntity,
     files: Express.Multer.File[],
   ): Promise<ResponseHttpInterface> {
     return await this.dataSource.transaction(async (manager) => {
       const userUpdate = await this.saveUser(manager, payload.user, user);
-      const process = await this.saveCurrentProcess(manager, payload, userUpdate);
+      const process = await this.saveWithOriginProcess(manager, payload, userUpdate);
       const establishment = await this.saveEstablishment(
         manager,
         payload.establishment,
         payload.user,
         process.id,
       );
-      const processGuide = await this.saveCurrentProcessGuide(
+      const processGuide = await this.saveWithOriginProcessGuide(
         manager,
         userUpdate,
         files,
@@ -393,7 +405,7 @@ export class ProcessGuideService {
         process,
       );
 
-      const credential = await this.saveCredential(manager, payload, process);
+      const credential = await this.saveWithOriginCredential(manager, payload, process);
 
       return {
         data: null,
@@ -403,9 +415,9 @@ export class ProcessGuideService {
     });
   }
 
-  private async saveCurrentProcess(
+  private async saveWithOriginProcess(
     manager: EntityManager,
-    payload: BaseCurrentProcessGuideDto,
+    payload: BaseWithOriginProcessGuideDto,
     user: UserEntity,
   ): Promise<ProcessEntity> {
     const processRepository = manager.getRepository(ProcessEntity);
@@ -428,11 +440,11 @@ export class ProcessGuideService {
     return await processRepository.save(process);
   }
 
-  private async saveCurrentProcessGuide(
+  private async saveWithOriginProcessGuide(
     manager: EntityManager,
     user: UserEntity,
     files: Express.Multer.File[],
-    payload: BaseCurrentProcessGuideDto,
+    payload: BaseWithOriginProcessGuideDto,
     process: ProcessEntity,
   ): Promise<boolean> {
     const processGuideRepository = manager.getRepository(ProcessGuideEntity);
@@ -442,6 +454,12 @@ export class ProcessGuideService {
       processGuide.requirementId = item.requirement.id;
       processGuide.value = item.value;
       const processGuideSave = await processGuideRepository.save(processGuide);
+
+      if (item.requirement.code === CatalogueProcessGuidesCodeEnum.pane_guide) {
+        const processRepository = manager.getRepository(ProcessEntity);
+        process.isProtectedArea = item.value == 'true';
+        await processRepository.save(process);
+      }
 
       await this.saveFile(
         manager,
@@ -455,9 +473,9 @@ export class ProcessGuideService {
     return true;
   }
 
-  private async saveCredential(
+  private async saveWithOriginCredential(
     manager: EntityManager,
-    payload: BaseCurrentProcessGuideDto,
+    payload: BaseWithOriginProcessGuideDto,
     process: ProcessEntity,
   ): Promise<boolean> {
     const credentialRepository = manager.getRepository(CredentialEntity);
@@ -513,6 +531,10 @@ export class ProcessGuideService {
             where: { name: In(protectedAreasString) },
           });
           if (protectedAreasDB) {
+            const processRepository = manager.getRepository(ProcessEntity);
+            process.isProtectedArea = true;
+            await processRepository.save(process);
+
             for (const area of protectedAreasDB) {
               const areaSave = protectedAreaRepository.create();
               areaSave.processId = process.id;
@@ -560,20 +582,20 @@ export class ProcessGuideService {
   }
 
   async createExpiredRegistration(
-    payload: BaseCurrentProcessGuideDto,
+    payload: BaseWithOriginProcessGuideDto,
     user: UserEntity,
     files: Express.Multer.File[],
   ): Promise<ResponseHttpInterface> {
     return await this.dataSource.transaction(async (manager) => {
       const userUpdate = await this.saveUser(manager, payload.user, user);
-      const process = await this.saveCurrentProcess(manager, payload, userUpdate);
+      const process = await this.saveWithOriginProcess(manager, payload, userUpdate);
       const establishment = await this.saveEstablishment(
         manager,
         payload.establishment,
         payload.user,
         process.id,
       );
-      const processGuide = await this.saveCurrentProcessGuide(
+      const processGuide = await this.saveWithOriginProcessGuide(
         manager,
         userUpdate,
         files,
@@ -581,7 +603,7 @@ export class ProcessGuideService {
         process,
       );
 
-      const credential = await this.saveCredential(manager, payload, process);
+      const credential = await this.saveWithOriginCredential(manager, payload, process);
 
       return {
         data: null,

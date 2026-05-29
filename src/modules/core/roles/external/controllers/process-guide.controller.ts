@@ -16,8 +16,8 @@ import { ParseFormPayloadJsonPipe } from '@utils/pipes';
 import { UserEntity } from '@auth/entities';
 import { ParseMultipartInterceptor } from '@utils/interceptors';
 import {
-  BaseCurrentProcessGuideDto
-} from '@modules/core/roles/external/dto/process-guide/base-current-process-guide.dto';
+  BaseWithOriginProcessGuideDto
+} from '@modules/core/roles/external/dto/process-guide/base-with-origin-process-guide.dto';
 
 @ApiTags('Process Guide')
 @Auth()
@@ -52,7 +52,7 @@ export class ProcessGuideController {
   @Post('current-registrations')
   async createCurrentRegistration(
     @UploadedFiles() files: Express.Multer.File[],
-    @Body('payload') payload: BaseCurrentProcessGuideDto,
+    @Body('payload') payload: BaseWithOriginProcessGuideDto,
     @User() user: UserEntity,
   ): Promise<ResponseHttpInterface> {
     console.log(payload);
@@ -67,10 +67,10 @@ export class ProcessGuideController {
 
   @ApiOperation({ summary: 'Registration Process Current Credential' })
   @UseInterceptors(AnyFilesInterceptor(), ParseMultipartInterceptor)
-  @Post('current-registrations')
+  @Post('expired-registrations')
   async createExpiredRegistration(
     @UploadedFiles() files: Express.Multer.File[],
-    @Body('payload') payload: BaseCurrentProcessGuideDto,
+    @Body('payload') payload: BaseWithOriginProcessGuideDto,
     @User() user: UserEntity,
   ): Promise<ResponseHttpInterface> {
     console.log(payload);

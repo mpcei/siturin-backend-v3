@@ -5,11 +5,11 @@ import {
   ProcessGuideDto,
   UserDto,
 } from '@modules/core/roles/external/dto/process-guide';
-import { CurrentProcessDto } from '@modules/core/roles/external/dto/process-guide/current-process.dto';
+import { WithOriginProcessDto } from '@modules/core/roles/external/dto/process-guide/with-origin-process.dto';
 import { CredentialDto } from '@modules/core/roles/external/dto/process-guide/credential.dto';
 import { GuideOriginDto } from '@modules/core/roles/external/dto/process-guide/guide-origin.dto';
 
-export class BaseCurrentProcessGuideDto {
+export class BaseWithOriginProcessGuideDto {
   @IsObject()
   @ValidateNested()
   @Type(() => EstablishmentDto)
@@ -22,8 +22,8 @@ export class BaseCurrentProcessGuideDto {
 
   @IsObject()
   @ValidateNested()
-  @Type(() => CurrentProcessDto)
-  readonly process: CurrentProcessDto;
+  @Type(() => WithOriginProcessDto)
+  readonly process: WithOriginProcessDto;
 
   @IsObject()
   @ValidateNested()

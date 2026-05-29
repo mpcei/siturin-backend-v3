@@ -2,7 +2,7 @@ import { IsDate, IsNotEmpty, IsObject, IsOptional } from 'class-validator';
 import { isDateValidationOptions, isNotEmptyValidationOptions } from '@utils/dto-validation';
 import { Type } from 'class-transformer';
 
-export class CurrentProcessDto {
+export class WithOriginProcessDto {
   @IsObject()
   @IsNotEmpty(isNotEmptyValidationOptions())
   readonly type: any;

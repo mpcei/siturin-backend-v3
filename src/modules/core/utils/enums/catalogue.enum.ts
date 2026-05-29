@@ -180,6 +180,7 @@ export enum CatalogueProcessGuidesCodeEnum {
   document_vehicle_inspection = 'document_vehicle_inspection',
   accident_policy = 'accident_policy',
   guide_local = 'guide_local',
+  pane_guide = 'pane_guide',
 }
 
 export enum CatalogueProfessionalTitlesLevelEnum {

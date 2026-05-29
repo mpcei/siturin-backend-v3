@@ -123,7 +123,7 @@ export class CredentialEntity {
     name: 'state_name',
     type: 'varchar',
     nullable: true,
-    comment: 'Nombre del de la credencial. Proviene de catalago. Ejemplo: Caducado Inactivo',
+    comment: 'Nombre del estado de la credencial. Proviene de catalago. Ejemplo: Caducado Inactivo',
   })
   stateName: string;
 }

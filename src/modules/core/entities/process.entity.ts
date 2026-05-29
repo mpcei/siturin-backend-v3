@@ -268,7 +268,7 @@ export class ProcessEntity {
   @Column({
     name: 'is_protected_area',
     type: 'boolean',
-    nullable: true,
+    default: false,
     comment: '',
   })
   isProtectedArea: boolean;
