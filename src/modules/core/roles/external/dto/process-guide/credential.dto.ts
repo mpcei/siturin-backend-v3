@@ -17,6 +17,15 @@ export class CredentialDto {
   @IsOptional()
   @IsString(isStringValidationOptions())
   @IsNotEmpty(isNotEmptyValidationOptions())
+  readonly code: string;
+
+  @IsString(isStringValidationOptions())
+  @IsNotEmpty(isNotEmptyValidationOptions())
+  readonly origin: string;
+
+  @IsOptional()
+  @IsString(isStringValidationOptions())
+  @IsNotEmpty(isNotEmptyValidationOptions())
   readonly protectedAreas: string;
 
   @IsOptional()

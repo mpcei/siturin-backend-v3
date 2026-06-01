@@ -112,6 +112,22 @@ export class CredentialEntity {
   endedAt: Date;
 
   @Column({
+    name: 'code',
+    type: 'varchar',
+    nullable: true,
+    comment: 'Código identificador de la clasificación. Ejemplo: GTL.001.0000040',
+  })
+  code: string;
+
+  @Column({
+    name: 'origin',
+    type: 'varchar',
+    nullable: true,
+    comment: 'Origin de la clasificacion. Ejemplo: SIETE, CANJE',
+  })
+  origin: string;
+
+  @Column({
     name: 'state_code',
     type: 'varchar',
     nullable: true,

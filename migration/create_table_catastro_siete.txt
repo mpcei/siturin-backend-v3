@@ -24,7 +24,8 @@ create table guias
     telefono_celular         varchar(10),
     correo_electronico       varchar(100),
     acceso_area_protegida    text,
-    modalidad                text
+    modalidad                text,
+    origin                   text
 );
 
 alter table guias

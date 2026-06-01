@@ -520,6 +520,8 @@ export class ProcessGuideService {
       credential.categoryId = classification?.category.id;
       credential.startedAt = new Date(item.startedAt);
       credential.endedAt = new Date(item.endedAt);
+      credential.code = item.code;
+      credential.origin = item.origin;
       credential.processId = process.id;
       credential.establishmentId = payload.establishment.id;
       await credentialRepository.save(credential);
