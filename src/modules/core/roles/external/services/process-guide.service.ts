@@ -528,10 +528,18 @@ export class ProcessGuideService {
 
       if (CatalogueProcessGuidesCodeEnum.guide_local === classification?.code) {
         if (item.protectedAreas) {
-          const protectedAreasString = item.protectedAreas.split(',').map((i) => i.trim());
-          const protectedAreasDB = await catalogueRepository.find({
-            where: { name: In(protectedAreasString) },
-          });
+          const protectedAreasString = item.protectedAreas
+            .split(',')
+            .map((i) => i.trim().toLowerCase());
+          // const protectedAreasDB = await catalogueRepository.find({
+          //   where: { name: In(protectedAreasString) },
+          // });
+          const protectedAreasDB = await catalogueRepository
+            .createQueryBuilder('catalogue')
+            .where('LOWER(catalogue.name) IN (:...names)', {
+              names: protectedAreasString,
+            })
+            .getMany();
           if (protectedAreasDB) {
             const processRepository = manager.getRepository(ProcessEntity);
             process.isProtectedArea = true;
@@ -563,10 +571,16 @@ export class ProcessGuideService {
         }
       }
       if (item.modalities) {
-        const modalitiesString = item.modalities.split(',').map((i) => i.trim());
-        const modalitiesDB = await catalogueRepository.find({
-          where: { name: In(modalitiesString) },
-        });
+        const modalitiesString = item.modalities.split(',').map((i) => i.trim().toLowerCase());
+        // const modalitiesDB = await catalogueRepository.find({
+        //   where: { name: In(modalitiesString) },
+        // });
+        const modalitiesDB = await catalogueRepository
+          .createQueryBuilder('catalogue')
+          .where('LOWER(catalogue.name) IN (:...names)', {
+            names: modalitiesString,
+          })
+          .getMany();
         if (modalitiesDB) {
           for (const modality of modalitiesDB) {
             const modalitySave = modalityRepository.create();
