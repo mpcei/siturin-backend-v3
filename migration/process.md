@@ -20,7 +20,8 @@
 
 # Cambios Catalogues
 - Actualizar tipos de tramite
+- Actualizar estados de catastro
 - Actualizar el code de continente a continent
-- 
+- Actualizar el code de ruc_types juridica a juridical
 
 

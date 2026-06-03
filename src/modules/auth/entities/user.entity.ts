@@ -10,6 +10,7 @@ import {
   ManyToMany,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -19,6 +20,7 @@ import { CatalogueEntity } from '@modules/common/catalogue/catalogue.entity';
 import { SecurityQuestionEntity } from '@auth/entities/security-question.entity';
 import { resolveMaxAttempts } from '@auth/constants';
 import { EmailVerificationsEntity } from '@auth/entities/email-verifications.entity';
+import { RucEntity } from '@modules/core/entities';
 
 @Entity('users', { schema: 'auth' })
 export class UserEntity {
@@ -57,6 +59,9 @@ export class UserEntity {
 
   @OneToMany(() => EmailVerificationsEntity, (entity) => entity.user)
   emailVerifications: EmailVerificationsEntity[];
+
+  @OneToOne(() => RucEntity, (ruc) => ruc.user)
+  ruc: RucEntity;
 
   /** Foreign Keys **/
   @ManyToOne(() => CatalogueEntity, { nullable: true })

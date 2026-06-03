@@ -13,6 +13,7 @@ import {
 import { CatalogueEntity } from '@modules/common/catalogue/catalogue.entity';
 import { PaymentEntity } from '@modules/core/entities/payment.entity';
 import { EstablishmentEntity } from '@modules/core/entities/establishment.entity';
+import { UserEntity } from '@auth/entities';
 
 @Entity('rucs', { schema: 'core' })
 export class RucEntity {
@@ -91,6 +92,13 @@ export class RucEntity {
     comment: '',
   })
   legalEntityId: string;
+
+  @OneToOne(() => UserEntity, (user) => user.ruc)
+  @JoinColumn({
+    name: 'number',
+    referencedColumnName: 'identification',
+  })
+  user: UserEntity;
 
   /** Columns **/
   @Column({

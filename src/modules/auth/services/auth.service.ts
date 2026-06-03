@@ -130,6 +130,7 @@ export class AuthService {
         roles: true,
         nationality: true,
         sex: true,
+        ruc: { type: true },
       },
     });
 
@@ -278,7 +279,7 @@ export class AuthService {
   async createRuc(ruc: CreateRucDto): Promise<RucEntity> {
     const catalogues = await this.cataloguesService.findCache();
     const state = catalogues.find((item) => item.code === ruc.estadoContribuyente.toLowerCase());
-    const type = catalogues.find((item) => item.code === ruc.tipoContribuyente.toLowerCase());
+    const type = catalogues.find((item) => item.acronym === ruc.tipoContribuyente.toLowerCase());
 
     const rucEntity = this.rucRepository.create();
     rucEntity.mainEconomicActivity = ruc.actividadEconomicaPrincipal;
