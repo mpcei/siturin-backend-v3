@@ -203,7 +203,7 @@ export class EstablishmentService {
     return await this.repository.findOne({
       where: { id: establishmentId },
       relations: {
-        process: { cadastre: { state: true } },
+        process: { cadastre: { state: true }, activity: true },
         credentials: true,
         province: true,
         canton: true,
