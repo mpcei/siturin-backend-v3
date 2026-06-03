@@ -216,6 +216,8 @@ export class ProcessGuideService {
     cadastre.processId = process.id;
     cadastre.registerNumber = '14528798457.002.001';
     cadastre.registeredAt = new Date();
+    cadastre.systemOrigin = 'SITURIN';
+
     if (catalogue) {
       cadastre.stateId = catalogue.id;
     }
