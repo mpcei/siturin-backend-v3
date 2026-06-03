@@ -109,4 +109,18 @@ export class EstablishmentController {
       title: `Consultado`,
     };
   }
+
+  @ApiOperation({ summary: 'Find One Cadastre' })
+  @Get(':id/cadastres')
+  async findCadastreByEstablishment(
+    @Param('id', ParseUUIDPipe) id: string,
+  ): Promise<ResponseHttpInterface> {
+    const serviceResponse = await this.service.findCadastreByEstablishment(id);
+
+    return {
+      data: serviceResponse,
+      message: `Registro Consultado`,
+      title: `Consultado`,
+    };
+  }
 }

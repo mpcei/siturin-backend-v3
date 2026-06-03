@@ -24,6 +24,7 @@ import { AssignmentEntity } from '@modules/core/entities/assignment.entity';
 import { ProcessStateEntity } from '@modules/core/entities/process-state.entity';
 import { ProcessGuideEntity } from '@modules/core/entities/process-guide.entity';
 import { ProfessionalTitleEntity } from '@modules/core/entities/professional-title.entity';
+import { CredentialEntity } from '@modules/core/entities/credential.entity';
 
 @Entity('processes', { schema: 'core' })
 export class ProcessEntity {
@@ -92,6 +93,9 @@ export class ProcessEntity {
 
   @OneToOne(() => ProcessGuideEntity, (entity) => entity.process)
   processGuia: ProcessStateEntity;
+
+  @OneToMany(() => CredentialEntity, (entity) => entity.process)
+  credentials: CredentialEntity[];
 
   /** Foreign Keys **/
   @ManyToOne(() => ActivityEntity, { nullable: true })
