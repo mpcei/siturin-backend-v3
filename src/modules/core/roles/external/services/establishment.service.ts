@@ -198,4 +198,17 @@ export class EstablishmentService {
       };
     });
   }
+
+  async findCadastreByEstablishment(establishmentId: string): Promise<any> {
+    return await this.repository.findOne({
+      where: { id: establishmentId },
+      relations: {
+        process: { cadastre: true },
+        credentials: true,
+        province: true,
+        canton: true,
+        parish: true,
+      },
+    });
+  }
 }

@@ -15,6 +15,7 @@ import { CatalogueEntity } from '@modules/common/catalogue/catalogue.entity';
 import { DpaEntity } from '@modules/common/dpa/dpa.entity';
 import { ProcessEntity } from '@modules/core/entities/process.entity';
 import { EstablishmentAddressEntity } from '@modules/core/entities/establishment-address.entity';
+import { CredentialEntity } from '@modules/core/entities/credential.entity';
 
 @Entity('establishments', { schema: 'core' })
 export class EstablishmentEntity {
@@ -62,6 +63,9 @@ export class EstablishmentEntity {
 
   @OneToOne(() => EstablishmentAddressEntity, (entity) => entity.establishment)
   establishmentAddress: EstablishmentAddressEntity;
+
+  @OneToMany(() => CredentialEntity, (entity) => entity.establishment)
+  credentials: CredentialEntity[];
 
   /** Foreign Keys **/
   @ManyToOne(() => RucEntity, { nullable: true })

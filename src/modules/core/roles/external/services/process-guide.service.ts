@@ -435,6 +435,7 @@ export class ProcessGuideService {
     return await this.dataSource.transaction(async (manager) => {
       const userUpdate = await this.saveUser(manager, payload.user, user);
       const process = await this.saveWithOriginProcess(manager, payload, userUpdate);
+      const cadastre = await this.saveCadastre(manager, user, process);
       const establishment = await this.saveEstablishment(
         manager,
         payload.establishment,
@@ -649,6 +650,7 @@ export class ProcessGuideService {
     return await this.dataSource.transaction(async (manager) => {
       const userUpdate = await this.saveUser(manager, payload.user, user);
       const process = await this.saveWithOriginProcess(manager, payload, userUpdate);
+      const cadastre = await this.saveCadastre(manager, user, process);
       const establishment = await this.saveEstablishment(
         manager,
         payload.establishment,
