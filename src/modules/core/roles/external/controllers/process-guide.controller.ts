@@ -37,7 +37,6 @@ export class ProcessGuideController {
     @Body('payload') payload: BaseProcessGuideDto,
     @User() user: UserEntity,
   ): Promise<ResponseHttpInterface> {
-    console.log(payload);
     const serviceResponse = await this.service.createRegistration(payload, user, files);
 
     return {
@@ -55,7 +54,6 @@ export class ProcessGuideController {
     @Body('payload') payload: BaseWithOriginProcessGuideDto,
     @User() user: UserEntity,
   ): Promise<ResponseHttpInterface> {
-    console.log(payload);
     const serviceResponse = await this.service.createCurrentRegistration(payload, user, files);
 
     return {
@@ -73,7 +71,6 @@ export class ProcessGuideController {
     @Body('payload') payload: BaseWithOriginProcessGuideDto,
     @User() user: UserEntity,
   ): Promise<ResponseHttpInterface> {
-    console.log(payload);
     const serviceResponse = await this.service.createExpiredRegistration(payload, user, files);
 
     return {

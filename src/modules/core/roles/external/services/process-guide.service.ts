@@ -217,7 +217,7 @@ export class ProcessGuideService {
     cadastre.registerNumber = '14528798457.002.001';
     cadastre.registeredAt = new Date();
     cadastre.systemOrigin = 'SITURIN';
-    console.log(catalogue);
+
     if (catalogue) {
       cadastre.stateId = catalogue.id;
     }
@@ -264,7 +264,6 @@ export class ProcessGuideService {
 
       //Guardar areas protegidas
       if (item.requirement.code === CatalogueProcessGuidesCodeEnum.pane) {
-        console.log('pane', item.value == 'true');
         const processRepository = manager.getRepository(ProcessEntity);
         process.isProtectedArea = item.value == 'true';
         await processRepository.save(process);
