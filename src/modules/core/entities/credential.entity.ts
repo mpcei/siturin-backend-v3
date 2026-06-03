@@ -12,6 +12,7 @@ import { EstablishmentEntity } from '@modules/core/entities/establishment.entity
 import { ProcessEntity } from '@modules/core/entities/process.entity';
 import { ClassificationEntity } from '@modules/core/entities/classification.entity';
 import { CategoryEntity } from '@modules/core/entities/category.entity';
+import { CatalogueEntity } from '@modules/common/catalogue/catalogue.entity';
 
 @Entity('credentials', { schema: 'guide' })
 export class CredentialEntity {
@@ -93,6 +94,17 @@ export class CredentialEntity {
     comment: '',
   })
   categoryId: string;
+
+  @ManyToOne(() => CatalogueEntity, { nullable: true })
+  @JoinColumn({ name: 'geographic_area_id' })
+  geographicArea: CatalogueEntity;
+  @Column({
+    type: 'uuid',
+    name: 'geographic_area_id',
+    nullable: true,
+    comment: '',
+  })
+  geographicAreaId: string;
 
   /** Columns **/
   @Column({

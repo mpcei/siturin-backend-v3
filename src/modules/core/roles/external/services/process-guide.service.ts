@@ -192,6 +192,7 @@ export class ProcessGuideService {
     credential.categoryId = payload.process.category.id;
     credential.processId = saveProcess.id;
     credential.establishmentId = payload.establishment.id;
+    credential.geographicAreaId = payload.process.geographicArea.id;
     await credentialRepository.save(credential);
 
     return saveProcess;
@@ -562,6 +563,14 @@ export class ProcessGuideService {
           message: 'Comunicarse con la Dirección de Acreditación y Control',
         });
       }
+
+      const geographicArea = await catalogueRepository.findOne({
+        where: {
+          name: ILike(item.geographicArea),
+          type: CoreCatalogueTypeEnum.activities_geographic_area,
+        },
+      });
+
       credential.classificationId = classification?.id;
       credential.categoryId = classification?.category.id;
       credential.startedAt = new Date(item.startedAt);
@@ -570,6 +579,9 @@ export class ProcessGuideService {
       credential.origin = item.origin;
       credential.processId = process.id;
       credential.establishmentId = payload.establishment.id;
+      if (geographicArea) {
+        credential.geographicAreaId = geographicArea.id;
+      }
       await credentialRepository.save(credential);
 
       if (CatalogueProcessGuidesCodeEnum.guide_local === classification?.code) {

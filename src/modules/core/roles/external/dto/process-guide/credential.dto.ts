@@ -23,6 +23,10 @@ export class CredentialDto {
   @IsNotEmpty(isNotEmptyValidationOptions())
   readonly origin: string;
 
+  @IsString(isStringValidationOptions())
+  @IsNotEmpty(isNotEmptyValidationOptions())
+  readonly geographicArea: string;
+
   @IsOptional()
   @IsString(isStringValidationOptions())
   @IsNotEmpty(isNotEmptyValidationOptions())

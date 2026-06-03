@@ -204,7 +204,8 @@ export class EstablishmentService {
       where: { id: establishmentId },
       relations: {
         process: { cadastre: { state: true }, activity: true },
-        credentials: true,
+        ruc: true,
+        credentials: { classification: true, geographicArea: true },
         province: true,
         canton: true,
         parish: true,
