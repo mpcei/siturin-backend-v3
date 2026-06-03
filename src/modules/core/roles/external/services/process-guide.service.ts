@@ -25,6 +25,8 @@ import {
 import { ProcessGuideEntity } from '@modules/core/entities/process-guide.entity';
 import {
   CatalogueCadastresStateEnum,
+  CatalogueInactivationCauseCodeEnum,
+  CatalogueProcessesStateEnum,
   CatalogueProcessGuidesCodeEnum,
   CoreCatalogueTypeEnum,
 } from '@modules/core/utils/enums';
@@ -38,6 +40,7 @@ import { CatalogueEntity } from '@modules/common/catalogue/catalogue.entity';
 import { DpaEntity } from '@modules/common/dpa/dpa.entity';
 import { BaseWithOriginProcessGuideDto } from '@modules/core/roles/external/dto/process-guide/base-with-origin-process-guide.dto';
 import { InactivationDto } from '@modules/core/roles/external/dto/process-guide/inactivation.dto';
+import { ProcessStateEntity } from '@modules/core/entities/process-state.entity';
 
 @Injectable()
 export class ProcessGuideService {
@@ -169,7 +172,16 @@ export class ProcessGuideService {
     user: UserEntity,
   ): Promise<ProcessEntity> {
     const processRepository = manager.getRepository(ProcessEntity);
+    const processStateRepository = manager.getRepository(ProcessStateEntity);
+    const catalogueRepository = manager.getRepository(CatalogueEntity);
     const credentialRepository = manager.getRepository(CredentialEntity);
+
+    const processStateCatalogue = await catalogueRepository.findOne({
+      where: {
+        code: CatalogueProcessesStateEnum.in_progress,
+        type: CoreCatalogueTypeEnum.processes_state,
+      },
+    });
 
     const process = processRepository.create();
     process.activityId = payload.process.activity.id;
@@ -187,7 +199,20 @@ export class ProcessGuideService {
       process.totalMen = 1;
       if (user.hasDisability) process.totalMenDisability = 1;
     }
+
+    if (processStateCatalogue) {
+      process.stateId = processStateCatalogue.id;
+    }
     const saveProcess = await processRepository.save(process);
+
+    const processState = processStateRepository.create();
+    processState.processId = saveProcess.id;
+    processState.startedAt = new Date();
+    if (processStateCatalogue) {
+      processState.stateCode = processStateCatalogue.code;
+      processState.stateName = processStateCatalogue.name;
+    }
+    await processStateRepository.save(processState);
 
     const credential = credentialRepository.create();
     credential.classificationId = payload.process.classification.id;
@@ -470,6 +495,15 @@ export class ProcessGuideService {
     user: UserEntity,
   ): Promise<ProcessEntity> {
     const processRepository = manager.getRepository(ProcessEntity);
+    const processStateRepository = manager.getRepository(ProcessStateEntity);
+    const catalogueRepository = manager.getRepository(CatalogueEntity);
+
+    const processStateCatalogue = await catalogueRepository.findOne({
+      where: {
+        code: CatalogueProcessesStateEnum.in_progress,
+        type: CoreCatalogueTypeEnum.processes_state,
+      },
+    });
 
     const process = processRepository.create();
     process.activityId = payload.process.activity.id;
@@ -486,7 +520,21 @@ export class ProcessGuideService {
       if (user.hasDisability) process.totalMenDisability = 1;
     }
 
-    return await processRepository.save(process);
+    if (processStateCatalogue) {
+      process.stateId = processStateCatalogue.id;
+    }
+
+    const processSave = await processRepository.save(process);
+    const processState = processStateRepository.create();
+    processState.processId = processSave.id;
+    processState.startedAt = new Date();
+    if (processStateCatalogue) {
+      processState.stateCode = processStateCatalogue.code;
+      processState.stateName = processStateCatalogue.name;
+    }
+    await processStateRepository.save(processState);
+
+    return processSave;
   }
 
   private async saveWithOriginProcessGuide(
@@ -690,9 +738,7 @@ export class ProcessGuideService {
     });
   }
 
-  async createInactivation(
-    payload: InactivationDto
-  ): Promise<ResponseHttpInterface> {
+  async createInactivation(payload: InactivationDto): Promise<ResponseHttpInterface> {
     return await this.dataSource.transaction(async (manager) => {
       const process = await this.saveInactivationProcess(manager, payload);
       const cadastre = await this.saveInactivationCadastre(manager, payload, process);
@@ -710,6 +756,8 @@ export class ProcessGuideService {
     payload: InactivationDto,
   ): Promise<ProcessEntity> {
     const processRepository = manager.getRepository(ProcessEntity);
+    const processStateRepository = manager.getRepository(ProcessStateEntity);
+    const catalogueRepository = manager.getRepository(CatalogueEntity);
     const inactivationCauseRepository = manager.getRepository(InactivationCauseEntity);
 
     const processOld = await processRepository.findOne({
@@ -722,6 +770,20 @@ export class ProcessGuideService {
         message: 'No encontrado',
       });
     }
+
+    const inactivationCauseType = await catalogueRepository.findOne({
+      where: {
+        code: CatalogueInactivationCauseCodeEnum.peticion,
+        type: CoreCatalogueTypeEnum.inactivation_cause_type,
+      },
+    });
+
+    const processStateCatalogue = await catalogueRepository.findOne({
+      where: {
+        code: CatalogueProcessesStateEnum.completed,
+        type: CoreCatalogueTypeEnum.processes_state,
+      },
+    });
 
     const processNew = processRepository.create();
     processNew.activityId = processOld?.activityId;
@@ -736,9 +798,24 @@ export class ProcessGuideService {
     processNew.totalWomenDisability = processOld.totalWomenDisability;
     processNew.totalMen = processOld.totalMen;
     processNew.totalMenDisability = processOld.totalMenDisability;
+    if (inactivationCauseType) {
+      processNew.inactivationCauseTypeId = inactivationCauseType.id;
+    }
+    if (processStateCatalogue) {
+      processNew.stateId = processStateCatalogue.id;
+    }
 
     await processRepository.softRemove(processOld);
     const processNewSave = await processRepository.save(processNew);
+
+    const processState = processStateRepository.create();
+    processState.processId = processNewSave.id;
+    processState.startedAt = new Date();
+    if (processStateCatalogue) {
+      processState.stateCode = processStateCatalogue.code;
+      processState.stateName = processStateCatalogue.name;
+    }
+    await processStateRepository.save(processState);
 
     if (payload.inactivationCauses) {
       for (const item of payload.inactivationCauses) {

@@ -59,6 +59,12 @@ export enum CatalogueProcessesStateEnum {
   pending_1 = 'pending_1',
   pending_2 = 'pending_2',
   completed = 'completed',
+  in_progress = 'in_progress',
+}
+
+export enum CatalogueInactivationCauseCodeEnum {
+  oficio = 'de_oficio',
+  peticion = 'a_peticion',
 }
 
 export enum CatalogueActivitiesCodeEnum {
@@ -87,7 +93,6 @@ export enum CatalogueCadastresStateEnum {
   recategorized = 'recategorized',
   reclassified = 'reclassified',
 }
-
 export enum CatalogueSchoolPeriodStateEnum {
   OPEN = 'open',
   CLOSE = 'close',
