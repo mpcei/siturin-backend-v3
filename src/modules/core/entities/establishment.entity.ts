@@ -200,7 +200,7 @@ export class EstablishmentEntity {
   @Column({
     name: 'is_cadastre',
     type: 'boolean',
-    default: true,
+    default: false,
     comment: 'true=catastrado, false=no catastrado',
   })
   isCadastre: boolean;
