@@ -194,6 +194,14 @@ export class EstablishmentEntity {
   longitude: number;
 
   @Column({
+    name: 'is_cadastre',
+    type: 'boolean',
+    default: true,
+    comment: 'true=catastrado, false=no catastrado',
+  })
+  isCadastre: boolean;
+
+  @Column({
     name: 'id_temp',
     type: 'bigint',
     nullable: true,

@@ -4,6 +4,8 @@ import { DataSource, EntityManager, ILike, In } from 'typeorm';
 import { CatalogueUsersSexEnum, ConfigEnum } from '@utils/enums';
 import { ResponseHttpInterface } from '@utils/interfaces';
 import {
+  CadastreEntity,
+  CadastreStateEntity,
   ClassificationEntity,
   EstablishmentAddressEntity,
   EstablishmentContactPersonEntity,
@@ -20,7 +22,11 @@ import {
   UserDto,
 } from '@modules/core/roles/external/dto/process-guide';
 import { ProcessGuideEntity } from '@modules/core/entities/process-guide.entity';
-import { CatalogueProcessGuidesCodeEnum, CoreCatalogueTypeEnum } from '@modules/core/utils/enums';
+import {
+  CatalogueCadastresStateEnum,
+  CatalogueProcessGuidesCodeEnum,
+  CoreCatalogueTypeEnum,
+} from '@modules/core/utils/enums';
 import { FileService } from '@modules/common/file/file.service';
 import { AdventureModalityEntity } from '@modules/core/entities/adventure-modality.entity';
 import { ProtectedAreaEntity } from '@modules/core/entities/protected-area.entity';
@@ -50,6 +56,7 @@ export class ProcessGuideService {
     return await this.dataSource.transaction(async (manager) => {
       const userUpdate = await this.saveUser(manager, payload.user, user);
       const process = await this.saveProcess(manager, payload, userUpdate);
+      const cadastre = await this.saveCadastre(manager, user, process);
       const establishment = await this.saveEstablishment(
         manager,
         payload.establishment,
@@ -101,6 +108,7 @@ export class ProcessGuideService {
     establishment.referenceStreet = establishmentLoad.referenceStreet;
     establishment.latitude = establishmentLoad.latitude;
     establishment.longitude = establishmentLoad.longitude;
+    establishment.isCadastre = true;
 
     await establishmentRepository.save(establishment);
 
@@ -187,6 +195,42 @@ export class ProcessGuideService {
     await credentialRepository.save(credential);
 
     return saveProcess;
+  }
+
+  private async saveCadastre(
+    manager: EntityManager,
+    user: UserEntity,
+    process: ProcessEntity,
+  ): Promise<CadastreEntity> {
+    const cadastreRepository = manager.getRepository(CadastreEntity);
+    const catalogueRepository = manager.getRepository(CatalogueEntity);
+
+    const catalogue = await catalogueRepository.findOne({
+      where: {
+        code: CatalogueCadastresStateEnum.ratified,
+        type: CoreCatalogueTypeEnum.cadastre_states_state,
+      },
+    });
+
+    const cadastre = cadastreRepository.create();
+    cadastre.processId = process.id;
+    cadastre.registerNumber = '14528798457.002.001';
+    cadastre.registeredAt = new Date();
+    if (catalogue) {
+      cadastre.stateId = catalogue.id;
+    }
+    const cadastreSave = await cadastreRepository.save(cadastre);
+
+    const cadastreStateRepository = manager.getRepository(CadastreStateEntity);
+    const cadastreState = cadastreStateRepository.create();
+    cadastreState.cadastreId = cadastreSave.id;
+    cadastreState.userId = user.id;
+    if (catalogue) {
+      cadastreState.stateId = catalogue.id;
+    }
+    await cadastreStateRepository.save(cadastreState);
+
+    return cadastreSave;
   }
 
   private async saveProcessGuide(
