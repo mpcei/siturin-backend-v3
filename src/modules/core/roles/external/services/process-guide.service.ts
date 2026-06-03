@@ -10,6 +10,7 @@ import {
   EstablishmentAddressEntity,
   EstablishmentContactPersonEntity,
   EstablishmentEntity,
+  InactivationCauseEntity,
   LandTransportEntity,
   ProcessEntity,
 } from '@modules/core/entities';
@@ -36,6 +37,7 @@ import { CredentialEntity } from '@modules/core/entities/credential.entity';
 import { CatalogueEntity } from '@modules/common/catalogue/catalogue.entity';
 import { DpaEntity } from '@modules/common/dpa/dpa.entity';
 import { BaseWithOriginProcessGuideDto } from '@modules/core/roles/external/dto/process-guide/base-with-origin-process-guide.dto';
+import { InactivationDto } from '@modules/core/roles/external/dto/process-guide/inactivation.dto';
 
 @Injectable()
 export class ProcessGuideService {
@@ -686,5 +688,116 @@ export class ProcessGuideService {
         message: 'Recuerde revisar su correo electronico de manera permanente',
       };
     });
+  }
+
+  async createInactivation(
+    payload: InactivationDto
+  ): Promise<ResponseHttpInterface> {
+    return await this.dataSource.transaction(async (manager) => {
+      const process = await this.saveInactivationProcess(manager, payload);
+      const cadastre = await this.saveInactivationCadastre(manager, payload, process);
+
+      return {
+        data: null,
+        title: 'Proceso completado de manera exitosa',
+        message: 'Recuerde revisar su correo electronico de manera permanente',
+      };
+    });
+  }
+
+  private async saveInactivationProcess(
+    manager: EntityManager,
+    payload: InactivationDto,
+  ): Promise<ProcessEntity> {
+    const processRepository = manager.getRepository(ProcessEntity);
+    const inactivationCauseRepository = manager.getRepository(InactivationCauseEntity);
+
+    const processOld = await processRepository.findOne({
+      where: { establishmentId: payload.establishmentId },
+    });
+
+    if (!processOld) {
+      throw new NotFoundException({
+        error: 'No existe el tramite',
+        message: 'No encontrado',
+      });
+    }
+
+    const processNew = processRepository.create();
+    processNew.activityId = processOld?.activityId;
+    processNew.professionalTitleId = processOld?.professionalTitleId;
+    processNew.establishmentId = payload.establishmentId;
+    processNew.type = payload.processType.id;
+    processNew.driverLicenseId = processOld.driverLicenseId;
+    processNew.registeredAt = new Date();
+    processNew.startedAt = new Date();
+    processNew.endedAt = new Date();
+    processNew.totalWomen = processOld.totalWomen;
+    processNew.totalWomenDisability = processOld.totalWomenDisability;
+    processNew.totalMen = processOld.totalMen;
+    processNew.totalMenDisability = processOld.totalMenDisability;
+
+    await processRepository.softRemove(processOld);
+    const processNewSave = await processRepository.save(processNew);
+
+    if (payload.inactivationCauses) {
+      for (const item of payload.inactivationCauses) {
+        const inactivationCause = inactivationCauseRepository.create();
+        inactivationCause.processId = processNewSave.id;
+        inactivationCause.code = item.code;
+        inactivationCause.name = item.name;
+        await inactivationCauseRepository.save(inactivationCause);
+      }
+    }
+
+    return processNewSave;
+  }
+
+  private async saveInactivationCadastre(
+    manager: EntityManager,
+    payload: InactivationDto,
+    process: ProcessEntity,
+  ): Promise<CadastreEntity> {
+    const cadastreRepository = manager.getRepository(CadastreEntity);
+    const catalogueRepository = manager.getRepository(CatalogueEntity);
+
+    const cadastreOld = await cadastreRepository.findOne({ where: { id: payload.cadastreId } });
+
+    if (!cadastreOld) {
+      throw new NotFoundException({
+        error: 'No existe el catastro',
+        message: 'No encontrado',
+      });
+    }
+
+    await cadastreRepository.softRemove(cadastreOld);
+
+    const catalogue = await catalogueRepository.findOne({
+      where: {
+        code: CatalogueCadastresStateEnum.inactive,
+        type: CoreCatalogueTypeEnum.cadastre_states_state,
+      },
+    });
+
+    const cadastre = cadastreRepository.create();
+    cadastre.processId = process.id;
+    cadastre.registerNumber = cadastreOld.registerNumber;
+    cadastre.registeredAt = new Date();
+    cadastre.systemOrigin = cadastreOld.systemOrigin;
+
+    if (catalogue) {
+      cadastre.stateId = catalogue.id;
+    }
+    const cadastreSave = await cadastreRepository.save(cadastre);
+
+    const cadastreStateRepository = manager.getRepository(CadastreStateEntity);
+    const cadastreState = cadastreStateRepository.create();
+    cadastreState.cadastreId = cadastreSave.id;
+    if (catalogue) {
+      cadastreState.stateId = catalogue.id;
+    }
+    await cadastreStateRepository.save(cadastreState);
+
+    return cadastreSave;
   }
 }

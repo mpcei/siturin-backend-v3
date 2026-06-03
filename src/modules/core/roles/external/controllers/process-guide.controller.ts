@@ -18,6 +18,7 @@ import { ParseMultipartInterceptor } from '@utils/interceptors';
 import {
   BaseWithOriginProcessGuideDto
 } from '@modules/core/roles/external/dto/process-guide/base-with-origin-process-guide.dto';
+import { InactivationDto } from '@modules/core/roles/external/dto/process-guide/inactivation.dto';
 
 @ApiTags('Process Guide')
 @Auth()
@@ -72,6 +73,22 @@ export class ProcessGuideController {
     @User() user: UserEntity,
   ): Promise<ResponseHttpInterface> {
     const serviceResponse = await this.service.createExpiredRegistration(payload, user, files);
+
+    return {
+      data: serviceResponse.data,
+      message: serviceResponse.message,
+      title: serviceResponse.title,
+    };
+  }
+
+  @ApiOperation({ summary: 'Registration Inactivation' })
+  @UseInterceptors(AnyFilesInterceptor(), ParseMultipartInterceptor)
+  @Post('processes/inactivated')
+  async createInactivation(
+    @Body('payload') payload: InactivationDto,
+    @User() user: UserEntity,
+  ): Promise<ResponseHttpInterface> {
+    const serviceResponse = await this.service.createInactivation(payload);
 
     return {
       data: serviceResponse.data,
