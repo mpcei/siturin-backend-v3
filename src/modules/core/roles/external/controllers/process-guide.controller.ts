@@ -85,7 +85,7 @@ export class ProcessGuideController {
   @UseInterceptors(AnyFilesInterceptor(), ParseMultipartInterceptor)
   @Post('processes/inactivated')
   async createInactivation(
-    @Body('payload') payload: InactivationDto,
+    @Body() payload: InactivationDto,
     @User() user: UserEntity,
   ): Promise<ResponseHttpInterface> {
     const serviceResponse = await this.service.createInactivation(payload);
