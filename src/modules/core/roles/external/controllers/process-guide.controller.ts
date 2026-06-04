@@ -88,7 +88,7 @@ export class ProcessGuideController {
     @Body() payload: InactivationDto,
     @User() user: UserEntity,
   ): Promise<ResponseHttpInterface> {
-    const serviceResponse = await this.service.createInactivation(payload);
+    const serviceResponse = await this.service.createInactivation(payload, user);
 
     return {
       data: serviceResponse.data,

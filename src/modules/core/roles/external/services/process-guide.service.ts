@@ -209,6 +209,7 @@ export class ProcessGuideService {
     const processState = processStateRepository.create();
     processState.processId = saveProcess.id;
     processState.startedAt = new Date();
+    processState.userId = user.id;
     if (processStateCatalogue) {
       processState.stateCode = processStateCatalogue.code;
       processState.stateName = processStateCatalogue.name;
@@ -739,9 +740,12 @@ export class ProcessGuideService {
     });
   }
 
-  async createInactivation(payload: InactivationDto): Promise<ResponseHttpInterface> {
+  async createInactivation(
+    payload: InactivationDto,
+    user: UserEntity,
+  ): Promise<ResponseHttpInterface> {
     return await this.dataSource.transaction(async (manager) => {
-      const process = await this.saveInactivationProcess(manager, payload);
+      const process = await this.saveInactivationProcess(manager, payload, user);
       const cadastre = await this.saveInactivationCadastre(manager, payload, process);
       const credential = await this.saveInactivationCredential(manager, payload, process);
       return {
@@ -755,6 +759,7 @@ export class ProcessGuideService {
   private async saveInactivationProcess(
     manager: EntityManager,
     payload: InactivationDto,
+    user: UserEntity,
   ): Promise<ProcessEntity> {
     const processRepository = manager.getRepository(ProcessEntity);
     const processStateRepository = manager.getRepository(ProcessStateEntity);
@@ -812,6 +817,7 @@ export class ProcessGuideService {
     const processState = processStateRepository.create();
     processState.processId = processNewSave.id;
     processState.startedAt = new Date();
+    processState.userId = user.id;
     if (processStateCatalogue) {
       processState.stateCode = processStateCatalogue.code;
       processState.stateName = processStateCatalogue.name;
