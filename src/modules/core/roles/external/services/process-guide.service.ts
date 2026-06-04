@@ -25,6 +25,7 @@ import {
 import { ProcessGuideEntity } from '@modules/core/entities/process-guide.entity';
 import {
   CatalogueCadastresStateEnum,
+  CatalogueCredentialsStateEnum,
   CatalogueInactivationCauseCodeEnum,
   CatalogueProcessesStateEnum,
   CatalogueProcessGuidesCodeEnum,
@@ -742,10 +743,10 @@ export class ProcessGuideService {
     return await this.dataSource.transaction(async (manager) => {
       const process = await this.saveInactivationProcess(manager, payload);
       const cadastre = await this.saveInactivationCadastre(manager, payload, process);
-
+      const credential = await this.saveInactivationCredential(manager, payload, process);
       return {
         data: null,
-        title: 'Proceso completado de manera exitosa',
+        title: 'Proceso de Inactivación completado de manera exitosa',
         message: 'Recuerde revisar su correo electronico de manera permanente',
       };
     });
@@ -876,5 +877,58 @@ export class ProcessGuideService {
     await cadastreStateRepository.save(cadastreState);
 
     return cadastreSave;
+  }
+
+  private async saveInactivationCredential(
+    manager: EntityManager,
+    payload: InactivationDto,
+    process: ProcessEntity,
+  ): Promise<void> {
+    const credentialRepository = manager.getRepository(CredentialEntity);
+    const catalogueRepository = manager.getRepository(CatalogueEntity);
+
+    const credentialsOld = await credentialRepository.find({
+      where: { establishmentId: payload.establishmentId },
+    });
+
+    if (credentialsOld.length === 0) {
+      throw new NotFoundException({
+        error: 'No existen credenciales',
+        message: 'No encontradas',
+      });
+    }
+
+    const stateCredential = await catalogueRepository.findOne({
+      where: {
+        code: CatalogueCredentialsStateEnum.expired_inactive,
+        type: CoreCatalogueTypeEnum.credentials_state,
+      },
+    });
+
+    for (const credentialOld of credentialsOld) {
+      const credentialNew = credentialRepository.create();
+      credentialNew.establishmentId = credentialOld.establishmentId;
+      credentialNew.processId = process.id;
+      credentialNew.geographicAreaId = credentialOld.geographicAreaId;
+      credentialNew.code = credentialOld.code;
+      credentialNew.classificationId = credentialOld.classificationId;
+      credentialNew.categoryId = credentialOld.categoryId;
+      credentialNew.origin = credentialOld.origin;
+      credentialNew.startedAt = credentialOld.startedAt;
+      credentialNew.endedAt = credentialOld.endedAt;
+      if (credentialOld.stateCode === CatalogueCredentialsStateEnum.current) {
+        if (stateCredential) {
+          credentialNew.stateCode = stateCredential?.code;
+          credentialNew.stateName = stateCredential.name;
+        }
+      } else {
+        credentialNew.stateCode = credentialOld.stateCode;
+        credentialNew.stateName = credentialOld.stateName;
+      }
+
+      await credentialRepository.save(credentialNew);
+
+      await credentialRepository.softRemove(credentialOld);
+    }
   }
 }

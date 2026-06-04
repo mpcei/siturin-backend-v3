@@ -32,6 +32,7 @@ export enum CoreCatalogueTypeEnum {
   transporte_tipo_vehiculos = 'transporte_tipo_vehiculos',
   process_transport_airline_type = 'process_transport_airline_type',
   requirement_item = 'requirement_item',
+  credentials_state = 'credentials_state',
 }
 
 export enum CatalogueInspectionsStateEnum {
@@ -92,6 +93,12 @@ export enum CatalogueCadastresStateEnum {
   definitive_suspension = 'definitive_suspension',
   recategorized = 'recategorized',
   reclassified = 'reclassified',
+}
+
+export enum CatalogueCredentialsStateEnum {
+  current = 'current',
+  expired = 'expired',
+  expired_inactive = 'expired_inactive',
 }
 export enum CatalogueSchoolPeriodStateEnum {
   OPEN = 'open',
