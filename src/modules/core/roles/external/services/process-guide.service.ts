@@ -817,6 +817,7 @@ export class ProcessGuideService {
     const processState = processStateRepository.create();
     processState.processId = processNewSave.id;
     processState.startedAt = new Date();
+    processState.endedAt = new Date();
     processState.userId = user.id;
     if (processStateCatalogue) {
       processState.stateCode = processStateCatalogue.code;

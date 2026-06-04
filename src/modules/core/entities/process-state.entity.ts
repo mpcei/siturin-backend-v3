@@ -82,6 +82,7 @@ export class ProcessStateEntity {
   @Column({
     name: 'ended_at',
     type: 'timestamptz',
+    nullable: true,
     comment: 'Fecha de fin del estado',
   })
   endedAt: Date;
