@@ -2,11 +2,12 @@ import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import {
   CatalogueEstablishmentsStateEnum,
+  CatalogueProcessesStateEnum,
   CoreCatalogueTypeEnum,
   CoreRepositoryEnum,
 } from '@modules/core/utils/enums';
 import { ServiceResponseHttpInterface } from '@utils/interfaces';
-import { EstablishmentEntity, RucEntity } from '@modules/core/entities';
+import { EstablishmentEntity, ProcessEntity, RucEntity } from '@modules/core/entities';
 import { CreateCadastreDto, UpdateCadastreDto } from '@modules/core/roles/external/dto/cadastre';
 import { PaginationDto } from '@utils/pagination';
 import { PaginateFilterService } from '@utils/pagination/paginate-filter.service';
@@ -35,6 +36,8 @@ export class EstablishmentService {
   constructor(
     @Inject(CoreRepositoryEnum.ESTABLISHMENT_REPOSITORY)
     private readonly repository: Repository<EstablishmentEntity>,
+    @Inject(CoreRepositoryEnum.PROCESS_REPOSITORY)
+    private readonly processRepository: Repository<ProcessEntity>,
     @Inject(CoreRepositoryEnum.RUC_REPOSITORY)
     private readonly rucRepository: Repository<RucEntity>,
     private readonly cataloguesService: CataloguesService,
@@ -200,16 +203,33 @@ export class EstablishmentService {
   }
 
   async findCadastreByEstablishment(establishmentId: string): Promise<any> {
-    return await this.repository.findOne({
+    const cadastre = await this.repository.findOne({
       where: { id: establishmentId },
       relations: {
         process: { cadastre: { state: true }, activity: true },
-        ruc: true,
         credentials: { classification: true, geographicArea: true },
+        languages: true,
+        adventureModalities: true,
+        ruc: true,
         province: true,
         canton: true,
         parish: true,
       },
     });
+
+    const type = (await this.cataloguesService.findCache()).find(
+      (item) => item.code == CatalogueProcessesStateEnum.in_progress,
+    );
+
+    const process = await this.processRepository.findOne({
+      where: { typeId: type?.id },
+      relations: { type: true },
+      order: { createdAt: 'desc' },
+    });
+
+    return {
+      ...cadastre,
+      process,
+    };
   }
 }
