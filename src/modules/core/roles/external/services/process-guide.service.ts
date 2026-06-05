@@ -506,7 +506,7 @@ export class ProcessGuideService {
         type: CoreCatalogueTypeEnum.processes_state,
       },
     });
-
+  console.log(payload);
     const process = processRepository.create();
     process.activityId = payload.process.activity.id;
     process.establishmentId = payload.establishment.id;
@@ -943,6 +943,9 @@ export class ProcessGuideService {
   async createAutomaticInactivation(): Promise<ResponseHttpInterface> {
     return await this.dataSource.transaction(async (manager) => {
       const cadastreRepository = manager.getRepository(CadastreEntity);
+      const processRepository = manager.getRepository(ProcessEntity);
+      const processStateRepository = manager.getRepository(ProcessStateEntity);
+      const inactivationCauseRepository = manager.getRepository(InactivationCauseEntity);
 
       const state = (await this.cataloguesService.findCache()).find(
         (item) =>
@@ -983,6 +986,84 @@ export class ProcessGuideService {
         .getMany();
 
       console.log(cadastres);
+
+      const stateProcess = (await this.cataloguesService.findCache()).find(
+        (item) =>
+          item.code == CatalogueProcessesStateEnum.in_progress &&
+          item.type == CoreCatalogueTypeEnum.processes_state,
+      );
+
+      for (const cadastre of cadastres) {
+        const processOld = await processRepository.findOne({
+          where: { id: cadastre.processId },
+          relations: { establishment: true },
+        });
+
+        const processInProgress = await processRepository.findOne({
+          where: { establishmentId: processOld?.establishmentId, stateId: stateProcess?.id },
+        });
+/*
+        if (!processInProgress) {
+
+          //Inactivation Process
+          const inactivationCauseType = (await this.cataloguesService.findCache()).find(
+            (item) =>
+              item.code == CatalogueInactivationCauseCodeEnum.oficio &&
+              item.type == CoreCatalogueTypeEnum.inactivation_cause_type,
+          );
+
+          const processStateCatalogue = await catalogueRepository.findOne({
+            where: {
+              code: CatalogueProcessesStateEnum.completed,
+              type: CoreCatalogueTypeEnum.processes_state,
+            },
+          });
+
+          const processNew = processRepository.create();
+          processNew.activityId = processOld?.activityId;
+          processNew.professionalTitleId = processOld?.professionalTitleId;
+          processNew.establishmentId = payload.establishmentId;
+          processNew.type = payload.processType.id;
+          processNew.driverLicenseId = processOld.driverLicenseId;
+          processNew.registeredAt = new Date();
+          processNew.startedAt = new Date();
+          processNew.endedAt = new Date();
+          processNew.totalWomen = processOld.totalWomen;
+          processNew.totalWomenDisability = processOld.totalWomenDisability;
+          processNew.totalMen = processOld.totalMen;
+          processNew.totalMenDisability = processOld.totalMenDisability;
+          if (inactivationCauseType) {
+            processNew.inactivationCauseTypeId = inactivationCauseType.id;
+          }
+          if (processStateCatalogue) {
+            processNew.stateId = processStateCatalogue.id;
+          }
+
+          await processRepository.softRemove(processOld);
+          const processNewSave = await processRepository.save(processNew);
+
+          const processState = processStateRepository.create();
+          processState.processId = processNewSave.id;
+          processState.startedAt = new Date();
+          processState.endedAt = new Date();
+          processState.userId = user.id;
+          if (processStateCatalogue) {
+            processState.stateCode = processStateCatalogue.code;
+            processState.stateName = processStateCatalogue.name;
+          }
+          await processStateRepository.save(processState);
+
+          if (payload.inactivationCauses) {
+            for (const item of payload.inactivationCauses) {
+              const inactivationCause = inactivationCauseRepository.create();
+              inactivationCause.processId = processNewSave.id;
+              inactivationCause.code = item.code;
+              inactivationCause.name = item.name;
+              await inactivationCauseRepository.save(inactivationCause);
+            }
+          }
+        }*/
+      }
 
       return {
         data: null,
