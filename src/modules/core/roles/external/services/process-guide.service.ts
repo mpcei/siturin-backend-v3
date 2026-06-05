@@ -27,7 +27,9 @@ import {
   CatalogueCadastresStateEnum,
   CatalogueCredentialsStateEnum,
   CatalogueInactivationCauseCodeEnum,
+  CatalogueInactivationCausesEnum,
   CatalogueProcessesStateEnum,
+  CatalogueProcessesTypeEnum,
   CatalogueProcessGuidesCodeEnum,
   CoreCatalogueTypeEnum,
 } from '@modules/core/utils/enums';
@@ -818,7 +820,7 @@ export class ProcessGuideService {
     processNew.activityId = processOld?.activityId;
     processNew.professionalTitleId = processOld?.professionalTitleId;
     processNew.establishmentId = payload.establishmentId;
-    processNew.type = payload.processType.id;
+    processNew.typeId = payload.processType.id;
     processNew.driverLicenseId = processOld.driverLicenseId;
     processNew.registeredAt = new Date();
     processNew.startedAt = new Date();
@@ -968,6 +970,7 @@ export class ProcessGuideService {
       const processRepository = manager.getRepository(ProcessEntity);
       const processStateRepository = manager.getRepository(ProcessStateEntity);
       const inactivationCauseRepository = manager.getRepository(InactivationCauseEntity);
+      const credentialRepository = manager.getRepository(CredentialEntity);
 
       const state = (await this.cataloguesService.findCache()).find(
         (item) =>
@@ -976,7 +979,27 @@ export class ProcessGuideService {
       );
 
       const today = new Date();
-      const cadastres = await cadastreRepository
+
+      const result: any[] = await this.dataSource.query(
+        `
+          SELECT c.*
+          FROM core.cadastres c
+                   INNER JOIN core.processes t
+                              ON t.id = c.process_id
+                   INNER JOIN core.establishments e
+                              ON e.id = t.establishment_id
+          WHERE c.state_id = $1 and c.deleted_at is null
+            AND NOT EXISTS (
+              SELECT 1
+              FROM guide.credentials cr
+              WHERE cr.establishment_id = e.id
+                AND DATE(cr.ended_at) >= CURRENT_DATE
+          );`,
+        [state?.id],
+      );
+      console.log(result);
+
+      /*      const cadastres = await cadastreRepository
         .createQueryBuilder('cadastre')
         .innerJoin('cadastre.process', 'process')
         .innerJoin('process.establishment', 'establishment')
@@ -999,7 +1022,7 @@ export class ProcessGuideService {
             .select('1')
             .from(CredentialEntity, 'c')
             .where('c.establishmentId = establishment.id')
-            .andWhere('c.endedAt >= :today')
+            .andWhere('DATE(c.ended_at) >= CURRENT_DATE')
             .getQuery();
 
           return `NOT EXISTS ${activeCredential}`;
@@ -1007,88 +1030,169 @@ export class ProcessGuideService {
         .setParameter('today', today)
         .getMany();
 
-      console.log(cadastres);
+      console.log(cadastres);*/
 
-      const stateProcess = (await this.cataloguesService.findCache()).find(
+      const catalogues = await this.cataloguesService.findCache();
+
+      const stateProcess = catalogues.find(
         (item) =>
           item.code == CatalogueProcessesStateEnum.in_progress &&
           item.type == CoreCatalogueTypeEnum.processes_state,
       );
 
-      for (const cadastre of cadastres) {
+      const typeProcess = catalogues.find(
+        (item) =>
+          item.code == CatalogueProcessesTypeEnum.inactivation &&
+          item.type == CoreCatalogueTypeEnum.processes_type,
+      );
+
+      const inactivationCauseType = catalogues.find(
+        (item) =>
+          item.code == CatalogueInactivationCauseCodeEnum.oficio &&
+          item.type == CoreCatalogueTypeEnum.inactivation_cause_type,
+      );
+
+      const processStateCatalogue = catalogues.find(
+        (item) =>
+          item.code == CatalogueProcessesStateEnum.completed &&
+          item.type == CoreCatalogueTypeEnum.processes_state,
+      );
+
+      const inactivationCauseCatalogue = catalogues.find(
+        (item) =>
+          item.code == CatalogueInactivationCausesEnum.automatic_inactivation &&
+          item.type == CoreCatalogueTypeEnum.guide_automatic_inactivation_cause,
+      );
+
+      const cadastreStateCatalogue = catalogues.find(
+        (item) =>
+          item.code == CatalogueCadastresStateEnum.inactive &&
+          item.type == CoreCatalogueTypeEnum.cadastre_states_state,
+      );
+
+      const stateCredential = catalogues.find(
+        (item) =>
+          item.code == CatalogueCredentialsStateEnum.expired_inactive &&
+          item.type == CoreCatalogueTypeEnum.credentials_state,
+      );
+
+      for (const cadastreOld of result) {
         const processOld = await processRepository.findOne({
-          where: { id: cadastre.processId },
+          where: { id: cadastreOld.process_id },
           relations: { establishment: true },
         });
 
-        const processInProgress = await processRepository.findOne({
-          where: { establishmentId: processOld?.establishmentId, stateId: stateProcess?.id },
-        });
-        /*
-        if (!processInProgress) {
+        if (processOld) {
+          const processInProgress = await processRepository.findOne({
+            where: { establishmentId: processOld?.establishmentId, stateId: stateProcess?.id },
+          });
 
-          //Inactivation Process
-          const inactivationCauseType = (await this.cataloguesService.findCache()).find(
-            (item) =>
-              item.code == CatalogueInactivationCauseCodeEnum.oficio &&
-              item.type == CoreCatalogueTypeEnum.inactivation_cause_type,
-          );
+          if (!processInProgress) {
+            //Inactivation Process
+            const processNew = processRepository.create();
+            processNew.activityId = processOld?.activityId;
+            processNew.professionalTitleId = processOld?.professionalTitleId;
+            processNew.establishmentId = processOld.establishmentId;
+            if (typeProcess) {
+              processNew.typeId = typeProcess?.id;
+            }
+            processNew.driverLicenseId = processOld.driverLicenseId;
+            processNew.registeredAt = new Date();
+            processNew.startedAt = new Date();
+            processNew.endedAt = new Date();
+            processNew.totalWomen = processOld.totalWomen;
+            processNew.totalWomenDisability = processOld.totalWomenDisability;
+            processNew.totalMen = processOld.totalMen;
+            processNew.totalMenDisability = processOld.totalMenDisability;
+            if (inactivationCauseType) {
+              processNew.inactivationCauseTypeId = inactivationCauseType.id;
+            }
+            if (processStateCatalogue) {
+              processNew.stateId = processStateCatalogue.id;
+            }
 
-          const processStateCatalogue = (await this.cataloguesService.findCache()).find(
-            (item) =>
-              item.code == CatalogueProcessesStateEnum.completed &&
-              item.type == CoreCatalogueTypeEnum.processes_state,
-          );
+            await processRepository.softRemove(processOld);
+            const processNewSave = await processRepository.save(processNew);
 
-          const processNew = processRepository.create();
-          processNew.activityId = processOld?.activityId;
-          processNew.professionalTitleId = processOld?.professionalTitleId;
-          processNew.establishmentId = processOld.establishmentId;
-          processNew.type = payload.processType.id;
-          processNew.driverLicenseId = processOld.driverLicenseId;
-          processNew.registeredAt = new Date();
-          processNew.startedAt = new Date();
-          processNew.endedAt = new Date();
-          processNew.totalWomen = processOld.totalWomen;
-          processNew.totalWomenDisability = processOld.totalWomenDisability;
-          processNew.totalMen = processOld.totalMen;
-          processNew.totalMenDisability = processOld.totalMenDisability;
-          if (inactivationCauseType) {
-            processNew.inactivationCauseTypeId = inactivationCauseType.id;
-          }
-          if (processStateCatalogue) {
-            processNew.stateId = processStateCatalogue.id;
-          }
+            const processState = processStateRepository.create();
+            processState.processId = processNewSave.id;
+            processState.startedAt = new Date();
+            processState.endedAt = new Date();
+            if (processStateCatalogue) {
+              processState.stateCode = processStateCatalogue.code;
+              processState.stateName = processStateCatalogue.name;
+            }
+            await processStateRepository.save(processState);
 
-          await processRepository.softRemove(processOld);
-          const processNewSave = await processRepository.save(processNew);
-
-          const processState = processStateRepository.create();
-          processState.processId = processNewSave.id;
-          processState.startedAt = new Date();
-          processState.endedAt = new Date();
-          if (processStateCatalogue) {
-            processState.stateCode = processStateCatalogue.code;
-            processState.stateName = processStateCatalogue.name;
-          }
-          await processStateRepository.save(processState);
-
-          if (payload.inactivationCauses) {
-            for (const item of payload.inactivationCauses) {
+            if (inactivationCauseCatalogue) {
               const inactivationCause = inactivationCauseRepository.create();
               inactivationCause.processId = processNewSave.id;
-              inactivationCause.code = item.code;
-              inactivationCause.name = item.name;
+              inactivationCause.code = inactivationCauseCatalogue.code;
+              inactivationCause.name = inactivationCauseCatalogue.name;
               await inactivationCauseRepository.save(inactivationCause);
             }
+
+            //InactivationCadastre
+            console.log('cadastreOld' + cadastreOld.registerNumber);
+            const cadastre = cadastreRepository.create();
+            cadastre.processId = processNewSave.id;
+            cadastre.registerNumber = cadastreOld.registerNumber;
+            cadastre.registeredAt = new Date();
+            cadastre.systemOrigin = cadastreOld.systemOrigin;
+            if (cadastreStateCatalogue) {
+              cadastre.stateId = cadastreStateCatalogue.id;
+            }
+            const cadastreSave = await cadastreRepository.save(cadastre);
+
+            const cadastreStateRepository = manager.getRepository(CadastreStateEntity);
+            const cadastreState = cadastreStateRepository.create();
+            cadastreState.cadastreId = cadastreSave.id;
+            if (cadastreStateCatalogue) {
+              cadastreState.stateId = cadastreStateCatalogue.id;
+            }
+            await cadastreStateRepository.save(cadastreState);
+
+            await cadastreRepository.softRemove({id: cadastreOld.id});
+
+            // InactivationCredential
+
+            const credentialsOld = await credentialRepository.find({
+              where: { establishmentId: processNewSave.establishmentId },
+            });
+
+            for (const credentialOld of credentialsOld) {
+              const credentialNew = credentialRepository.create();
+              credentialNew.establishmentId = credentialOld.establishmentId;
+              credentialNew.processId = processNewSave.id;
+              credentialNew.geographicAreaId = credentialOld.geographicAreaId;
+              credentialNew.code = credentialOld.code;
+              credentialNew.classificationId = credentialOld.classificationId;
+              credentialNew.categoryId = credentialOld.categoryId;
+              credentialNew.origin = credentialOld.origin;
+              credentialNew.startedAt = credentialOld.startedAt;
+              credentialNew.endedAt = credentialOld.endedAt;
+              if (credentialOld.stateCode === CatalogueCredentialsStateEnum.current) {
+                if (stateCredential) {
+                  credentialNew.stateCode = stateCredential?.code;
+                  credentialNew.stateName = stateCredential.name;
+                }
+              } else {
+                credentialNew.stateCode = credentialOld.stateCode;
+                credentialNew.stateName = credentialOld.stateName;
+              }
+
+              await credentialRepository.save(credentialNew);
+
+              await credentialRepository.softRemove(credentialOld);
+            }
           }
-        }*/
+        }
       }
 
       return {
-        data: null,
-        title: 'Proceso de Inactivación completado de manera exitosa',
-        message: 'Recuerde revisar su correo electronico de manera permanente',
+        data: true,
+        title: 'Proceso Automático de Inactivación completado de manera exitosa',
+        message: 'Recuerde revisar su correo electrónico de manera permanente',
       };
     });
   }

@@ -33,6 +33,8 @@ export enum CoreCatalogueTypeEnum {
   process_transport_airline_type = 'process_transport_airline_type',
   requirement_item = 'requirement_item',
   credentials_state = 'credentials_state',
+  processes_type = 'processes_type',
+  guide_automatic_inactivation_cause = 'guide_automatic_inactivation_cause',
 }
 
 export enum CatalogueInspectionsStateEnum {
@@ -61,6 +63,10 @@ export enum CatalogueProcessesStateEnum {
   pending_2 = 'pending_2',
   completed = 'completed',
   in_progress = 'in_progress',
+}
+
+export enum CatalogueInactivationCausesEnum {
+  automatic_inactivation = 'automatic_inactivation',
 }
 
 export enum CatalogueInactivationCauseCodeEnum {
