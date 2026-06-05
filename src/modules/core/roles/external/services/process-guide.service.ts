@@ -603,6 +603,18 @@ export class ProcessGuideService {
       }
     }
 
+    const stateExpired = (await this.cataloguesService.findCache()).find(
+      (item) =>
+        item.code == CatalogueCredentialsStateEnum.expired &&
+        item.type == CoreCatalogueTypeEnum.credentials_state,
+    );
+
+    const stateCurrent = (await this.cataloguesService.findCache()).find(
+      (item) =>
+        item.code == CatalogueCredentialsStateEnum.current &&
+        item.type == CoreCatalogueTypeEnum.credentials_state,
+    );
+
     for (const item of payload.credentials) {
       const credential = credentialRepository.create();
 
@@ -623,6 +635,11 @@ export class ProcessGuideService {
           type: CoreCatalogueTypeEnum.activities_geographic_area,
         },
       });
+      const endedAt = new Date(item.endedAt);
+      endedAt.setHours(0, 0, 0, 0);
+
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
 
       credential.classificationId = classification?.id;
       credential.categoryId = classification?.category.id;
@@ -632,6 +649,11 @@ export class ProcessGuideService {
       credential.origin = item.origin;
       credential.processId = process.id;
       credential.establishmentId = payload.establishment.id;
+      const state = endedAt >= today ? stateCurrent : stateExpired;
+      if (state) {
+        credential.stateCode = state.code;
+        credential.stateName = state.name;
+      }
       if (geographicArea) {
         credential.geographicAreaId = geographicArea.id;
       }
@@ -1002,7 +1024,7 @@ export class ProcessGuideService {
         const processInProgress = await processRepository.findOne({
           where: { establishmentId: processOld?.establishmentId, stateId: stateProcess?.id },
         });
-/*
+        /*
         if (!processInProgress) {
 
           //Inactivation Process
