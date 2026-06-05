@@ -506,11 +506,11 @@ export class ProcessGuideService {
         type: CoreCatalogueTypeEnum.processes_state,
       },
     });
-  console.log(payload);
+    console.log(payload);
     const process = processRepository.create();
     process.activityId = payload.process.activity.id;
     process.establishmentId = payload.establishment.id;
-    process.type = payload.process.type.id;
+    process.typeId = payload.process.type.id;
     process.registeredAt = new Date();
     process.startedAt = payload.process.startedAt;
     process.endedAt = payload.process.endedAt;
@@ -1002,7 +1002,7 @@ export class ProcessGuideService {
         const processInProgress = await processRepository.findOne({
           where: { establishmentId: processOld?.establishmentId, stateId: stateProcess?.id },
         });
-/*
+        /*
         if (!processInProgress) {
 
           //Inactivation Process
@@ -1012,17 +1012,16 @@ export class ProcessGuideService {
               item.type == CoreCatalogueTypeEnum.inactivation_cause_type,
           );
 
-          const processStateCatalogue = await catalogueRepository.findOne({
-            where: {
-              code: CatalogueProcessesStateEnum.completed,
-              type: CoreCatalogueTypeEnum.processes_state,
-            },
-          });
+          const processStateCatalogue = (await this.cataloguesService.findCache()).find(
+            (item) =>
+              item.code == CatalogueProcessesStateEnum.completed &&
+              item.type == CoreCatalogueTypeEnum.processes_state,
+          );
 
           const processNew = processRepository.create();
           processNew.activityId = processOld?.activityId;
           processNew.professionalTitleId = processOld?.professionalTitleId;
-          processNew.establishmentId = payload.establishmentId;
+          processNew.establishmentId = processOld.establishmentId;
           processNew.type = payload.processType.id;
           processNew.driverLicenseId = processOld.driverLicenseId;
           processNew.registeredAt = new Date();
