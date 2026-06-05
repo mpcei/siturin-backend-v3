@@ -96,4 +96,17 @@ export class ProcessGuideController {
       title: serviceResponse.title,
     };
   }
+
+  @ApiOperation({ summary: 'Registration Inactivation' })
+  @UseInterceptors(AnyFilesInterceptor(), ParseMultipartInterceptor)
+  @Post('processes/automatic-inactivated')
+  async createAutomaticInactivation(): Promise<ResponseHttpInterface> {
+    const serviceResponse = await this.service.createAutomaticInactivation();
+
+    return {
+      data: serviceResponse.data,
+      message: serviceResponse.message,
+      title: serviceResponse.title,
+    };
+  }
 }

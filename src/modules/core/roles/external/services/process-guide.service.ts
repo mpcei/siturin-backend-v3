@@ -525,11 +525,12 @@ export class ProcessGuideService {
     if (processStateCatalogue) {
       process.stateId = processStateCatalogue.id;
     }
-
     const processSave = await processRepository.save(process);
+
     const processState = processStateRepository.create();
     processState.processId = processSave.id;
     processState.startedAt = new Date();
+    processState.userId = user.id;
     if (processStateCatalogue) {
       processState.stateCode = processStateCatalogue.code;
       processState.stateName = processStateCatalogue.name;
