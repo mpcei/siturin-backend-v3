@@ -218,7 +218,9 @@ export class EstablishmentService {
     });
 
     const type = (await this.cataloguesService.findCache()).find(
-      (item) => item.code == CatalogueProcessesStateEnum.in_progress,
+      (item) =>
+        item.code == CatalogueProcessesStateEnum.in_progress &&
+        item.type == CoreCatalogueTypeEnum.processes_state,
     );
 
     const process = await this.processRepository.findOne({
@@ -229,7 +231,7 @@ export class EstablishmentService {
 
     return {
       ...cadastre,
-      process,
+      currentProcess: process,
     };
   }
 }

@@ -1002,7 +1002,7 @@ export class ProcessGuideService {
         const processInProgress = await processRepository.findOne({
           where: { establishmentId: processOld?.establishmentId, stateId: stateProcess?.id },
         });
-        /*
+/*
         if (!processInProgress) {
 
           //Inactivation Process
@@ -1045,7 +1045,6 @@ export class ProcessGuideService {
           processState.processId = processNewSave.id;
           processState.startedAt = new Date();
           processState.endedAt = new Date();
-          processState.userId = user.id;
           if (processStateCatalogue) {
             processState.stateCode = processStateCatalogue.code;
             processState.stateName = processStateCatalogue.name;

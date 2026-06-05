@@ -67,6 +67,7 @@ export class ProcessStateEntity {
   @Column({
     type: 'uuid',
     name: 'user_id',
+    nullable: true,
     comment: 'Auditoria, para saber quien cambia el estado',
   })
   userId: string;
