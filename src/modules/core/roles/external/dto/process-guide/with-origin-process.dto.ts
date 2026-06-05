@@ -11,6 +11,10 @@ export class WithOriginProcessDto {
   @IsNotEmpty(isNotEmptyValidationOptions())
   readonly activity: any;
 
+  @IsObject()
+  @IsNotEmpty(isNotEmptyValidationOptions())
+  readonly geographicArea: any;
+
   @Type(() => Date)
   @IsDate(isDateValidationOptions())
   @IsNotEmpty(isNotEmptyValidationOptions())

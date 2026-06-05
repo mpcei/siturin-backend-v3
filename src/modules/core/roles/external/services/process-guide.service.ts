@@ -51,7 +51,7 @@ export class ProcessGuideService {
     private readonly fileService: FileService,
     private readonly emailService: EmailService,
     private readonly processService: ProcessService,
-    private readonly catalogueService: CataloguesService,
+    private readonly cataloguesService: CataloguesService,
   ) {}
 
   async createRegistration(
@@ -388,7 +388,7 @@ export class ProcessGuideService {
       landTransport.year = item.year;
       const landTransportSave = await landTransportRepository.save(landTransport);
 
-      const typeVehicleRegistration = (await this.catalogueService.findCache()).find(
+      const typeVehicleRegistration = (await this.cataloguesService.findCache()).find(
         (item) =>
           item.code === CatalogueProcessGuidesCodeEnum.vehicle_registration &&
           item.type === CoreCatalogueTypeEnum.requirement_item,
@@ -402,7 +402,7 @@ export class ProcessGuideService {
         typeVehicleRegistration?.id,
       );
 
-      const typeDocumentVehicleInspection = (await this.catalogueService.findCache()).find(
+      const typeDocumentVehicleInspection = (await this.cataloguesService.findCache()).find(
         (item) =>
           item.code === CatalogueProcessGuidesCodeEnum.document_vehicle_inspection &&
           item.type === CoreCatalogueTypeEnum.requirement_item,
@@ -416,7 +416,7 @@ export class ProcessGuideService {
         typeDocumentVehicleInspection?.id,
       );
 
-      const typeAccidentPolicy = (await this.catalogueService.findCache()).find(
+      const typeAccidentPolicy = (await this.cataloguesService.findCache()).find(
         (item) =>
           item.code === CatalogueProcessGuidesCodeEnum.accident_policy &&
           item.type === CoreCatalogueTypeEnum.requirement_item,
@@ -937,5 +937,57 @@ export class ProcessGuideService {
 
       await credentialRepository.softRemove(credentialOld);
     }
+  }
+
+  async createAutomaticInactivation(): Promise<ResponseHttpInterface> {
+    return await this.dataSource.transaction(async (manager) => {
+      const cadastreRepository = manager.getRepository(CadastreEntity);
+
+      const state = (await this.cataloguesService.findCache()).find(
+        (item) =>
+          item.code == CatalogueCadastresStateEnum.ratified &&
+          item.type == CoreCatalogueTypeEnum.cadastre_states_state,
+      );
+
+      const today = new Date();
+      const cadastres = await cadastreRepository
+        .createQueryBuilder('cadastre')
+        .innerJoin('cadastre.process', 'process')
+        .innerJoin('process.establishment', 'establishment')
+        .where('cadastre.stateId = :stateId', {
+          stateId: state?.id,
+        })
+        .andWhere((qb) => {
+          const existsCredential = qb
+            .subQuery()
+            .select('1')
+            .from(CredentialEntity, 'c')
+            .where('c.establishmentId = establishment.id')
+            .getQuery();
+
+          return `EXISTS ${existsCredential}`;
+        })
+        .andWhere((qb) => {
+          const activeCredential = qb
+            .subQuery()
+            .select('1')
+            .from(CredentialEntity, 'c')
+            .where('c.establishmentId = establishment.id')
+            .andWhere('c.endedAt >= :today')
+            .getQuery();
+
+          return `NOT EXISTS ${activeCredential}`;
+        })
+        .setParameter('today', today)
+        .getMany();
+
+      console.log(cadastres);
+
+      return {
+        data: null,
+        title: 'Proceso de Inactivación completado de manera exitosa',
+        message: 'Recuerde revisar su correo electronico de manera permanente',
+      };
+    });
   }
 }
