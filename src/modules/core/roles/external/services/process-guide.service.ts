@@ -1088,7 +1088,7 @@ export class ProcessGuideService {
           });
 
           if (!processInProgress) {
-            //Inactivation Process
+            //Inactivation Proces
             const processNew = processRepository.create();
             processNew.activityId = processOld?.activityId;
             processNew.professionalTitleId = processOld?.professionalTitleId;
