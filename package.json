@@ -25,6 +25,7 @@
     "@aws-sdk/s3-request-presigner": "^3.995.0",
     "@bull-board/api": "^6.20.3",
     "@bull-board/express": "^6.20.3",
+    "@faker-js/faker": "^10.4.0",
     "@nestjs/axios": "^4.0.1",
     "@nestjs/bullmq": "^11.0.4",
     "@nestjs/cache-manager": "^3.1.0",
@@ -63,7 +64,6 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.3",
     "@eslint/js": "^9.39.2",
-    "@faker-js/faker": "^10.1.0",
     "@nestjs/cli": "^11.0.14",
     "@nestjs/schematics": "^11.0.9",
     "@nestjs/testing": "^11.1.10",
