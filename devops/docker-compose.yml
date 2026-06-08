@@ -1,0 +1,19 @@
+services:
+  backend-qa:
+    build:
+      context: ..
+      dockerfile: devops/Dockerfile
+
+    container_name: backend-qa
+
+    restart: unless-stopped
+
+    env_file:
+      - ../.env
+
+    networks:
+      - qa_network
+
+networks:
+  qa_network:
+    external: true
