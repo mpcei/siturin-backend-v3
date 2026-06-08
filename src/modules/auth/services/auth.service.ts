@@ -110,6 +110,7 @@ export class AuthService {
     const user: UserEntity | null = await this.repository.findOne({
       select: {
         id: true,
+        hasDisability:true,
         identification: true,
         lastname: true,
         name: true,
