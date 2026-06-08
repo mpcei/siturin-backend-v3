@@ -1,12 +1,15 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import * as fs from 'fs';
 import { join } from 'path';
 import { MenusSeeder, RolesSeeder, UsersSeeder } from '@database/seeders';
 import { CataloguesSeeder } from '@database/seeders/catalogues-seeder';
+import { envConfig } from '@config';
+import { ConfigType } from '@nestjs/config';
 
 @Injectable()
 export class DatabaseSeeder {
   constructor(
+    @Inject(envConfig.KEY) private configService: ConfigType<typeof envConfig>,
     private cataloguesSeeder: CataloguesSeeder,
     private usersSeeder: UsersSeeder,
     private rolesSeeder: RolesSeeder,
@@ -14,12 +17,14 @@ export class DatabaseSeeder {
   ) {}
 
   async run() {
-    /** Auth Seeders **/
-    await this.cataloguesSeeder.run();
-    await this.rolesSeeder.run();
-    await this.usersSeeder.run();
-    await this.menusSeeder.run();
-    // this.createUploadsDirectories();
+    if (this.configService.app.env === 'local') {
+      /** Auth Seeders **/
+      await this.cataloguesSeeder.run();
+      await this.rolesSeeder.run();
+      await this.usersSeeder.run();
+      await this.menusSeeder.run();
+      // this.createUploadsDirectories();
+    }
   }
 
   createUploadsDirectories() {
