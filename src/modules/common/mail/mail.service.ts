@@ -29,12 +29,20 @@ export class MailService implements OnModuleInit {
     this.transporter = nodemailer.createTransport({
       host: this.configService.mail.host,
       port: this.configService.mail.port,
-      secure: this.configService.mail.secure == 'true',
-      auth: {
-        user: this.configService.mail.user,
-        pass: this.configService.mail.pass,
-      },
+      secure: false,
+      logger: true,
+      debug: true,
     });
+
+    // this.transporter = nodemailer.createTransport({
+    //   host: this.configService.mail.host,
+    //   port: this.configService.mail.port,
+    //   secure: this.configService.mail.secure == 'true',
+    //   auth: {
+    //     user: this.configService.mail.user,
+    //     pass: this.configService.mail.pass,
+    //   },
+    // });
   }
 
   async onModuleInit() {
@@ -97,11 +105,11 @@ export class MailService implements OnModuleInit {
       });
     }
 
-    mailAttachments.push({
-      filename: 'header.png',
-      path: join(this.folderPathsService.mailImages, 'header.png'),
-      cid: 'header',
-    });
+    // mailAttachments.push({
+    //   filename: 'header.png',
+    //   path: join(this.folderPathsService.mailImages, 'header.png'),
+    //   cid: 'header',
+    // });//review
 
     // mailAttachments.push({
     //       filename: 'footer.png',
