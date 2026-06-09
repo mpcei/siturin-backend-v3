@@ -82,13 +82,17 @@ export class ProcessGuideService {
         process,
       );
 
+      console.log(userUpdate);
+      console.log(process);
+      console.log(establishment);
+
       const mailData: MailDataInterface = {
-        to: user.email || user.personalEmail,
+        to: userUpdate.email || userUpdate.personalEmail,
         subject: MailSubjectEnum.EMAIL_PROCESS_REGISTRATION,
         template: MailTemplateEnum.PROCESS_REGISTRATION,
         data: {
           process,
-          user,
+          user: userUpdate,
           establishment,
         },
       };
