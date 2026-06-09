@@ -18,7 +18,6 @@ export class ProcessEventController {
     @Body() payload: CreateRegistrationProcessEventDto,
     @User() user: UserEntity,
   ): Promise<ResponseHttpInterface> {
-    //console.log('Payload recibido:', payload);
     const serviceResponse = await this.service.createRegistration(payload, user);
 
     return {

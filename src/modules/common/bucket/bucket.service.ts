@@ -41,7 +41,6 @@ export class BucketService implements OnModuleInit, BucketInterface {
     try {
       await this.s3.send(new HeadBucketCommand({ Bucket: bucket }));
     } catch (err: any) {
-      console.debug('err ensure bucket: ', err);
       await this.s3.send(new CreateBucketCommand({ Bucket: bucket }));
     }
   }
