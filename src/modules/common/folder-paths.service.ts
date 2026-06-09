@@ -20,7 +20,7 @@ export class FolderPathsService {
       return join(process.cwd(), 'src/modules/common/mail/images');
     }
 
-    return join(__dirname, 'mail/templates');
+    return join(__dirname, 'mail/images');
   }
 
   get mailTemplates(): string {
