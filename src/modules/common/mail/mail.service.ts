@@ -29,16 +29,19 @@ export class MailService implements OnModuleInit {
     this.transporter = nodemailer.createTransport({
       host: this.configService.mail.host,
       port: this.configService.mail.port,
-      secure: this.configService.mail.secure == 'true',
-      auth: {
-        user: this.configService.mail.user,
-        pass: this.configService.mail.pass,
-      },
+      secure: false,
     });
   }
 
   async onModuleInit() {
     await this.configTemplates();
+
+    try {
+      await this.transporter.verify();
+      console.log('SMTP conectado correctamente');
+    } catch (error) {
+      console.error('Error conectando al SMTP:', error);
+    }
   }
 
   async sendMail(mailData: MailDataInterface) {
@@ -69,6 +72,7 @@ export class MailService implements OnModuleInit {
   }
 
   async sendRealMail(mailData: MailDataInterface) {
+    console.log('Intentando enviar correo a:', mailData.to);
     const mailAttachments: Attachment[] = [];
 
     if (mailData?.attachments) {
