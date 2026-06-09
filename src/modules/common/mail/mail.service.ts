@@ -105,11 +105,11 @@ export class MailService implements OnModuleInit {
       });
     }
 
-    // mailAttachments.push({
-    //   filename: 'header.png',
-    //   path: join(this.folderPathsService.mailImages, 'header.png'),
-    //   cid: 'header',
-    // });//review
+    mailAttachments.push({
+      filename: 'header.png',
+      path: join(this.folderPathsService.mailImages, 'header.png'),
+      cid: 'header',
+    });
 
     // mailAttachments.push({
     //       filename: 'footer.png',
@@ -136,11 +136,9 @@ export class MailService implements OnModuleInit {
     };
 
     try {
-      console.log('Antes de sendMail');
       const response: SentMessageInfo = await this.transporter.sendMail(sendMailOptions);
       console.log('Después de sendMail');
 
-      console.log('response: ', response);
       return {
         accepted: response.accepted,
         rejected: response.rejected,

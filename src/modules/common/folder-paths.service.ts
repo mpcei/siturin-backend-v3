@@ -12,7 +12,7 @@ export class FolderPathsService {
       return join(process.cwd(), 'src/modules/common/mail/temporary-files');
     }
 
-    return join(__dirname, 'temporary-files');
+    return join(__dirname, 'mail/temporary-files');
   }
 
   get mailImages(): string {
@@ -20,7 +20,7 @@ export class FolderPathsService {
       return join(process.cwd(), 'src/modules/common/mail/images');
     }
 
-    return join(__dirname, 'templates');
+    return join(__dirname, 'mail/templates');
   }
 
   get mailTemplates(): string {
@@ -28,7 +28,7 @@ export class FolderPathsService {
       return join(process.cwd(), 'src/modules/common/mail/templates');
     }
 
-    return join(__dirname, 'templates');
+    return join(__dirname, 'mail/templates');
   }
 
   get avatars(): string {
