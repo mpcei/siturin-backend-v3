@@ -1,4 +1,4 @@
-<p>Estimado/a {{data.user.name}} {{data.user.lastname}},</p>
+<p>Estimado/a {{data.establishment.ruc.legalName}},</p>
 
 <p>
   Su trámite correspondiente a {{data.process.type.name}} ha sido enviado, adjunto encontrará
@@ -6,7 +6,7 @@
 </p>
 
 <div class="code-container">
-  <table>
+  <table border="1">
     <tr>
       <th>INFORMACIÓN DEL PRESTADOR DE SERVICIOSTURÍSTICO</th>
       <th>UBICACIÓN DEL PRESTADOR DESERVICIOS TURÍSTICO </th>
@@ -14,11 +14,11 @@
     <tr>
       <td>
         <ul>
-          <li>RUC: {{data.user.identification}}</li>
-          <li>Razón Social: {{data.user.name}}</li>
+          <li>RUC: {{data.establishment.ruc.number}}</li>
+          <li>Razón Social: {{data.establishment.ruc.legalName}}</li>
           <li>Fecha de Solicitud: {{data.process.registeredAt}}</li>
           <li>Actividad: {{data.process.activity.name}}</li>
-          <li>Clasificación: {{data.process.classification.name}}</li>
+          <li>Clasificación: {{data.classifications}}</li>
         </ul>
       </td>
       <td>
@@ -42,7 +42,7 @@
 
 <p>
   <b>Saludos Cordiales,</b>
-</p>>
+</p>
 <p>
   "MINISTERIO DE PRODUCCIÓN, COMERCIO EXTERIOR E INVERSIONES"
 </p>

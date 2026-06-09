@@ -1,6 +1,6 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { Repository } from 'typeorm';
-import { AuthRepositoryEnum } from '@utils/enums';
+import { EntityManager, Repository } from 'typeorm';
+import { AuthRepositoryEnum, MailSubjectEnum } from '@utils/enums';
 import { CoreRepositoryEnum, MailTemplateEnum } from '@modules/core/utils/enums';
 import { CadastreEntity, ProcessEntity } from '@modules/core/entities';
 import { UserEntity } from '@auth/entities';
@@ -83,6 +83,70 @@ export class EmailService {
     }
   }
 
+  async sendProcessRegistrationEmail(processId: string, manager: EntityManager) {
+    // Cargar el proceso y lanzar NotFoundException si no existe
+    const processRepository = manager.getRepository(ProcessEntity);
+    const process = await processRepository.findOne({
+      where: { id: processId },
+      relations: {
+        establishment: { ruc: true, province: true, canton: true, parish: true },
+        activity: true,
+        establishmentAddress: true,
+        establishmentContactPerson: true,
+        credentials: { classification: true },
+      },
+    });
+
+    if (!process) {
+      throw new NotFoundException('Trámite no encontrado');
+    }
+
+    const user = await this.userRepository.findOneBy({
+      identification: process.establishment.ruc.number,
+    });
+    if (!user) {
+      throw new NotFoundException('Usuario no encontrado');
+    }
+
+    // Preparar los datos del correo
+    const data = {
+      user,
+      process,
+      establishment: process.establishment,
+      classifications: process.credentials.map((item) => item.classification.name).join(', '),
+    };
+
+    // Validar correos usando un método reutilizable
+    const { validRecipients, invalidRecipients } = this.extractValidEmails([
+      user.email,
+      process.establishmentContactPerson.email,
+    ]);
+
+    if (validRecipients.length === 0) {
+      return {
+        title: 'No se pudo entregar a ningún correo válid',
+        message: invalidRecipients,
+      };
+    }
+
+    const mailData: MailDataInterface = {
+      to: validRecipients,
+      subject: MailSubjectEnum.EMAIL_PROCESS_REGISTRATION,
+      template: MailTemplateEnum.PROCESS_REGISTRATION,
+      data,
+    };
+
+    await this.mailService.sendMail(mailData);
+
+    // Manejar posibles correos fallidos
+    if (invalidRecipients.length > 0) {
+      return {
+        title: 'No se pudo entregar a los siguientes correos',
+        message: invalidRecipients,
+      };
+    }
+  }
+
   /**
    * Valida y separa correos electrónicos válidos e inválidos.
    */
@@ -95,10 +159,12 @@ export class EmailService {
     const invalidRecipients: string[] = [];
 
     emails.forEach((email) => {
-      if (emailRegex.test(email)) {
-        validRecipients.push(email);
-      } else {
-        invalidRecipients.push(email);
+      if (email != null && email != '') {
+        if (emailRegex.test(email)) {
+          validRecipients.push(email);
+        } else {
+          invalidRecipients.push(email);
+        }
       }
     });
 
