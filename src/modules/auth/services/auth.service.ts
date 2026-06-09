@@ -256,9 +256,11 @@ export class AuthService {
       securityQuestions,
     });
 
-    await this.createRuc(payload.ruc);
+    const userSaved = await this.repository.save(entity);
 
-    return await this.repository.save(entity);
+    await this.createRuc(payload.ruc, userSaved);
+
+    return userSaved;
   }
 
   async acceptTerms(id: string, payload: TermsDto): Promise<boolean> {
@@ -278,7 +280,7 @@ export class AuthService {
     return true;
   }
 
-  async createRuc(ruc: CreateRucDto): Promise<RucEntity> {
+  async createRuc(ruc: CreateRucDto, user: UserEntity): Promise<RucEntity> {
     const catalogues = await this.cataloguesService.findCache();
     const state = catalogues.find((item) => item.code === ruc.estadoContribuyente.toLowerCase());
     const type = catalogues.find((item) => item.acronym === ruc.tipoContribuyente.toLowerCase());
@@ -288,7 +290,8 @@ export class AuthService {
     rucEntity.legalRepresentativeIdentification = ruc.cedulaRepresentanteLegal;
     rucEntity.legalRepresentativeNames = ruc.nombreRepresentanteLegal;
     rucEntity.legalName = ruc.razonSocial;
-    rucEntity.number = ruc.ruc;
+    rucEntity.number = user.identification;
+    console.log(user.identification);
     if (state) rucEntity.state = state;
     if (type) rucEntity.type = type;
 
