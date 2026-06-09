@@ -137,7 +137,6 @@ export class MailService implements OnModuleInit {
 
     try {
       const response: SentMessageInfo = await this.transporter.sendMail(sendMailOptions);
-      console.log('Después de sendMail');
 
       return {
         accepted: response.accepted,

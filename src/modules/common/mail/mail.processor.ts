@@ -15,7 +15,6 @@ export class MailProcessor extends WorkerHost {
   }
 
   async process(job: Job) {
-    console.log('JOB recibido:', job.name);
     if (job.name === 'sendMail') {
       return this.mailService.sendRealMail(job.data);
     }

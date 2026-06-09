@@ -37,9 +37,6 @@ export class MailController {
   @PublicRoute()
   @Post('test/attachments')
   async testAttachments(@Body() payload: any, @Query() q: any): Promise<ResponseHttpInterface> {
-    console.log(q);
-    console.log(payload);
-
     const mailData: MailDataInterface = {
       to: payload.to,
       subject: 'Testing Email Send',
