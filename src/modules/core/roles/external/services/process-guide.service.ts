@@ -997,40 +997,6 @@ export class ProcessGuideService {
           );`,
         [state?.id],
       );
-      console.log(result);
-
-      /*      const cadastres = await cadastreRepository
-        .createQueryBuilder('cadastre')
-        .innerJoin('cadastre.process', 'process')
-        .innerJoin('process.establishment', 'establishment')
-        .where('cadastre.stateId = :stateId', {
-          stateId: state?.id,
-        })
-        .andWhere((qb) => {
-          const existsCredential = qb
-            .subQuery()
-            .select('1')
-            .from(CredentialEntity, 'c')
-            .where('c.establishmentId = establishment.id')
-            .getQuery();
-
-          return `EXISTS ${existsCredential}`;
-        })
-        .andWhere((qb) => {
-          const activeCredential = qb
-            .subQuery()
-            .select('1')
-            .from(CredentialEntity, 'c')
-            .where('c.establishmentId = establishment.id')
-            .andWhere('DATE(c.ended_at) >= CURRENT_DATE')
-            .getQuery();
-
-          return `NOT EXISTS ${activeCredential}`;
-        })
-        .setParameter('today', today)
-        .getMany();
-
-      console.log(cadastres);*/
 
       const catalogues = await this.cataloguesService.findCache();
 
@@ -1097,9 +1063,9 @@ export class ProcessGuideService {
               processNew.typeId = typeProcess?.id;
             }
             processNew.driverLicenseId = processOld.driverLicenseId;
-            processNew.registeredAt = new Date();
-            processNew.startedAt = new Date();
-            processNew.endedAt = new Date();
+            processNew.registeredAt = today;
+            processNew.startedAt = today
+            processNew.endedAt = today;
             processNew.totalWomen = processOld.totalWomen;
             processNew.totalWomenDisability = processOld.totalWomenDisability;
             processNew.totalMen = processOld.totalMen;
@@ -1116,8 +1082,8 @@ export class ProcessGuideService {
 
             const processState = processStateRepository.create();
             processState.processId = processNewSave.id;
-            processState.startedAt = new Date();
-            processState.endedAt = new Date();
+            processState.startedAt = today;
+            processState.endedAt = today;
             if (processStateCatalogue) {
               processState.stateCode = processStateCatalogue.code;
               processState.stateName = processStateCatalogue.name;
@@ -1133,12 +1099,11 @@ export class ProcessGuideService {
             }
 
             //InactivationCadastre
-            console.log('cadastreOld' + cadastreOld.registerNumber);
             const cadastre = cadastreRepository.create();
             cadastre.processId = processNewSave.id;
-            cadastre.registerNumber = cadastreOld.registerNumber;
-            cadastre.registeredAt = new Date();
-            cadastre.systemOrigin = cadastreOld.systemOrigin;
+            cadastre.registerNumber = cadastreOld.register_number;
+            cadastre.registeredAt = today;
+            cadastre.systemOrigin = cadastreOld.system_origin;
             if (cadastreStateCatalogue) {
               cadastre.stateId = cadastreStateCatalogue.id;
             }
