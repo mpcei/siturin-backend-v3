@@ -160,7 +160,7 @@ export class MailService implements OnModuleInit {
   private async configTemplates() {
     let pathTemplates = join(__dirname, 'templates');
 
-    if (this.configService.app.env !== 'production') {
+    if (this.configService.app.env !== 'production' && this.configService.app.env !== 'qa') {
       pathTemplates = this.folderPathsService.mailTemplates;
     }
 

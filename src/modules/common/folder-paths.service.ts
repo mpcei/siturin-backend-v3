@@ -8,7 +8,7 @@ export class FolderPathsService {
   constructor(@Inject(envConfig.KEY) private configService: ConfigType<typeof envConfig>) {}
 
   get mailTemporaryFiles(): string {
-    if (this.configService.app.env !== 'production') {
+    if (this.configService.app.env !== 'production' && this.configService.app.env !== 'qa') {
       return join(process.cwd(), 'src/modules/common/mail/temporary-files');
     }
 
@@ -16,7 +16,7 @@ export class FolderPathsService {
   }
 
   get mailImages(): string {
-    if (this.configService.app.env !== 'production') {
+    if (this.configService.app.env !== 'production' && this.configService.app.env !== 'qa') {
       return join(process.cwd(), 'src/modules/common/mail/images');
     }
 
@@ -24,7 +24,7 @@ export class FolderPathsService {
   }
 
   get mailTemplates(): string {
-    if (this.configService.app.env !== 'production') {
+    if (this.configService.app.env !== 'production' && this.configService.app.env !== 'qa') {
       return join(process.cwd(), 'src/modules/common/mail/templates');
     }
 
@@ -32,7 +32,7 @@ export class FolderPathsService {
   }
 
   get avatars(): string {
-    if (this.configService.app.env !== 'production') {
+    if (this.configService.app.env !== 'production' && this.configService.app.env !== 'qa') {
       return join(process.cwd(), 'src/modules/common/mail/templates');
     }
 
