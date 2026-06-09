@@ -120,7 +120,6 @@ export class AuthService {
         emailVerifiedAt: true,
         username: true,
         birthdate: true,
-        bloodType: true,
         securityQuestionAcceptedAt: true,
         passwordChanged: true,
         termsAcceptedAt: true,
@@ -131,6 +130,7 @@ export class AuthService {
       relations: {
         roles: true,
         nationality: true,
+        bloodType: true,
         sex: true,
         ruc: { type: true },
       },
