@@ -1,7 +1,7 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { DataSource, EntityManager, ILike, In } from 'typeorm';
 
-import { CatalogueUsersSexEnum, ConfigEnum } from '@utils/enums';
+import { CatalogueUsersSexEnum, ConfigEnum, MailSubjectEnum, MailTemplateEnum } from '@utils/enums';
 import { ResponseHttpInterface } from '@utils/interfaces';
 import {
   CadastreEntity,
@@ -44,6 +44,8 @@ import { DpaEntity } from '@modules/common/dpa/dpa.entity';
 import { BaseWithOriginProcessGuideDto } from '@modules/core/roles/external/dto/process-guide/base-with-origin-process-guide.dto';
 import { InactivationDto } from '@modules/core/roles/external/dto/process-guide/inactivation.dto';
 import { ProcessStateEntity } from '@modules/core/entities/process-state.entity';
+import { MailDataInterface } from '@modules/common/mail/interfaces/mail-data.interface';
+import { MailService } from '@modules/common/mail/mail.service';
 
 @Injectable()
 export class ProcessGuideService {
@@ -52,6 +54,7 @@ export class ProcessGuideService {
     private readonly dataSource: DataSource,
     private readonly fileService: FileService,
     private readonly emailService: EmailService,
+    private readonly mailService: MailService,
     private readonly processService: ProcessService,
     private readonly cataloguesService: CataloguesService,
   ) {}
@@ -78,6 +81,19 @@ export class ProcessGuideService {
         payload,
         process,
       );
+
+      const mailData: MailDataInterface = {
+        to: user.email || user.personalEmail,
+        subject: MailSubjectEnum.EMAIL_PROCESS_REGISTRATION,
+        template: MailTemplateEnum.PROCESS_REGISTRATION,
+        data: {
+          process,
+          user,
+          establishment,
+        },
+      };
+
+      await this.mailService.sendMail(mailData);
 
       return {
         data: null,
@@ -1064,7 +1080,7 @@ export class ProcessGuideService {
             }
             processNew.driverLicenseId = processOld.driverLicenseId;
             processNew.registeredAt = today;
-            processNew.startedAt = today
+            processNew.startedAt = today;
             processNew.endedAt = today;
             processNew.totalWomen = processOld.totalWomen;
             processNew.totalWomenDisability = processOld.totalWomenDisability;
@@ -1117,7 +1133,7 @@ export class ProcessGuideService {
             }
             await cadastreStateRepository.save(cadastreState);
 
-            await cadastreRepository.softRemove({id: cadastreOld.id});
+            await cadastreRepository.softRemove({ id: cadastreOld.id });
 
             // InactivationCredential
 

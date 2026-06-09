@@ -4,6 +4,7 @@ export enum MailSubjectEnum {
   TRANSACTIONAL_CODE = 'Tu código de verificación',
   INTERNAL_ACCOUNT_CREATED = `Bienvenido/a - Activación de cuenta`,
   EMAIL_VERIFICATION_RESEND = `Reenvío de correo de verificación`,
+  EMAIL_PROCESS_REGISTRATION = 'Envio de solicitud',
 }
 
 export enum MailTemplateEnum {
@@ -13,4 +14,5 @@ export enum MailTemplateEnum {
   TRANSACTIONAL_SIGNUP_CODE = 'features/auth/transactional-signup-code',
   INTERNAL_ACCOUNT_CREATED = 'features/auth/internal-account-created',
   EMAIL_VERIFICATION_RESEND = 'features/auth/email-verification-resend',
+  PROCESS_REGISTRATION = 'features/external/process-registration',
 }
