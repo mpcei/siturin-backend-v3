@@ -57,7 +57,7 @@ export class MailService implements OnModuleInit {
       data: mailData.data,
       status: 'queued',
     }) as MailLogEntity;
-
+    console.log(entity);
     const logMail = await this.mailLogRepository.save(entity);
 
     await this.emailQueue.add(
