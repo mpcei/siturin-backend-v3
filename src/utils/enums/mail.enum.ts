@@ -14,5 +14,4 @@ export enum MailTemplateEnum {
   TRANSACTIONAL_SIGNUP_CODE = 'features/auth/transactional-signup-code',
   INTERNAL_ACCOUNT_CREATED = 'features/auth/internal-account-created',
   EMAIL_VERIFICATION_RESEND = 'features/auth/email-verification-resend',
-  PROCESS_REGISTRATION = 'features/external/process-registration',
 }

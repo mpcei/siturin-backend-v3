@@ -1,7 +1,7 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { DataSource, EntityManager, ILike, In } from 'typeorm';
 
-import { CatalogueUsersSexEnum, ConfigEnum, MailSubjectEnum, MailTemplateEnum } from '@utils/enums';
+import { CatalogueUsersSexEnum, ConfigEnum } from '@utils/enums';
 import { ResponseHttpInterface } from '@utils/interfaces';
 import {
   CadastreEntity,
@@ -44,7 +44,6 @@ import { DpaEntity } from '@modules/common/dpa/dpa.entity';
 import { BaseWithOriginProcessGuideDto } from '@modules/core/roles/external/dto/process-guide/base-with-origin-process-guide.dto';
 import { InactivationDto } from '@modules/core/roles/external/dto/process-guide/inactivation.dto';
 import { ProcessStateEntity } from '@modules/core/entities/process-state.entity';
-import { MailDataInterface } from '@modules/common/mail/interfaces/mail-data.interface';
 import { MailService } from '@modules/common/mail/mail.service';
 
 @Injectable()
@@ -82,22 +81,18 @@ export class ProcessGuideService {
         process,
       );
 
-      console.log(userUpdate);
-      console.log(process);
-      console.log(establishment);
+      const responseSendEmail = await this.emailService.sendProcessRegistrationEmail(
+        process.id,
+        manager,
+      );
 
-      const mailData: MailDataInterface = {
-        to: userUpdate.email || userUpdate.personalEmail,
-        subject: MailSubjectEnum.EMAIL_PROCESS_REGISTRATION,
-        template: MailTemplateEnum.PROCESS_REGISTRATION,
-        data: {
-          process,
-          user: userUpdate,
-          establishment,
-        },
-      };
-
-      await this.mailService.sendMail(mailData);
+      if (responseSendEmail) {
+        return {
+          data: cadastre,
+          title: responseSendEmail.title,
+          message: responseSendEmail.message,
+        };
+      }
 
       return {
         data: null,
@@ -266,7 +261,7 @@ export class ProcessGuideService {
 
     const cadastre = cadastreRepository.create();
     cadastre.processId = process.id;
-    cadastre.registerNumber = '14528798457.002.001';
+    cadastre.registerNumber = '14528798457.002.10654789';
     cadastre.registeredAt = new Date();
     cadastre.systemOrigin = 'SITURIN';
 
@@ -504,6 +499,19 @@ export class ProcessGuideService {
       );
 
       const credential = await this.saveWithOriginCredential(manager, payload, process);
+
+      const responseSendEmail = await this.emailService.sendProcessRegistrationEmail(
+        process.id,
+        manager,
+      );
+
+      if (responseSendEmail) {
+        return {
+          data: cadastre,
+          title: responseSendEmail.title,
+          message: responseSendEmail.message,
+        };
+      }
 
       return {
         data: null,
@@ -776,6 +784,19 @@ export class ProcessGuideService {
       );
 
       const credential = await this.saveWithOriginCredential(manager, payload, process);
+
+      const responseSendEmail = await this.emailService.sendProcessRegistrationEmail(
+        process.id,
+        manager,
+      );
+
+      if (responseSendEmail) {
+        return {
+          data: cadastre,
+          title: responseSendEmail.title,
+          message: responseSendEmail.message,
+        };
+      }
 
       return {
         data: null,
