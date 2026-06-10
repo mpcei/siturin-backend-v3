@@ -105,6 +105,7 @@ export enum CatalogueCredentialsStateEnum {
   current = 'current',
   expired = 'expired',
   expired_inactive = 'expired_inactive',
+  in_progress = 'in_progress',
 }
 export enum CatalogueSchoolPeriodStateEnum {
   OPEN = 'open',

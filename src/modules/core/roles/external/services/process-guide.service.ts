@@ -200,12 +200,18 @@ export class ProcessGuideService {
         type: CoreCatalogueTypeEnum.processes_state,
       },
     });
+    const credentialState = await catalogueRepository.findOne({
+      where: {
+        code: CatalogueCredentialsStateEnum.in_progress,
+        type: CoreCatalogueTypeEnum.credentials_state,
+      },
+    });
 
     const process = processRepository.create();
     process.activityId = payload.process.activity.id;
     process.professionalTitleId = payload.process.professionalTitle.id;
     process.establishmentId = payload.establishment.id;
-    process.type = payload.process.type.id;
+    process.typeId = payload.process.type.id;
     process.driverLicenseId = payload.process?.driverLicense?.id;
     process.registeredAt = new Date();
     process.startedAt = payload.process.startedAt;
@@ -237,8 +243,13 @@ export class ProcessGuideService {
     credential.classificationId = payload.process.classification.id;
     credential.categoryId = payload.process.category.id;
     credential.processId = saveProcess.id;
+    credential.enabled = false;
     credential.establishmentId = payload.establishment.id;
     credential.geographicAreaId = payload.process.geographicArea.id;
+    if (credentialState) {
+      credential.stateCode = credentialState.code;
+      credential.stateName = credentialState.name;
+    }
     await credentialRepository.save(credential);
 
     return saveProcess;
