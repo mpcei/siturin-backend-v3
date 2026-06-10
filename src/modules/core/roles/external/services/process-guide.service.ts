@@ -261,7 +261,7 @@ export class ProcessGuideService {
 
     const cadastre = cadastreRepository.create();
     cadastre.processId = process.id;
-    cadastre.registerNumber = '14528798457.002.001';
+    cadastre.registerNumber = '14528798457.002.10654789';
     cadastre.registeredAt = new Date();
     cadastre.systemOrigin = 'SITURIN';
 
