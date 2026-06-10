@@ -217,14 +217,14 @@ export class EstablishmentService {
       },
     });
 
-    const type = (await this.cataloguesService.findCache()).find(
+    const state = (await this.cataloguesService.findCache()).find(
       (item) =>
         item.code == CatalogueProcessesStateEnum.in_progress &&
         item.type == CoreCatalogueTypeEnum.processes_state,
     );
 
     const process = await this.processRepository.findOne({
-      where: { typeId: type?.id },
+      where: { stateId: state?.id },
       relations: { type: true },
       order: { createdAt: 'desc' },
     });
