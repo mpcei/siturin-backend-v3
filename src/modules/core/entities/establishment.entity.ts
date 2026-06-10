@@ -18,6 +18,7 @@ import { EstablishmentAddressEntity } from '@modules/core/entities/establishment
 import { CredentialEntity } from '@modules/core/entities/credential.entity';
 import { LanguageEntity } from '@modules/core/entities/language.entity';
 import { AdventureModalityEntity } from '@modules/core/entities/adventure-modality.entity';
+import { EstablishmentContactPersonEntity } from '@modules/core/entities/establishment-contact-person.entity';
 
 @Entity('establishments', { schema: 'core' })
 export class EstablishmentEntity {
@@ -65,6 +66,9 @@ export class EstablishmentEntity {
 
   @OneToOne(() => EstablishmentAddressEntity, (entity) => entity.establishment)
   establishmentAddress: EstablishmentAddressEntity;
+
+  @OneToOne(() => EstablishmentContactPersonEntity, (entity) => entity.establishment)
+  establishmentContactPerson: EstablishmentContactPersonEntity;
 
   @OneToMany(() => CredentialEntity, (entity) => entity.establishment)
   credentials: CredentialEntity[];
