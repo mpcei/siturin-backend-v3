@@ -825,6 +825,20 @@ export class ProcessGuideService {
       const process = await this.saveInactivationProcess(manager, payload, user);
       const cadastre = await this.saveInactivationCadastre(manager, payload, process);
       const credential = await this.saveInactivationCredential(manager, payload, process);
+
+      const responseSendEmail = await this.emailService.sendProcessInactivationEmail(
+        cadastre,
+        manager,
+      );
+
+      if (responseSendEmail) {
+        return {
+          data: cadastre,
+          title: responseSendEmail.title,
+          message: responseSendEmail.message,
+        };
+      }
+
       return {
         data: null,
         title: 'Proceso de Inactivación completado de manera exitosa',
