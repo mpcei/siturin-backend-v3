@@ -827,7 +827,7 @@ export class ProcessGuideService {
       const credential = await this.saveInactivationCredential(manager, payload, process);
 
       const responseSendEmail = await this.emailService.sendProcessInactivationEmail(
-        cadastre,
+        payload.cadastreId,
         manager,
       );
 

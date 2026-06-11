@@ -149,21 +149,20 @@ export class EmailService {
     }
   }
 
-  async sendProcessInactivationEmail(cadastre: CadastreEntity, manager: EntityManager) {
+  async sendProcessInactivationEmail(cadastreId: string, manager: EntityManager) {
     // Cargar el proceso y lanzar NotFoundException si no existe
     const processRepository = manager.getRepository(ProcessEntity);
     const process = await processRepository.findOne({
-      where: { id: cadastre.processId },
+      where: { cadastre: { id: cadastreId } },
       relations: {
         establishment: { ruc: true, province: true, canton: true, parish: true },
         activity: true,
         establishmentAddress: true,
         establishmentContactPerson: true,
         credentials: { classification: true },
+        cadastre: true,
       },
     });
-
-    console.log('cadastre', cadastre);
 
     if (!process) {
       throw new NotFoundException('Trámite no encontrado');
@@ -184,7 +183,6 @@ export class EmailService {
       classifications: process.credentials.map((item) => item.classification.name).join(', '),
     };
 
-    console.log('process', process);
     // Validar correos usando un método reutilizable
     const { validRecipients, invalidRecipients } = this.extractValidEmails([
       user.email,
@@ -200,14 +198,14 @@ export class EmailService {
 
     // Generar el PDF y enviar el correo
     const pdf = (await this.externalPdfService.generateInactivation({
-      cadastreId: cadastre.id,
+      cadastreId,
     })) as Buffer;
 
     const mailData: MailDataInterface = {
       to: validRecipients,
       subject: MailSubjectEnum.EMAIL_PROCESS_REGISTRATION,
       template: MailTemplateEnum.PROCESS_REGISTRATION,
-      attachments: [{ file: pdf, filename: `${cadastre.registerNumber}.pdf` }],
+      attachments: [{ file: pdf, filename: `${process.cadastre.registerNumber}.pdf` }],
       data,
     };
 
