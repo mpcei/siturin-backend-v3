@@ -30,8 +30,10 @@ export class MailService implements OnModuleInit {
       host: this.configService.mail.host,
       port: this.configService.mail.port,
       secure: false,
-      logger: true,
-      debug: true,
+      auth: {
+        user: this.configService.mail.user,
+        pass: this.configService.mail.pass,
+      },
     });
 
     // this.transporter = nodemailer.createTransport({
@@ -57,7 +59,7 @@ export class MailService implements OnModuleInit {
       data: mailData.data,
       status: 'queued',
     }) as MailLogEntity;
-    console.log(entity);
+
     const logMail = await this.mailLogRepository.save(entity);
 
     await this.emailQueue.add(
@@ -81,11 +83,14 @@ export class MailService implements OnModuleInit {
 
     if (mailData?.attachments) {
       mailData.attachments.forEach((attachment) => {
+        const content = Buffer.isBuffer(attachment.file)
+          ? attachment.file
+          : Buffer.from(attachment.file!);
         let data!: Attachment;
 
         if (attachment.file) {
           data = {
-            content: attachment.file,
+            content,
             filename: attachment.filename,
             contentDisposition: 'attachment',
           };
@@ -143,6 +148,7 @@ export class MailService implements OnModuleInit {
         rejected: response.rejected,
       };
     } catch (error) {
+      console.error('ERROR',error);
       if (error.responseCode === 535) {
         throw new MailSendException(
           'No se pudo enviar el correo',

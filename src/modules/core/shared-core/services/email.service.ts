@@ -204,7 +204,7 @@ export class EmailService {
       cadastreId: cadastre.id,
     })) as Buffer;
 
-    console.log('pdf', pdf);
+    // console.log('pdf', pdf);
 
     const mailData: MailDataInterface = {
       to: validRecipients,

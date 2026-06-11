@@ -11,7 +11,6 @@ export class ExternalPdfSql {
   ) {}
 
   async findRegisterInactivation(cadastreId: string): Promise<any> {
-    console.log('cadastreId', cadastreId);
     const cadastre = await this.cadastreRepository.findOne({
       relations: {
         process: {

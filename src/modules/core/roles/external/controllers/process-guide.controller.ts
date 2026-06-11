@@ -1,7 +1,10 @@
 import {
   Body,
   Controller,
+  Get,
+  ParseUUIDPipe,
   Post,
+  Query,
   UploadedFiles,
   UseInterceptors,
   ValidationPipe,
@@ -15,9 +18,7 @@ import { BaseProcessGuideDto } from '@modules/core/roles/external/dto/process-gu
 import { ParseFormPayloadJsonPipe } from '@utils/pipes';
 import { UserEntity } from '@auth/entities';
 import { ParseMultipartInterceptor } from '@utils/interceptors';
-import {
-  BaseWithOriginProcessGuideDto
-} from '@modules/core/roles/external/dto/process-guide/base-with-origin-process-guide.dto';
+import { BaseWithOriginProcessGuideDto } from '@modules/core/roles/external/dto/process-guide/base-with-origin-process-guide.dto';
 import { InactivationDto } from '@modules/core/roles/external/dto/process-guide/inactivation.dto';
 
 @ApiTags('Process Guide')
@@ -102,6 +103,19 @@ export class ProcessGuideController {
   @Post('processes/automatic-inactivated')
   async createAutomaticInactivation(): Promise<ResponseHttpInterface> {
     const serviceResponse = await this.service.createAutomaticInactivation();
+
+    return {
+      data: serviceResponse.data,
+      message: serviceResponse.message,
+      title: serviceResponse.title,
+    };
+  }
+
+  @ApiOperation({ summary: 'Registration Inactivation' })
+  @UseInterceptors(AnyFilesInterceptor(), ParseMultipartInterceptor)
+  @Get('mail')
+  async sendQaMail(@Query('cadastreId') cadastreId: string) {
+    const serviceResponse = await this.service.sendQaMail(cadastreId);
 
     return {
       data: serviceResponse.data,

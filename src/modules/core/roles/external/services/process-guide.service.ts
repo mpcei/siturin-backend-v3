@@ -1,5 +1,5 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { DataSource, EntityManager, ILike, In } from 'typeorm';
+import { DataSource, EntityManager, ILike, In, Repository } from 'typeorm';
 
 import { CatalogueUsersSexEnum, ConfigEnum } from '@utils/enums';
 import { ResponseHttpInterface } from '@utils/interfaces';
@@ -32,6 +32,7 @@ import {
   CatalogueProcessesTypeEnum,
   CatalogueProcessGuidesCodeEnum,
   CoreCatalogueTypeEnum,
+  CoreRepositoryEnum,
 } from '@modules/core/utils/enums';
 import { FileService } from '@modules/common/file/file.service';
 import { AdventureModalityEntity } from '@modules/core/entities/adventure-modality.entity';
@@ -56,6 +57,8 @@ export class ProcessGuideService {
     private readonly mailService: MailService,
     private readonly processService: ProcessService,
     private readonly cataloguesService: CataloguesService,
+    @Inject(CoreRepositoryEnum.CADASTRE_REPOSITORY)
+    private readonly cadastreRepository: Repository<CadastreEntity>,
   ) {}
 
   async createRegistration(
@@ -1227,5 +1230,25 @@ export class ProcessGuideService {
         message: 'Recuerde revisar su correo electrónico de manera permanente',
       };
     });
+  }
+
+  async sendQaMail(cadastreId: string): Promise<ResponseHttpInterface> {
+    const cadastre = await this.cadastreRepository.findOne({ where: { id: cadastreId } });
+    if (cadastre) {
+      const responseSendEmail = await this.emailService.sendProcessInactivationEmail(cadastre);
+
+      if (responseSendEmail) {
+        return {
+          data: cadastre,
+          title: responseSendEmail.title,
+          message: responseSendEmail.message,
+        };
+      }
+    }
+    return {
+      data: null,
+      title: 'Solicitud enviada',
+      message: 'Recuerde revisar su correo electronico de manera permanente',
+    };
   }
 }
