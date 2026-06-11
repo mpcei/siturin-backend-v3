@@ -21,7 +21,7 @@ export class ExternalPdfService {
     cadastreId: string;
   }): Promise<PDFKit.PDFDocument | Buffer> {
     const data: any = await this.externalPdfSql.findRegisterInactivation(cadastreId);
-
+    console.log('data', data);
     try {
       if (type === 'buffer') return this.printerService.createPdfBuffer(guideInactivation(data));
       else return this.printerService.createPdf(guideInactivation(data));
