@@ -182,6 +182,7 @@ export class EmailService {
       classifications: process.credentials.map((item) => item.classification.name).join(', '),
     };
 
+    console.log('process', process);
     // Validar correos usando un método reutilizable
     const { validRecipients, invalidRecipients } = this.extractValidEmails([
       user.email,
