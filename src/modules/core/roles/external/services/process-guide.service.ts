@@ -830,7 +830,7 @@ export class ProcessGuideService {
     });
 
     if (!cadastre) {
-      throw new Error()
+      throw new Error();
     }
     const responseSendEmail = await this.emailService.sendProcessInactivationEmail(cadastre);
 
