@@ -149,10 +149,10 @@ export class EmailService {
     }
   }
 
-  async sendProcessInactivationEmail(cadastre: CadastreEntity, manager: EntityManager) {
+  async sendProcessInactivationEmail(cadastre: CadastreEntity) {
     // Cargar el proceso y lanzar NotFoundException si no existe
-    const processRepository = manager.getRepository(ProcessEntity);
-    const process = await processRepository.findOne({
+
+    const process = await this.processRepository.findOne({
       where: { id: cadastre.processId },
       relations: {
         establishment: {

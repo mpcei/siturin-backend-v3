@@ -10,12 +10,9 @@ export class ExternalPdfSql {
     private readonly cadastreRepository: Repository<CadastreEntity>,
   ) {}
 
-  async findRegisterInactivation(cadastreId: string, manager?: EntityManager): Promise<any> {
+  async findRegisterInactivation(cadastreId: string): Promise<any> {
     console.log('cadastreId', cadastreId);
-    let cadastreRepository = this.cadastreRepository;
-    if (manager) cadastreRepository = manager.getRepository(CadastreEntity);
-
-    const cadastre = await cadastreRepository.findOne({
+    const cadastre = await this.cadastreRepository.findOne({
       relations: {
         process: {
           establishment: { ruc: true, province: { zone: true }, canton: true, parish: true },

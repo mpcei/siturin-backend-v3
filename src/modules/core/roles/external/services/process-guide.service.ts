@@ -821,33 +821,31 @@ export class ProcessGuideService {
     payload: InactivationDto,
     user: UserEntity,
   ): Promise<ResponseHttpInterface> {
-    const response = await this.dataSource.transaction(async (manager) => {
+    const cadastre = await this.dataSource.transaction(async (manager) => {
       const process = await this.saveInactivationProcess(manager, payload, user);
       const cadastre = await this.saveInactivationCadastre(manager, payload, process);
       const credential = await this.saveInactivationCredential(manager, payload, process);
 
-      const responseSendEmail = await this.emailService.sendProcessInactivationEmail(
-        cadastre,
-        manager,
-      );
-
-      if (responseSendEmail) {
-        return {
-          data: cadastre,
-          title: responseSendEmail.title,
-          message: responseSendEmail.message,
-        };
-      }
-
-      return {
-        data: null,
-        title: 'Proceso de Inactivación completado de manera exitosa',
-        message: 'Recuerde revisar su correo electronico de manera permanente',
-      };
+      return cadastre;
     });
 
-    console.log('response', response);
-    return response;
+    if (!cadastre) {
+      throw new Error()
+    }
+    const responseSendEmail = await this.emailService.sendProcessInactivationEmail(cadastre);
+
+    if (responseSendEmail) {
+      return {
+        data: cadastre,
+        title: responseSendEmail.title,
+        message: responseSendEmail.message,
+      };
+    }
+    return {
+      data: null,
+      title: 'Proceso de Inactivación completado de manera exitosa',
+      message: 'Recuerde revisar su correo electronico de manera permanente',
+    };
   }
 
   private async saveInactivationProcess(
