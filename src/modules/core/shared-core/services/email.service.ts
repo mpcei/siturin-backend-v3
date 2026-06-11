@@ -160,7 +160,6 @@ export class EmailService {
           province: true,
           canton: true,
           parish: true,
-          establishmentAddress: true,
           establishmentContactPerson: true,
         },
         activity: true,
@@ -192,7 +191,7 @@ export class EmailService {
     // Validar correos usando un método reutilizable
     const { validRecipients, invalidRecipients } = this.extractValidEmails([
       user.email,
-      process.establishmentContactPerson.email,
+      process.establishment.establishmentContactPerson.email,
     ]);
 
     if (validRecipients.length === 0) {
