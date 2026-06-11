@@ -5,7 +5,7 @@ import { format } from 'date-fns/format';
 export const guideInactivation = (data: any): TDocumentDefinitions => {
   const qrData = `http://localhost:3000/api/v1/enrollment-reports/certificate`;
 
-  const legalName = data.processruc.legalName;
+  const legalName = data.ruc.legalName;
 
   let message;
 
