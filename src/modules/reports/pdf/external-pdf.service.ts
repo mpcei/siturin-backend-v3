@@ -16,6 +16,7 @@ export class ExternalPdfService {
   async generateInactivation({
     type = 'buffer',
     cadastreId,
+
   }: {
     type?: string;
     cadastreId: string;

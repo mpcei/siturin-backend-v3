@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 import { CoreRepositoryEnum } from '@modules/core/utils/enums';
 import { CadastreEntity } from '@modules/core/entities';
 
@@ -10,8 +10,12 @@ export class ExternalPdfSql {
     private readonly cadastreRepository: Repository<CadastreEntity>,
   ) {}
 
-  async findRegisterInactivation(cadastreId: string): Promise<any> {
-    const cadastre = await this.cadastreRepository.findOne({
+  async findRegisterInactivation(cadastreId: string, manager?: EntityManager): Promise<any> {
+    console.log('cadastreId', cadastreId);
+    let cadastreRepository = this.cadastreRepository;
+    if (manager) cadastreRepository = manager.getRepository(CadastreEntity);
+
+    const cadastre = await cadastreRepository.findOne({
       relations: {
         process: {
           establishment: { ruc: true, province: { zone: true }, canton: true, parish: true },

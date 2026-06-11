@@ -821,7 +821,7 @@ export class ProcessGuideService {
     payload: InactivationDto,
     user: UserEntity,
   ): Promise<ResponseHttpInterface> {
-    return await this.dataSource.transaction(async (manager) => {
+    const response = await this.dataSource.transaction(async (manager) => {
       const process = await this.saveInactivationProcess(manager, payload, user);
       const cadastre = await this.saveInactivationCadastre(manager, payload, process);
       const credential = await this.saveInactivationCredential(manager, payload, process);
@@ -845,6 +845,9 @@ export class ProcessGuideService {
         message: 'Recuerde revisar su correo electronico de manera permanente',
       };
     });
+
+    console.log('response', response);
+    return response;
   }
 
   private async saveInactivationProcess(
