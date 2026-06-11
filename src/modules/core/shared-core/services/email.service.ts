@@ -163,6 +163,8 @@ export class EmailService {
         cadastre: true,
       },
     });
+    console.log('cadastreId', cadastreId);
+    console.log('process', process);
 
     if (!process) {
       throw new NotFoundException('Trámite no encontrado');
