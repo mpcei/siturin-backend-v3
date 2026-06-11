@@ -5,6 +5,7 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -62,7 +63,7 @@ export class EstablishmentContactPersonEntity {
   })
   establishmentId: string;
 
-  @ManyToOne(() => ProcessEntity, { nullable: true })
+  @OneToOne(() => ProcessEntity, { nullable: true })
   @JoinColumn({ name: 'process_id' })
   process: ProcessEntity;
   @Column({
