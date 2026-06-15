@@ -48,6 +48,23 @@ export class ProcessGuideController {
     };
   }
 
+  @ApiOperation({ summary: 'Renewal Registration Process' })
+  @UseInterceptors(AnyFilesInterceptor(), ParseMultipartInterceptor)
+  @Post('renewal-registrations')
+  async createRenewalRegistration(
+    @UploadedFiles() files: Express.Multer.File[],
+    @Body('payload') payload: BaseProcessGuideDto,
+    @User() user: UserEntity,
+  ): Promise<ResponseHttpInterface> {
+    const serviceResponse = await this.service.createRenewalRegistration(payload, user, files);
+
+    return {
+      data: serviceResponse.data,
+      message: serviceResponse.message,
+      title: serviceResponse.title,
+    };
+  }
+
   @ApiOperation({ summary: 'Registration Process Current Credential' })
   @UseInterceptors(AnyFilesInterceptor(), ParseMultipartInterceptor)
   @Post('current-registrations')

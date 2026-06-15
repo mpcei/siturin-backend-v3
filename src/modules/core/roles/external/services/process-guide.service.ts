@@ -1251,4 +1251,48 @@ export class ProcessGuideService {
       message: 'Recuerde revisar su correo electronico de manera permanente',
     };
   }
+
+  async createRenewalRegistration(
+    payload: BaseProcessGuideDto,
+    user: UserEntity,
+    files: Express.Multer.File[],
+  ): Promise<ResponseHttpInterface> {
+    return await this.dataSource.transaction(async (manager) => {
+      const userUpdate = await this.saveUser(manager, payload.user, user);
+      const process = await this.saveProcess(manager, payload, userUpdate);
+      const cadastre = await this.saveCadastre(manager, user, process);
+      const establishment = await this.saveEstablishment(
+        manager,
+        payload.establishment,
+        payload.user,
+        process.id,
+      );
+      const processGuide = await this.saveProcessGuide(
+        manager,
+        userUpdate,
+        files,
+        payload,
+        process,
+      );
+
+      const responseSendEmail = await this.emailService.sendProcessRegistrationEmail(
+        process.id,
+        manager,
+      );
+
+      if (responseSendEmail) {
+        return {
+          data: cadastre,
+          title: responseSendEmail.title,
+          message: responseSendEmail.message,
+        };
+      }
+
+      return {
+        data: null,
+        title: 'Solicitud enviada',
+        message: 'Recuerde revisar su correo electronico de manera permanente',
+      };
+    });
+  }
 }
