@@ -430,6 +430,7 @@ export class ProcessService {
     assignment.dpaId = dpaId;
 
     const availableInternalUser = await this.getAvailableInternalUser(dpaId);
+
     if (availableInternalUser) assignment.internalUser = availableInternalUser;
 
     return assignmentRepository.save(assignment);

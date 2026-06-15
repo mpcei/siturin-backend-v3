@@ -93,6 +93,7 @@ export class EmailService {
       relations: {
         establishment: { ruc: true, province: true, canton: true, parish: true },
         activity: true,
+        type: true,
         establishmentAddress: true,
         establishmentContactPerson: true,
         credentials: { classification: true },
