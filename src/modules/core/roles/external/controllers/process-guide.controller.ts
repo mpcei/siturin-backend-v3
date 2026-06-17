@@ -83,7 +83,7 @@ export class ProcessGuideController {
 
   @ApiOperation({ summary: 'Renewal Registration Process' })
   @UseInterceptors(AnyFilesInterceptor(), ParseMultipartInterceptor)
-  @Post('renewal-registrations')
+  @Post('renewals')
   async createRenewalRegistration(
     @UploadedFiles() files: Express.Multer.File[],
     @Body('payload') payload: BaseProcessGuideDto,
@@ -98,9 +98,9 @@ export class ProcessGuideController {
     };
   }
 
-  @ApiOperation({ summary: 'Renewal Registration Process' })
+  @ApiOperation({ summary: 'Readmission Registration Process' })
   @UseInterceptors(AnyFilesInterceptor(), ParseMultipartInterceptor)
-  @Post('renewal-registrations')
+  @Post('readmissions')
   async createReadmissionRegistration(
     @UploadedFiles() files: Express.Multer.File[],
     @Body('payload') payload: BaseProcessGuideDto,
