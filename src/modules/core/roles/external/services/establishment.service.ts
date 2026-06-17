@@ -129,14 +129,15 @@ export class EstablishmentService {
       if (!establishment) {
         establishment = this.repository.create();
         establishment.rucId = ruc.id;
+
+        establishment.number = sriEstablishment.numero;
+        establishment.tradeName = sriEstablishment.nombreComercial;
+        establishment.mainStreet = sriEstablishment.callePrincipal;
+        establishment.numberStreet = sriEstablishment.calleNumeracion;
+        establishment.secondaryStreet = sriEstablishment.calleInterseccion;
+        establishment.referenceStreet = sriEstablishment.calleReferencia;
       }
 
-      establishment.number = sriEstablishment.numero;
-      establishment.tradeName = sriEstablishment.nombreComercial;
-      establishment.mainStreet = sriEstablishment.callePrincipal;
-      establishment.numberStreet = sriEstablishment.calleNumeracion;
-      establishment.secondaryStreet = sriEstablishment.calleInterseccion;
-      establishment.referenceStreet = sriEstablishment.calleReferencia;
       if (state) establishment.state = state;
 
       await this.repository.save(establishment);
@@ -228,7 +229,7 @@ export class EstablishmentService {
     );
 
     const process = await this.processRepository.findOne({
-      where: { stateId: state?.id },
+      where: { stateId: state?.id, establishmentId },
       relations: { type: true },
       order: { createdAt: 'desc' },
     });
