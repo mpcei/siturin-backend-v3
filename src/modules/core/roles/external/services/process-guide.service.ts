@@ -14,7 +14,6 @@ import {
   LandTransportEntity,
   ProcessEntity,
 } from '@modules/core/entities';
-import { ProcessService } from '@modules/core/shared-core/services/process.service';
 import { UserEntity } from '@auth/entities';
 import { EmailService } from '@modules/core/shared-core/services/email.service';
 import {
@@ -46,9 +45,7 @@ import { DpaEntity } from '@modules/common/dpa/dpa.entity';
 import { BaseWithOriginProcessGuideDto } from '@modules/core/roles/external/dto/process-guide/base-with-origin-process-guide.dto';
 import { InactivationDto } from '@modules/core/roles/external/dto/process-guide/inactivation.dto';
 import { ProcessStateEntity } from '@modules/core/entities/process-state.entity';
-import { MailService } from '@modules/common/mail/mail.service';
 import { CredentialDto } from '@modules/core/roles/external/dto/process-guide/credential.dto';
-import { fa } from '@faker-js/faker';
 
 @Injectable()
 export class ProcessGuideService {
@@ -57,8 +54,6 @@ export class ProcessGuideService {
     private readonly dataSource: DataSource,
     private readonly fileService: FileService,
     private readonly emailService: EmailService,
-    private readonly mailService: MailService,
-    private readonly processService: ProcessService,
     private readonly cataloguesService: CataloguesService,
     @Inject(CoreRepositoryEnum.CADASTRE_REPOSITORY)
     private readonly cadastreRepository: Repository<CadastreEntity>,
@@ -788,7 +783,7 @@ export class ProcessGuideService {
         credential.stateCode = stateProgress.code;
         credential.stateName = stateProgress.name;
       }
-      if(endedAt >= today){
+      if (endedAt >= today) {
         credential.startedAt = item.startedAt;
         credential.endedAt = item.endedAt;
       }
@@ -1332,6 +1327,7 @@ export class ProcessGuideService {
       };
     });
   }
+
   async createReadmissionRegistration(
     payload: BaseProcessGuideDto,
     user: UserEntity,
@@ -1361,6 +1357,57 @@ export class ProcessGuideService {
       );
 
       const credential = await this.saveExistentCredential(manager, payload.credentials, process);
+
+      const responseSendEmail = await this.emailService.sendProcessRegistrationEmail(
+        process.id,
+        manager,
+      );
+
+      if (responseSendEmail) {
+        return {
+          data: cadastre,
+          title: responseSendEmail.title,
+          message: responseSendEmail.message,
+        };
+      }
+
+      return {
+        data: null,
+        title: 'Solicitud enviada',
+        message: 'Recuerde revisar su correo electronico de manera permanente',
+      };
+    });
+  }
+
+  async updateRegister(
+    payload: BaseProcessGuideDto,
+    user: UserEntity,
+    files: Express.Multer.File[],
+  ): Promise<ResponseHttpInterface> {
+    return await this.dataSource.transaction(async (manager) => {
+      const userUpdate = await this.saveUser(manager, payload.user, user);
+      const process = await this.saveProcess(
+        manager,
+        payload.process,
+        payload.establishment.id,
+        userUpdate,
+      );
+
+      const cadastre = await this.saveCadastre(manager, user, process);
+
+      const establishment = await this.saveEstablishment(
+        manager,
+        payload.establishment,
+        payload.user,
+        process.id,
+      );
+      const processGuide = await this.saveProcessGuide(
+        manager,
+        userUpdate,
+        files,
+        payload,
+        process,
+      );
 
       const responseSendEmail = await this.emailService.sendProcessRegistrationEmail(
         process.id,

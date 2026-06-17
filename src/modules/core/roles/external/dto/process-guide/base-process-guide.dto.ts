@@ -38,31 +38,31 @@ export class BaseProcessGuideDto {
   readonly process: ProcessDto;
 
   @IsArray()
-  @ValidateNested()
+  @ValidateNested({ each: true })
   @Type(() => ProcessGuideDto)
   readonly processGuides: ProcessGuideDto[];
 
   @IsArray()
   @IsOptional()
-  @ValidateNested()
+  @ValidateNested({ each: true })
   @Type(() => ProtectedAreaDto)
   readonly protectedAreas: ProtectedAreaDto[];
 
   @IsArray()
   @IsOptional()
-  @ValidateNested()
+  @ValidateNested({ each: true })
   @Type(() => LanguageDto)
   readonly languages: LanguageDto[];
 
   @IsArray()
   @IsOptional()
-  @ValidateNested()
+  @ValidateNested({ each: true })
   @Type(() => AdventureModalityDto)
   readonly adventureModalities: AdventureModalityDto[];
 
   @IsArray()
   @IsOptional()
-  @ValidateNested()
+  @ValidateNested({ each: true })
   @Type(() => LandTransportDto)
   readonly landTransports: LandTransportDto[];
 

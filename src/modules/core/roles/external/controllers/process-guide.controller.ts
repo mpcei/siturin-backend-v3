@@ -81,6 +81,23 @@ export class ProcessGuideController {
     };
   }
 
+  @ApiOperation({ summary: 'General Data Update Process' })
+  @UseInterceptors(AnyFilesInterceptor(), ParseMultipartInterceptor)
+  @Post('updates')
+  async updateRegister(
+    @UploadedFiles() files: Express.Multer.File[],
+    @Body('payload') payload: BaseProcessGuideDto,
+    @User() user: UserEntity,
+  ): Promise<ResponseHttpInterface> {
+    const serviceResponse = await this.service.updateRegister(payload, user, files);
+
+    return {
+      data: serviceResponse.data,
+      message: serviceResponse.message,
+      title: serviceResponse.title,
+    };
+  }
+
   @ApiOperation({ summary: 'Renewal Registration Process' })
   @UseInterceptors(AnyFilesInterceptor(), ParseMultipartInterceptor)
   @Post('renewals')
