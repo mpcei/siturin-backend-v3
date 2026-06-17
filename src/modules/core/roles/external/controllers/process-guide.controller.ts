@@ -2,7 +2,6 @@ import {
   Body,
   Controller,
   Get,
-  ParseUUIDPipe,
   Post,
   Query,
   UploadedFiles,
@@ -48,23 +47,6 @@ export class ProcessGuideController {
     };
   }
 
-  @ApiOperation({ summary: 'Renewal Registration Process' })
-  @UseInterceptors(AnyFilesInterceptor(), ParseMultipartInterceptor)
-  @Post('renewal-registrations')
-  async createRenewalRegistration(
-    @UploadedFiles() files: Express.Multer.File[],
-    @Body('payload') payload: BaseProcessGuideDto,
-    @User() user: UserEntity,
-  ): Promise<ResponseHttpInterface> {
-    const serviceResponse = await this.service.createRenewalRegistration(payload, user, files);
-
-    return {
-      data: serviceResponse.data,
-      message: serviceResponse.message,
-      title: serviceResponse.title,
-    };
-  }
-
   @ApiOperation({ summary: 'Registration Process Current Credential' })
   @UseInterceptors(AnyFilesInterceptor(), ParseMultipartInterceptor)
   @Post('current-registrations')
@@ -91,6 +73,40 @@ export class ProcessGuideController {
     @User() user: UserEntity,
   ): Promise<ResponseHttpInterface> {
     const serviceResponse = await this.service.createExpiredRegistration(payload, user, files);
+
+    return {
+      data: serviceResponse.data,
+      message: serviceResponse.message,
+      title: serviceResponse.title,
+    };
+  }
+
+  @ApiOperation({ summary: 'Renewal Registration Process' })
+  @UseInterceptors(AnyFilesInterceptor(), ParseMultipartInterceptor)
+  @Post('renewal-registrations')
+  async createRenewalRegistration(
+    @UploadedFiles() files: Express.Multer.File[],
+    @Body('payload') payload: BaseProcessGuideDto,
+    @User() user: UserEntity,
+  ): Promise<ResponseHttpInterface> {
+    const serviceResponse = await this.service.createRenewalRegistration(payload, user, files);
+
+    return {
+      data: serviceResponse.data,
+      message: serviceResponse.message,
+      title: serviceResponse.title,
+    };
+  }
+
+  @ApiOperation({ summary: 'Renewal Registration Process' })
+  @UseInterceptors(AnyFilesInterceptor(), ParseMultipartInterceptor)
+  @Post('renewal-registrations')
+  async createReadmissionRegistration(
+    @UploadedFiles() files: Express.Multer.File[],
+    @Body('payload') payload: BaseProcessGuideDto,
+    @User() user: UserEntity,
+  ): Promise<ResponseHttpInterface> {
+    const serviceResponse = await this.service.createReadmissionRegistration(payload, user, files);
 
     return {
       data: serviceResponse.data,

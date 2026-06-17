@@ -20,6 +20,7 @@ import { EmailService } from '@modules/core/shared-core/services/email.service';
 import {
   BaseProcessGuideDto,
   EstablishmentDto,
+  ProcessDto,
   UserDto,
 } from '@modules/core/roles/external/dto/process-guide';
 import { ProcessGuideEntity } from '@modules/core/entities/process-guide.entity';
@@ -46,6 +47,7 @@ import { BaseWithOriginProcessGuideDto } from '@modules/core/roles/external/dto/
 import { InactivationDto } from '@modules/core/roles/external/dto/process-guide/inactivation.dto';
 import { ProcessStateEntity } from '@modules/core/entities/process-state.entity';
 import { MailService } from '@modules/common/mail/mail.service';
+import { CredentialDto } from '@modules/core/roles/external/dto/process-guide/credential.dto';
 
 @Injectable()
 export class ProcessGuideService {
@@ -68,7 +70,18 @@ export class ProcessGuideService {
   ): Promise<ResponseHttpInterface> {
     return await this.dataSource.transaction(async (manager) => {
       const userUpdate = await this.saveUser(manager, payload.user, user);
-      const process = await this.saveProcess(manager, payload, userUpdate);
+      const process = await this.saveProcess(
+        manager,
+        payload.process,
+        payload.establishment.id,
+        userUpdate,
+      );
+      const credential = await this.saveCredential(
+        manager,
+        payload.process,
+        process.id,
+        payload.establishment.id,
+      );
       const cadastre = await this.saveCadastre(manager, user, process);
       const establishment = await this.saveEstablishment(
         manager,
@@ -189,13 +202,13 @@ export class ProcessGuideService {
 
   private async saveProcess(
     manager: EntityManager,
-    payload: BaseProcessGuideDto,
+    process: ProcessDto,
+    establishmentId: string,
     user: UserEntity,
   ): Promise<ProcessEntity> {
     const processRepository = manager.getRepository(ProcessEntity);
     const processStateRepository = manager.getRepository(ProcessStateEntity);
     const catalogueRepository = manager.getRepository(CatalogueEntity);
-    const credentialRepository = manager.getRepository(CredentialEntity);
 
     const processStateCatalogue = await catalogueRepository.findOne({
       where: {
@@ -203,37 +216,28 @@ export class ProcessGuideService {
         type: CoreCatalogueTypeEnum.processes_state,
       },
     });
-    const credentialState = await catalogueRepository.findOne({
-      where: {
-        code: CatalogueCredentialsStateEnum.in_progress,
-        type: CoreCatalogueTypeEnum.credentials_state,
-      },
-    });
-
-    const process = processRepository.create();
-    process.activityId = payload.process.activity.id;
-    process.professionalTitleId = payload.process.professionalTitle.id;
-    process.establishmentId = payload.establishment.id;
-    process.typeId = payload.process.type.id;
-    process.driverLicenseId = payload.process?.driverLicense?.id;
-    process.registeredAt = new Date();
-    process.startedAt = payload.process.startedAt;
-    process.endedAt = payload.process.endedAt;
+    const processNew = processRepository.create();
+    processNew.activityId = process.activity.id;
+    processNew.establishmentId = establishmentId;
+    processNew.typeId = process.type.id;
+    processNew.registeredAt = new Date();
+    processNew.startedAt = process.startedAt;
+    processNew.endedAt = process.endedAt;
     if (user.sex?.code === CatalogueUsersSexEnum.female) {
-      process.totalWomen = 1;
-      if (user.hasDisability) process.totalWomenDisability = 1;
+      processNew.totalWomen = 1;
+      if (user.hasDisability) processNew.totalWomenDisability = 1;
     } else {
-      process.totalMen = 1;
-      if (user.hasDisability) process.totalMenDisability = 1;
+      processNew.totalMen = 1;
+      if (user.hasDisability) processNew.totalMenDisability = 1;
     }
 
     if (processStateCatalogue) {
-      process.stateId = processStateCatalogue.id;
+      processNew.stateId = processStateCatalogue.id;
     }
-    const saveProcess = await processRepository.save(process);
+    const processSave = await processRepository.save(process);
 
     const processState = processStateRepository.create();
-    processState.processId = saveProcess.id;
+    processState.processId = processSave.id;
     processState.startedAt = new Date();
     processState.userId = user.id;
     if (processStateCatalogue) {
@@ -242,20 +246,38 @@ export class ProcessGuideService {
     }
     await processStateRepository.save(processState);
 
+    return processSave;
+  }
+
+  private async saveCredential(
+    manager: EntityManager,
+    process: ProcessDto,
+    newProcessId: string,
+    establishmentId: string,
+  ): Promise<CredentialEntity> {
+    const catalogueRepository = manager.getRepository(CatalogueEntity);
+    const credentialRepository = manager.getRepository(CredentialEntity);
+
+    const credentialState = await catalogueRepository.findOne({
+      where: {
+        code: CatalogueCredentialsStateEnum.in_progress,
+        type: CoreCatalogueTypeEnum.credentials_state,
+      },
+    });
+
     const credential = credentialRepository.create();
-    credential.classificationId = payload.process.classification.id;
-    credential.categoryId = payload.process.category.id;
-    credential.processId = saveProcess.id;
+    credential.classificationId = process.classification.id;
+    credential.categoryId = process.category.id;
+    credential.processId = newProcessId;
     credential.enabled = false;
-    credential.establishmentId = payload.establishment.id;
-    credential.geographicAreaId = payload.process.geographicArea.id;
+    credential.establishmentId = establishmentId;
+    credential.geographicAreaId = process.geographicArea.id;
     if (credentialState) {
       credential.stateCode = credentialState.code;
       credential.stateName = credentialState.name;
     }
-    await credentialRepository.save(credential);
 
-    return saveProcess;
+    return await credentialRepository.save(credential);
   }
 
   private async saveCadastre(
@@ -496,7 +518,12 @@ export class ProcessGuideService {
   ): Promise<ResponseHttpInterface> {
     return await this.dataSource.transaction(async (manager) => {
       const userUpdate = await this.saveUser(manager, payload.user, user);
-      const process = await this.saveWithOriginProcess(manager, payload, userUpdate);
+      const process = await this.saveProcess(
+        manager,
+        payload.process,
+        payload.establishment.id,
+        userUpdate,
+      );
       const cadastre = await this.saveCadastre(manager, user, process);
       const establishment = await this.saveEstablishment(
         manager,
@@ -533,55 +560,6 @@ export class ProcessGuideService {
         message: 'Recuerde revisar su correo electronico de manera permanente',
       };
     });
-  }
-
-  private async saveWithOriginProcess(
-    manager: EntityManager,
-    payload: BaseWithOriginProcessGuideDto,
-    user: UserEntity,
-  ): Promise<ProcessEntity> {
-    const processRepository = manager.getRepository(ProcessEntity);
-    const processStateRepository = manager.getRepository(ProcessStateEntity);
-    const catalogueRepository = manager.getRepository(CatalogueEntity);
-
-    const processStateCatalogue = await catalogueRepository.findOne({
-      where: {
-        code: CatalogueProcessesStateEnum.in_progress,
-        type: CoreCatalogueTypeEnum.processes_state,
-      },
-    });
-    console.log(payload);
-    const process = processRepository.create();
-    process.activityId = payload.process.activity.id;
-    process.establishmentId = payload.establishment.id;
-    process.typeId = payload.process.type.id;
-    process.registeredAt = new Date();
-    process.startedAt = payload.process.startedAt;
-    process.endedAt = payload.process.endedAt;
-    if (user.sex?.code === CatalogueUsersSexEnum.female) {
-      process.totalWomen = 1;
-      if (user.hasDisability) process.totalWomenDisability = 1;
-    } else {
-      process.totalMen = 1;
-      if (user.hasDisability) process.totalMenDisability = 1;
-    }
-
-    if (processStateCatalogue) {
-      process.stateId = processStateCatalogue.id;
-    }
-    const processSave = await processRepository.save(process);
-
-    const processState = processStateRepository.create();
-    processState.processId = processSave.id;
-    processState.startedAt = new Date();
-    processState.userId = user.id;
-    if (processStateCatalogue) {
-      processState.stateCode = processStateCatalogue.code;
-      processState.stateName = processStateCatalogue.name;
-    }
-    await processStateRepository.save(processState);
-
-    return processSave;
   }
 
   private async saveWithOriginProcessGuide(
@@ -774,6 +752,35 @@ export class ProcessGuideService {
     return true;
   }
 
+  private async saveExistentCredential(
+    manager: EntityManager,
+    credentials: CredentialDto[],
+    process: ProcessEntity,
+    establishmentId: string,
+  ): Promise<boolean> {
+    const credentialRepository = manager.getRepository(CredentialEntity);
+
+    for (const item of credentials) {
+      const credential = credentialRepository.create();
+
+      credential.classificationId = item.classification.id;
+      credential.categoryId = item.category.id;
+      credential.startedAt = item.startedAt;
+      credential.endedAt = item.endedAt;
+      credential.code = item.code;
+      credential.origin = item.origin;
+      credential.processId = process.id;
+      credential.establishmentId = establishmentId;
+      credential.stateCode = item.stateCode;
+      credential.stateName = item.stateName;
+      credential.geographicAreaId = item.geographicArea.id;
+
+      await credentialRepository.save(credential);
+    }
+
+    return true;
+  }
+
   async createExpiredRegistration(
     payload: BaseWithOriginProcessGuideDto,
     user: UserEntity,
@@ -781,7 +788,12 @@ export class ProcessGuideService {
   ): Promise<ResponseHttpInterface> {
     return await this.dataSource.transaction(async (manager) => {
       const userUpdate = await this.saveUser(manager, payload.user, user);
-      const process = await this.saveWithOriginProcess(manager, payload, userUpdate);
+      const process = await this.saveProcess(
+        manager,
+        payload.process,
+        payload.establishment.id,
+        userUpdate,
+      );
       const cadastre = await this.saveCadastre(manager, user, process);
       const establishment = await this.saveEstablishment(
         manager,
@@ -1259,7 +1271,12 @@ export class ProcessGuideService {
   ): Promise<ResponseHttpInterface> {
     return await this.dataSource.transaction(async (manager) => {
       const userUpdate = await this.saveUser(manager, payload.user, user);
-      const process = await this.saveProcess(manager, payload, userUpdate);
+      const process = await this.saveProcess(
+        manager,
+        payload.process,
+        payload.establishment.id,
+        userUpdate,
+      );
       const cadastre = await this.saveCadastre(manager, user, process);
       const establishment = await this.saveEstablishment(
         manager,
@@ -1273,6 +1290,68 @@ export class ProcessGuideService {
         files,
         payload,
         process,
+      );
+
+      const credential = await this.saveExistentCredential(
+        manager,
+        payload.credentials,
+        process,
+        payload.establishment.id,
+      );
+
+      const responseSendEmail = await this.emailService.sendProcessRegistrationEmail(
+        process.id,
+        manager,
+      );
+
+      if (responseSendEmail) {
+        return {
+          data: cadastre,
+          title: responseSendEmail.title,
+          message: responseSendEmail.message,
+        };
+      }
+
+      return {
+        data: null,
+        title: 'Solicitud enviada',
+        message: 'Recuerde revisar su correo electronico de manera permanente',
+      };
+    });
+  }
+  async createReadmissionRegistration(
+    payload: BaseProcessGuideDto,
+    user: UserEntity,
+    files: Express.Multer.File[],
+  ): Promise<ResponseHttpInterface> {
+    return await this.dataSource.transaction(async (manager) => {
+      const userUpdate = await this.saveUser(manager, payload.user, user);
+      const process = await this.saveProcess(
+        manager,
+        payload.process,
+        payload.establishment.id,
+        userUpdate,
+      );
+      const cadastre = await this.saveCadastre(manager, user, process);
+      const establishment = await this.saveEstablishment(
+        manager,
+        payload.establishment,
+        payload.user,
+        process.id,
+      );
+      const processGuide = await this.saveProcessGuide(
+        manager,
+        userUpdate,
+        files,
+        payload,
+        process,
+      );
+
+      const credential = await this.saveExistentCredential(
+        manager,
+        payload.credentials,
+        process,
+        payload.establishment.id,
       );
 
       const responseSendEmail = await this.emailService.sendProcessRegistrationEmail(

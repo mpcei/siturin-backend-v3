@@ -1,41 +1,39 @@
-import { IsNotEmpty, IsObject, IsOptional, IsString } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { isNotEmptyValidationOptions, isStringValidationOptions } from '@utils/dto-validation';
 
-export class CredentialDto {
-  @IsObject()
+export class CredentialSieteDto {
+  @IsString(isStringValidationOptions())
   @IsNotEmpty(isNotEmptyValidationOptions())
-  readonly classification: any;
-
-  @IsObject()
-  @IsNotEmpty(isNotEmptyValidationOptions())
-  readonly category: any;
+  readonly classificationCode: string;
 
   @IsString(isStringValidationOptions())
   @IsNotEmpty(isNotEmptyValidationOptions())
-  readonly stateCode: string;
+  readonly startedAt: string;
 
   @IsString(isStringValidationOptions())
   @IsNotEmpty(isNotEmptyValidationOptions())
-  readonly stateName: string;
-
-  @IsString(isStringValidationOptions())
-  @IsNotEmpty(isNotEmptyValidationOptions())
-  readonly startedAt: Date;
-
-  @IsString(isStringValidationOptions())
-  @IsNotEmpty(isNotEmptyValidationOptions())
-  readonly endedAt: Date;
-
-  @IsString(isStringValidationOptions())
-  @IsNotEmpty(isNotEmptyValidationOptions())
-  readonly code: string;
+  readonly endedAt: string;
 
   @IsOptional()
   @IsString(isStringValidationOptions())
   @IsNotEmpty(isNotEmptyValidationOptions())
+  readonly code: string;
+
+  @IsString(isStringValidationOptions())
+  @IsNotEmpty(isNotEmptyValidationOptions())
   readonly origin: string;
 
-  @IsObject()
+  @IsString(isStringValidationOptions())
   @IsNotEmpty(isNotEmptyValidationOptions())
-  readonly geographicArea: any;
+  readonly geographicArea: string;
+
+  @IsOptional()
+  @IsString(isStringValidationOptions())
+  @IsNotEmpty(isNotEmptyValidationOptions())
+  readonly protectedAreas: string;
+
+  @IsOptional()
+  @IsString(isStringValidationOptions())
+  @IsNotEmpty(isNotEmptyValidationOptions())
+  readonly modalities: string;
 }

@@ -15,6 +15,7 @@ export class ProcessDto {
   @IsNotEmpty(isNotEmptyValidationOptions())
   readonly activity: any;
 
+  @IsOptional()
   @IsObject()
   @IsNotEmpty(isNotEmptyValidationOptions())
   readonly classification: any;

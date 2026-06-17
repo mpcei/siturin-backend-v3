@@ -56,6 +56,9 @@ export enum CatalogueProcessesTypeEnum {
   readmission = 'readmission',
   reclassification = 'reclassification',
   recategorization = 'recategorization',
+  renewal_classification_update = 'renewal_classification_update',
+  general_data_update = 'general_data_update',
+  new_classification_update = 'new_classification_update',
 }
 
 export enum CatalogueProcessesStateEnum {
