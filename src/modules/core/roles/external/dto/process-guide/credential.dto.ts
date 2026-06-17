@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsObject, IsOptional, IsString } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { isNotEmptyValidationOptions, isStringValidationOptions } from '@utils/dto-validation';
 
 export class CredentialDto {
@@ -13,14 +13,6 @@ export class CredentialDto {
   @IsString()
   @IsNotEmpty(isNotEmptyValidationOptions())
   readonly categoryId: string;
-
-  @IsString(isStringValidationOptions())
-  @IsNotEmpty(isNotEmptyValidationOptions())
-  readonly stateCode: string;
-
-  @IsString(isStringValidationOptions())
-  @IsNotEmpty(isNotEmptyValidationOptions())
-  readonly stateName: string;
 
   @IsString(isStringValidationOptions())
   @IsNotEmpty(isNotEmptyValidationOptions())
