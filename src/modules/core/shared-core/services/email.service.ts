@@ -87,6 +87,7 @@ export class EmailService {
 
   async sendProcessRegistrationEmail(processId: string, manager: EntityManager) {
     // Cargar el proceso y lanzar NotFoundException si no existe
+    console.log(processId);
     const processRepository = manager.getRepository(ProcessEntity);
     const process = await processRepository.findOne({
       where: { id: processId },
@@ -100,6 +101,7 @@ export class EmailService {
       },
     });
 
+    console.log(process);
     if (!process) {
       throw new NotFoundException('Trámite no encontrado');
     }

@@ -2,13 +2,17 @@ import { IsNotEmpty, IsObject, IsOptional, IsString } from 'class-validator';
 import { isNotEmptyValidationOptions, isStringValidationOptions } from '@utils/dto-validation';
 
 export class CredentialDto {
-  @IsObject()
+  @IsString()
   @IsNotEmpty(isNotEmptyValidationOptions())
-  readonly classification: any;
+  readonly establishmentId: string;
 
-  @IsObject()
+  @IsString()
   @IsNotEmpty(isNotEmptyValidationOptions())
-  readonly category: any;
+  readonly classificationId: string;
+
+  @IsString()
+  @IsNotEmpty(isNotEmptyValidationOptions())
+  readonly categoryId: string;
 
   @IsString(isStringValidationOptions())
   @IsNotEmpty(isNotEmptyValidationOptions())
@@ -35,7 +39,7 @@ export class CredentialDto {
   @IsNotEmpty(isNotEmptyValidationOptions())
   readonly origin: string;
 
-  @IsObject()
+  @IsString()
   @IsNotEmpty(isNotEmptyValidationOptions())
-  readonly geographicArea: any;
+  readonly geographicAreaId: string;
 }

@@ -234,7 +234,7 @@ export class ProcessGuideService {
     if (processStateCatalogue) {
       processNew.stateId = processStateCatalogue.id;
     }
-    const processSave = await processRepository.save(process);
+    const processSave = await processRepository.save(processNew);
 
     const processState = processStateRepository.create();
     processState.processId = processSave.id;
@@ -756,24 +756,23 @@ export class ProcessGuideService {
     manager: EntityManager,
     credentials: CredentialDto[],
     process: ProcessEntity,
-    establishmentId: string,
   ): Promise<boolean> {
     const credentialRepository = manager.getRepository(CredentialEntity);
 
     for (const item of credentials) {
       const credential = credentialRepository.create();
 
-      credential.classificationId = item.classification.id;
-      credential.categoryId = item.category.id;
+      credential.classificationId = item.classificationId;
+      credential.categoryId = item.categoryId;
       credential.startedAt = item.startedAt;
       credential.endedAt = item.endedAt;
       credential.code = item.code;
       credential.origin = item.origin;
       credential.processId = process.id;
-      credential.establishmentId = establishmentId;
+      credential.establishmentId = item.establishmentId;
       credential.stateCode = item.stateCode;
       credential.stateName = item.stateName;
-      credential.geographicAreaId = item.geographicArea.id;
+      credential.geographicAreaId = item.geographicAreaId;
 
       await credentialRepository.save(credential);
     }
@@ -1292,12 +1291,7 @@ export class ProcessGuideService {
         process,
       );
 
-      const credential = await this.saveExistentCredential(
-        manager,
-        payload.credentials,
-        process,
-        payload.establishment.id,
-      );
+      const credential = await this.saveExistentCredential(manager, payload.credentials, process);
 
       const responseSendEmail = await this.emailService.sendProcessRegistrationEmail(
         process.id,
@@ -1347,12 +1341,7 @@ export class ProcessGuideService {
         process,
       );
 
-      const credential = await this.saveExistentCredential(
-        manager,
-        payload.credentials,
-        process,
-        payload.establishment.id,
-      );
+      const credential = await this.saveExistentCredential(manager, payload.credentials, process);
 
       const responseSendEmail = await this.emailService.sendProcessRegistrationEmail(
         process.id,

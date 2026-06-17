@@ -22,7 +22,7 @@ export class ProcessDto {
 
   @IsOptional() //review
   @IsObject()
-  @IsNotEmpty(isNotEmptyValidationOptions())
+  // @IsNotEmpty(isNotEmptyValidationOptions())
   readonly category: any;
 
   @IsObject()
