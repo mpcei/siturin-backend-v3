@@ -48,6 +48,7 @@ import { InactivationDto } from '@modules/core/roles/external/dto/process-guide/
 import { ProcessStateEntity } from '@modules/core/entities/process-state.entity';
 import { MailService } from '@modules/common/mail/mail.service';
 import { CredentialDto } from '@modules/core/roles/external/dto/process-guide/credential.dto';
+import { fa } from '@faker-js/faker';
 
 @Injectable()
 export class ProcessGuideService {
@@ -657,6 +658,7 @@ export class ProcessGuideService {
           type: CoreCatalogueTypeEnum.activities_geographic_area,
         },
       });
+
       const endedAt = new Date(item.endedAt);
       endedAt.setHours(0, 0, 0, 0);
 
@@ -759,20 +761,37 @@ export class ProcessGuideService {
   ): Promise<boolean> {
     const credentialRepository = manager.getRepository(CredentialEntity);
 
+    const stateProgress = (await this.cataloguesService.findCache()).find(
+      (item) =>
+        item.code == CatalogueCredentialsStateEnum.in_progress &&
+        item.type == CoreCatalogueTypeEnum.credentials_state,
+    );
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
     for (const item of credentials) {
       const credential = credentialRepository.create();
 
+      const endedAt = new Date(item.endedAt);
+      endedAt.setHours(0, 0, 0, 0);
+
       credential.classificationId = item.classificationId;
       credential.categoryId = item.categoryId;
-      credential.startedAt = item.startedAt;
-      credential.endedAt = item.endedAt;
       credential.code = item.code;
       credential.origin = item.origin;
       credential.processId = process.id;
       credential.establishmentId = item.establishmentId;
-      credential.stateCode = item.stateCode;
-      credential.stateName = item.stateName;
       credential.geographicAreaId = item.geographicAreaId;
+      credential.enabled = false;
+      if (stateProgress) {
+        credential.stateCode = stateProgress.code;
+        credential.stateName = stateProgress.name;
+      }
+      if(endedAt >= today){
+        credential.startedAt = item.startedAt;
+        credential.endedAt = item.endedAt;
+      }
 
       await credentialRepository.save(credential);
     }
