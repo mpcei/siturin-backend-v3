@@ -19,6 +19,7 @@ import { CredentialEntity } from '@modules/core/entities/credential.entity';
 import { LanguageEntity } from '@modules/core/entities/language.entity';
 import { AdventureModalityEntity } from '@modules/core/entities/adventure-modality.entity';
 import { EstablishmentContactPersonEntity } from '@modules/core/entities/establishment-contact-person.entity';
+import { ProtectedAreaEntity } from '@modules/core/entities/protected-area.entity';
 
 @Entity('establishments', { schema: 'core' })
 export class EstablishmentEntity {
@@ -78,6 +79,9 @@ export class EstablishmentEntity {
 
   @OneToMany(() => AdventureModalityEntity, (entity) => entity.establishment)
   adventureModalities: AdventureModalityEntity[];
+
+  @OneToMany(() => ProtectedAreaEntity, (entity) => entity.establishment)
+  protectedAreas: ProtectedAreaEntity[];
 
   /** Foreign Keys **/
   @ManyToOne(() => RucEntity, { nullable: true })
