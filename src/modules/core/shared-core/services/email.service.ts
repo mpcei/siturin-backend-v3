@@ -92,7 +92,7 @@ export class EmailService {
     const process = await processRepository.findOne({
       where: { id: processId },
       relations: {
-        establishment: { ruc: true, province: true, canton: true, parish: true },
+        establishment: { ruc: true, province: true, canton: true, parish: true, credentials: true },
         activity: true,
         type: true,
         establishmentAddress: true,
@@ -113,12 +113,24 @@ export class EmailService {
       throw new NotFoundException('Usuario no encontrado');
     }
 
+    let classifications = process.credentials
+      .map((item) => item.classification?.name)
+      .filter(Boolean)
+      .join(', ');
+
+    if (!classifications) {
+      classifications = process.establishment.credentials
+        .map((item) => item.classification?.name)
+        .filter(Boolean)
+        .join(', ');
+    }
+
     // Preparar los datos del correo
     const data = {
       user,
       process,
       establishment: process.establishment,
-      classifications: process.credentials.map((item) => item.classification.name).join(', '),
+      classifications,
     };
 
     // Validar correos usando un método reutilizable
