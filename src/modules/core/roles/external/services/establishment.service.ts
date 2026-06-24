@@ -63,7 +63,7 @@ export class EstablishmentService {
   ): Promise<ServiceResponseHttpInterface> {
     const [data, totalItems] = await this.repository
       .createQueryBuilder('e')
-      .leftJoin('e.ruc', 'ruc')
+      .leftJoinAndSelect('e.ruc', 'ruc')
       .leftJoinAndSelect('e.province', 'provinces')
       .leftJoinAndSelect('e.canton', 'cantons')
       .leftJoinAndSelect('e.parish', 'parishes')
