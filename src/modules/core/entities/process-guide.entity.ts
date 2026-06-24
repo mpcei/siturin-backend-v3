@@ -14,6 +14,7 @@ import { ProcessEntity } from '@modules/core/entities/process.entity';
 import { CatalogueEntity } from '@modules/common/catalogue/catalogue.entity';
 import { CredentialEntity } from '@modules/core/entities/credential.entity';
 import { FileEntity } from '@modules/common/file/file.entity';
+import { LandTransportEntity } from '@modules/core/entities/land-transport.entity';
 
 @Entity('process_guides', { schema: 'core' })
 export class ProcessGuideEntity {
