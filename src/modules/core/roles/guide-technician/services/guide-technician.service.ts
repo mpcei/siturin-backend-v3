@@ -19,12 +19,13 @@ export class GuideTechnicianService {
     const process1 = await this.processRepository.findOne({
       where: { id: processId },
       relations: {
+
         credentials: {
           classification: true,
           geographicArea: true,
           category: true,
         },
-        processGuide: { requirement: true },
+        processGuides: { requirement: true },
         processStates: true,
         establishment: {
           establishmentContactPerson: true,
@@ -49,7 +50,7 @@ export class GuideTechnicianService {
       .leftJoinAndSelect('credential.category', 'category')
 
       // Process Guide
-      .leftJoinAndSelect('process.processGuide', 'processGuide')
+      .leftJoinAndSelect('process.processGuides', 'processGuide')
       .leftJoinAndSelect('processGuide.requirement', 'requirement')
 
       // Archivo polimórfico

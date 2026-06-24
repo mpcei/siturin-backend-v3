@@ -92,8 +92,8 @@ export class ProcessEntity {
   @OneToMany(() => ProcessStateEntity, (entity) => entity.process)
   processStates: ProcessStateEntity[];
 
-  @OneToOne(() => ProcessGuideEntity, (entity) => entity.process)
-  processGuide: ProcessGuideEntity;
+  @OneToMany(() => ProcessGuideEntity, (entity) => entity.process)
+  processGuides: ProcessGuideEntity[];
 
   @OneToMany(() => CredentialEntity, (entity) => entity.process)
   credentials: CredentialEntity[];
