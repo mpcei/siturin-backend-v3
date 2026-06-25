@@ -10,7 +10,6 @@ import {
 } from 'typeorm';
 import { ProcessEntity } from '@modules/core/entities/process.entity';
 import { CatalogueEntity } from '@modules/common/catalogue/catalogue.entity';
-import { FileEntity } from '@modules/common/file/file.entity';
 
 @Entity('process_guides', { schema: 'core' })
 export class ProcessGuideEntity {

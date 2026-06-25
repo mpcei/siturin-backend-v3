@@ -16,10 +16,9 @@ export class GuideTechnicianService {
   ) {}
 
   async findProcessById(processId: string): Promise<ResponseHttpInterface> {
-    const process1 = await this.processRepository.findOne({
+    /*const process1 = await this.processRepository.findOne({
       where: { id: processId },
       relations: {
-
         credentials: {
           classification: true,
           geographicArea: true,
@@ -38,7 +37,7 @@ export class GuideTechnicianService {
       },
     });
 
-    console.log('process1', process1);
+    console.log('process1', process1);*/
 
     const process = await this.processRepository
       .createQueryBuilder('process')
