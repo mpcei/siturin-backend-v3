@@ -16,29 +16,6 @@ export class GuideTechnicianService {
   ) {}
 
   async findProcessById(processId: string): Promise<ResponseHttpInterface> {
-    /*const process1 = await this.processRepository.findOne({
-      where: { id: processId },
-      relations: {
-        credentials: {
-          classification: true,
-          geographicArea: true,
-          category: true,
-        },
-        processGuides: { requirement: true },
-        processStates: true,
-        establishment: {
-          establishmentContactPerson: true,
-          establishmentAddress: true,
-          adventureModalities: true,
-          languages: true,
-          protectedAreas: true,
-        },
-        landTransport: true,
-      },
-    });
-
-    console.log('process1', process1);*/
-
     const process = await this.processRepository
       .createQueryBuilder('process')
 
@@ -77,8 +54,8 @@ export class GuideTechnicianService {
 
     return {
       data: process,
-      title: 'Solicitud enviada',
-      message: 'Recuerde revisar su correo electronico de manera permanente',
+      title: 'Busqueda exitosa',
+      message: '',
     };
   }
 }
