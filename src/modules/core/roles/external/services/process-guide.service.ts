@@ -46,6 +46,7 @@ import { BaseWithOriginProcessGuideDto } from '@modules/core/roles/external/dto/
 import { InactivationDto } from '@modules/core/roles/external/dto/process-guide/inactivation.dto';
 import { ProcessStateEntity } from '@modules/core/entities/process-state.entity';
 import { CredentialDto } from '@modules/core/roles/external/dto/process-guide/credential.dto';
+import { ProcessService } from '@modules/core/shared-core/services/process.service';
 
 @Injectable()
 export class ProcessGuideService {
@@ -54,6 +55,7 @@ export class ProcessGuideService {
     private readonly dataSource: DataSource,
     private readonly fileService: FileService,
     private readonly emailService: EmailService,
+    private readonly processService: ProcessService,
     private readonly cataloguesService: CataloguesService,
     @Inject(CoreRepositoryEnum.CADASTRE_REPOSITORY)
     private readonly cadastreRepository: Repository<CadastreEntity>,
@@ -78,7 +80,7 @@ export class ProcessGuideService {
         process.id,
         payload.establishment.id,
       );
-      const cadastre = await this.saveCadastre(manager, user, process);
+      //const cadastre = await this.saveCadastre(manager, user, process);
       const establishment = await this.saveEstablishment(
         manager,
         payload.establishment,
@@ -93,6 +95,12 @@ export class ProcessGuideService {
         process,
       );
 
+      const assignment = await this.processService.saveAutoAssignment(
+        manager,
+        process.id,
+        establishment.provinceId,
+      );
+
       const responseSendEmail = await this.emailService.sendProcessRegistrationEmail(
         process.id,
         manager,
@@ -100,7 +108,7 @@ export class ProcessGuideService {
 
       if (responseSendEmail) {
         return {
-          data: cadastre,
+          data: process,
           title: responseSendEmail.title,
           message: responseSendEmail.message,
         };
@@ -276,7 +284,7 @@ export class ProcessGuideService {
     return await credentialRepository.save(credential);
   }
 
-  private async saveCadastre(
+  /*private async saveCadastre(
     manager: EntityManager,
     user: UserEntity,
     process: ProcessEntity,
@@ -312,7 +320,7 @@ export class ProcessGuideService {
     await cadastreStateRepository.save(cadastreState);
 
     return cadastreSave;
-  }
+  }*/
 
   private async saveProcessGuide(
     manager: EntityManager,
@@ -520,7 +528,6 @@ export class ProcessGuideService {
         payload.establishment.id,
         userUpdate,
       );
-      const cadastre = await this.saveCadastre(manager, user, process);
       const establishment = await this.saveEstablishment(
         manager,
         payload.establishment,
@@ -537,6 +544,12 @@ export class ProcessGuideService {
 
       const credential = await this.saveWithOriginCredential(manager, payload, process);
 
+      const assignment = await this.processService.saveAutoAssignment(
+        manager,
+        process.id,
+        establishment.provinceId,
+      );
+
       const responseSendEmail = await this.emailService.sendProcessRegistrationEmail(
         process.id,
         manager,
@@ -544,7 +557,7 @@ export class ProcessGuideService {
 
       if (responseSendEmail) {
         return {
-          data: cadastre,
+          data: process,
           title: responseSendEmail.title,
           message: responseSendEmail.message,
         };
@@ -807,7 +820,6 @@ export class ProcessGuideService {
         payload.establishment.id,
         userUpdate,
       );
-      const cadastre = await this.saveCadastre(manager, user, process);
       const establishment = await this.saveEstablishment(
         manager,
         payload.establishment,
@@ -824,6 +836,12 @@ export class ProcessGuideService {
 
       const credential = await this.saveWithOriginCredential(manager, payload, process);
 
+      const assignment = await this.processService.saveAutoAssignment(
+        manager,
+        process.id,
+        establishment.provinceId,
+      );
+
       const responseSendEmail = await this.emailService.sendProcessRegistrationEmail(
         process.id,
         manager,
@@ -831,7 +849,7 @@ export class ProcessGuideService {
 
       if (responseSendEmail) {
         return {
-          data: cadastre,
+          data: process,
           title: responseSendEmail.title,
           message: responseSendEmail.message,
         };
@@ -1290,7 +1308,6 @@ export class ProcessGuideService {
         payload.establishment.id,
         userUpdate,
       );
-      const cadastre = await this.saveCadastre(manager, user, process);
       const establishment = await this.saveEstablishment(
         manager,
         payload.establishment,
@@ -1307,6 +1324,12 @@ export class ProcessGuideService {
 
       const credential = await this.saveExistentCredential(manager, payload.credentials, process);
 
+      const assignment = await this.processService.saveAutoAssignment(
+        manager,
+        process.id,
+        establishment.provinceId,
+      );
+
       const responseSendEmail = await this.emailService.sendProcessRegistrationEmail(
         process.id,
         manager,
@@ -1314,7 +1337,7 @@ export class ProcessGuideService {
 
       if (responseSendEmail) {
         return {
-          data: cadastre,
+          data: process,
           title: responseSendEmail.title,
           message: responseSendEmail.message,
         };
@@ -1341,7 +1364,6 @@ export class ProcessGuideService {
         payload.establishment.id,
         userUpdate,
       );
-      const cadastre = await this.saveCadastre(manager, user, process);
       const establishment = await this.saveEstablishment(
         manager,
         payload.establishment,
@@ -1358,6 +1380,12 @@ export class ProcessGuideService {
 
       const credential = await this.saveExistentCredential(manager, payload.credentials, process);
 
+      const assignment = await this.processService.saveAutoAssignment(
+        manager,
+        process.id,
+        establishment.provinceId,
+      );
+
       const responseSendEmail = await this.emailService.sendProcessRegistrationEmail(
         process.id,
         manager,
@@ -1365,7 +1393,7 @@ export class ProcessGuideService {
 
       if (responseSendEmail) {
         return {
-          data: cadastre,
+          data: process,
           title: responseSendEmail.title,
           message: responseSendEmail.message,
         };
@@ -1393,8 +1421,6 @@ export class ProcessGuideService {
         userUpdate,
       );
 
-      const cadastre = await this.saveCadastre(manager, user, process);
-
       const establishment = await this.saveEstablishment(
         manager,
         payload.establishment,
@@ -1409,6 +1435,12 @@ export class ProcessGuideService {
         process,
       );
 
+      const assignment = await this.processService.saveAutoAssignment(
+        manager,
+        process.id,
+        establishment.provinceId,
+      );
+
       const responseSendEmail = await this.emailService.sendProcessRegistrationEmail(
         process.id,
         manager,
@@ -1416,7 +1448,7 @@ export class ProcessGuideService {
 
       if (responseSendEmail) {
         return {
-          data: cadastre,
+          data: process,
           title: responseSendEmail.title,
           message: responseSendEmail.message,
         };
