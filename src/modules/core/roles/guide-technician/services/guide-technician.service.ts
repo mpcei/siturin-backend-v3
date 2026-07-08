@@ -71,6 +71,13 @@ export class GuideTechnicianService {
       .leftJoinAndSelect('establishment.adventureModalities', 'adventureModalities')
       .leftJoinAndSelect('establishment.languages', 'languages')
       .leftJoinAndSelect('establishment.protectedAreas', 'protectedAreas')
+      .leftJoinAndSelect('establishment.ruc', 'ruc')
+
+      //User
+      .leftJoinAndSelect('ruc.user', 'user')
+      .leftJoinAndSelect('user.bloodType', 'bloodType')
+      .leftJoinAndSelect('user.sex', 'sex')
+      .leftJoinAndSelect('user.nationality', 'nationality')
 
       // Land Transport
       .leftJoinAndSelect('process.landTransport', 'landTransport')
@@ -78,6 +85,8 @@ export class GuideTechnicianService {
       .where('process.id = :id', { id: processId })
 
       .getOne();
+
+    console.log(JSON.stringify(process?.establishment.ruc.user, null, 2));
 
     return {
       data: process,
