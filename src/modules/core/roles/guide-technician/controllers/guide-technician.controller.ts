@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Post, Query, UseInterceptors } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseUUIDPipe,
+  Post,
+  Query,
+  UseInterceptors,
+} from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Auth, User } from '@auth/decorators';
 import { GuideTechnicianService } from '@modules/core/roles/guide-technician/services/guide-technician.service';
@@ -30,8 +39,8 @@ export class GuideTechnicianController {
 
   @ApiOperation({ summary: 'Tramite pendiente de revisión' })
   @UseInterceptors(AnyFilesInterceptor(), ParseMultipartInterceptor)
-  @Get('process')
-  async findProcessById(@Query('processId') processId: string) {
+  @Get('processes/:processeId')
+  async findProcessById(@Param('processId', ParseUUIDPipe) processId: string) {
     const serviceResponse = await this.service.findProcessById(processId);
     return {
       data: serviceResponse.data,
