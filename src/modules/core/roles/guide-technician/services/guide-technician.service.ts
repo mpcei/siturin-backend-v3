@@ -9,7 +9,13 @@ import {
   CoreRepositoryEnum,
 } from '@modules/core/utils/enums';
 import { ResponseHttpInterface, ServiceResponseHttpInterface } from '@utils/interfaces';
-import { AssignmentEntity, CadastreEntity, CadastreStateEntity, InactivationCauseEntity, ProcessEntity } from '@modules/core/entities';
+import {
+  AssignmentEntity,
+  CadastreEntity,
+  CadastreStateEntity,
+  InactivationCauseEntity,
+  ProcessEntity,
+} from '@modules/core/entities';
 import { PaginateFilterService } from '@utils/pagination/paginate-filter.service';
 import { FileEntity } from '@modules/common/file/file.entity';
 import { UserEntity } from '@auth/entities';
@@ -47,7 +53,15 @@ export class GuideTechnicianService {
           cadastre: { state: true },
           type: true,
           state: true,
-          establishment: { ruc: true, establishmentContactPerson: true, credentials: true },
+          establishment: {
+            ruc: true,
+            establishmentContactPerson: true,
+            credentials: true,
+            province: true,
+            canton: true,
+            parish: true,
+          },
+          credentials: true,
         },
       },
       skip: (params.page - 1) * params.limit,
