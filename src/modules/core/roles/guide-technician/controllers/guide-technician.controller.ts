@@ -39,7 +39,7 @@ export class GuideTechnicianController {
 
   @ApiOperation({ summary: 'Tramite pendiente de revisión' })
   @UseInterceptors(AnyFilesInterceptor(), ParseMultipartInterceptor)
-  @Get('processes/:processeId')
+  @Get('processes/:processId')
   async findProcessById(@Param('processId', ParseUUIDPipe) processId: string) {
     const serviceResponse = await this.service.findProcessById(processId);
     return {
