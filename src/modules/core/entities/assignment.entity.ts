@@ -103,6 +103,14 @@ export class AssignmentEntity {
   registeredAt: Date;
 
   @Column({
+    name: 'observation',
+    type: 'text',
+    nullable: true,
+    comment: 'Observación de la asignación',
+  })
+  observation: string;
+
+  @Column({
     name: 'id_temp',
     type: 'bigint',
     nullable: true,

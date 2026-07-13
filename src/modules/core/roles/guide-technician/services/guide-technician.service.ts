@@ -1,4 +1,4 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { DataSource, EntityManager, Repository } from 'typeorm';
 import {
   CatalogueCadastresStateEnum,
@@ -74,7 +74,17 @@ export class GuideTechnicianService {
     };
   }
 
-  async findProcessById(processId: string): Promise<ResponseHttpInterface> {
+  async findProcessById(user: UserEntity, processId: string): Promise<ResponseHttpInterface> {
+    const find = await this.dataSource.transaction(async (manager) => {
+      return await this.saveProcessState(manager, processId, user);
+    });
+    if (!find) {
+      throw new BadRequestException({
+        message: 'Trámite en estado diferente al requerido',
+        error: 'Estado Trámite',
+      });
+    }
+
     const process = await this.processRepository
       .createQueryBuilder('process')
 
@@ -98,6 +108,9 @@ export class GuideTechnicianService {
       .leftJoinAndSelect('process.establishment', 'establishment')
       .leftJoinAndSelect('establishment.establishmentContactPerson', 'establishmentContactPerson')
       .leftJoinAndSelect('establishment.establishmentAddress', 'establishmentAddress')
+      .leftJoinAndSelect('establishmentAddress.province', 'province')
+      .leftJoinAndSelect('establishmentAddress.canton', 'canton')
+      .leftJoinAndSelect('establishmentAddress.parish', 'parish')
       .leftJoinAndSelect('establishment.adventureModalities', 'adventureModalities')
       .leftJoinAndSelect('establishment.languages', 'languages')
       .leftJoinAndSelect('establishment.protectedAreas', 'protectedAreas')
@@ -116,13 +129,78 @@ export class GuideTechnicianService {
 
       .getOne();
 
-    console.log(JSON.stringify(process?.establishment.ruc.user, null, 2));
-
     return {
       data: process,
       title: 'Busqueda exitosa',
       message: '',
     };
+  }
+
+  private async saveProcessState(
+    manager: EntityManager,
+    processId: string,
+    user: UserEntity,
+  ): Promise<boolean> {
+    const processRepository = manager.getRepository(ProcessEntity);
+    const processStateRepository = manager.getRepository(ProcessStateEntity);
+    const catalogueRepository = manager.getRepository(CatalogueEntity);
+
+    const processStateInProcess = await catalogueRepository.findOne({
+      where: {
+        code: CatalogueProcessesStateEnum.in_progress,
+        type: CoreCatalogueTypeEnum.processes_state,
+      },
+    });
+
+    const processStateInReview = await catalogueRepository.findOne({
+      where: {
+        code: CatalogueProcessesStateEnum.in_review,
+        type: CoreCatalogueTypeEnum.processes_state,
+      },
+    });
+
+    if (!processStateInProcess) {
+      throw new NotFoundException({
+        message: 'No existe el estado En proceso',
+        error: 'Estado del Trámite',
+      });
+    }
+
+    const process = await processRepository.findOne({
+      where: { id: processId },
+      relations: { state: true },
+    });
+
+    if (!process) {
+      throw new NotFoundException({
+        message: 'No existe el Proceso',
+        error: 'Proceso',
+      });
+    }
+
+    if (!processStateInReview) {
+      throw new NotFoundException({
+        message: 'No existe el estado En revisión',
+        error: 'Estado del Trámite',
+      });
+    }
+
+    if (process.state.code === processStateInProcess.code) {
+      process.stateId = processStateInReview.id;
+      await processRepository.save(process);
+
+      const processState = processStateRepository.create();
+      processState.processId = processId;
+      processState.startedAt = new Date();
+      processState.userId = user.id;
+      processState.stateCode = processStateInReview.code;
+      processState.stateName = processStateInReview.name;
+      await processStateRepository.save(processState);
+
+      return true;
+    }
+
+    return process.state.code === processStateInReview.code;
   }
 
   async createInactivation(

@@ -66,6 +66,12 @@ export enum CatalogueProcessesStateEnum {
   pending_2 = 'pending_2',
   completed = 'completed',
   in_progress = 'in_progress',
+  in_review = 'in_review',
+  reviewed = 'reviewed',
+  document_rejected = 'document_rejected',
+  in_approval = 'in_approval',
+  approved = 'approved',
+  rejected = 'rejected',
 }
 
 export enum CatalogueInactivationCausesEnum {
