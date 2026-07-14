@@ -146,14 +146,12 @@ export class GuideTechnicianService {
   ): Promise<boolean> {
     const processRepository = manager.getRepository(ProcessEntity);
     const processStateRepository = manager.getRepository(ProcessStateEntity);
-    const catalogueRepository = manager.getRepository(CatalogueEntity);
 
     const processStateInProcess = (await this.cataloguesService.findCache()).find(
       (item) =>
         item.code == CatalogueProcessesStateEnum.in_progress &&
         item.type === CoreCatalogueTypeEnum.processes_state,
     );
-
 
     const processStateInReview = (await this.cataloguesService.findCache()).find(
       (item) =>
@@ -189,7 +187,6 @@ export class GuideTechnicianService {
 
     if (process.state.code === processStateInProcess.code) {
       process.state = processStateInReview;
-
       await processRepository.save(process);
 
       const processState = processStateRepository.create();
