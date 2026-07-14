@@ -26,6 +26,7 @@ import { ProcessStateEntity } from '@modules/core/entities/process-state.entity'
 import { CatalogueEntity } from '@modules/common/catalogue/catalogue.entity';
 import { CredentialEntity } from '@modules/core/entities/credential.entity';
 import { EmailService } from '@modules/core/shared-core/services/email.service';
+import { CataloguesService } from '@modules/common/catalogue/catalogue.service';
 
 @Injectable()
 export class GuideTechnicianService {
@@ -34,6 +35,7 @@ export class GuideTechnicianService {
   constructor(
     @Inject(ConfigEnum.PG_DATA_SOURCE)
     private readonly dataSource: DataSource,
+    private readonly cataloguesService: CataloguesService,
     @Inject(CoreRepositoryEnum.PROCESS_REPOSITORY)
     private processRepository: Repository<ProcessEntity>,
     @Inject(CoreRepositoryEnum.ASSIGNMENT_REPOSITORY)
@@ -78,6 +80,7 @@ export class GuideTechnicianService {
     const find = await this.dataSource.transaction(async (manager) => {
       return await this.saveProcessState(manager, processId, user);
     });
+
     if (!find) {
       throw new BadRequestException({
         message: 'Trámite en estado diferente al requerido',
@@ -145,19 +148,18 @@ export class GuideTechnicianService {
     const processStateRepository = manager.getRepository(ProcessStateEntity);
     const catalogueRepository = manager.getRepository(CatalogueEntity);
 
-    const processStateInProcess = await catalogueRepository.findOne({
-      where: {
-        code: CatalogueProcessesStateEnum.in_progress,
-        type: CoreCatalogueTypeEnum.processes_state,
-      },
-    });
+    const processStateInProcess = (await this.cataloguesService.findCache()).find(
+      (item) =>
+        item.code == CatalogueProcessesStateEnum.in_progress &&
+        item.type === CoreCatalogueTypeEnum.processes_state,
+    );
 
-    const processStateInReview = await catalogueRepository.findOne({
-      where: {
-        code: CatalogueProcessesStateEnum.in_review,
-        type: CoreCatalogueTypeEnum.processes_state,
-      },
-    });
+
+    const processStateInReview = (await this.cataloguesService.findCache()).find(
+      (item) =>
+        item.code == CatalogueProcessesStateEnum.in_review &&
+        item.type === CoreCatalogueTypeEnum.processes_state,
+    );
 
     if (!processStateInProcess) {
       throw new NotFoundException({
@@ -186,7 +188,8 @@ export class GuideTechnicianService {
     }
 
     if (process.state.code === processStateInProcess.code) {
-      process.stateId = processStateInReview.id;
+      process.state = processStateInReview;
+
       await processRepository.save(process);
 
       const processState = processStateRepository.create();
