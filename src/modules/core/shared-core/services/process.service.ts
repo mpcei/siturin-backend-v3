@@ -2,6 +2,7 @@ import { BadRequestException, Inject, Injectable, NotFoundException } from '@nes
 import { DataSource, EntityManager, Repository } from 'typeorm';
 import { addDays, differenceInDays, endOfDay, format, startOfDay } from 'date-fns';
 import {
+  CatalogueActivitiesCodeEnum,
   CatalogueInspectionsStateEnum,
   CatalogueProcessesTypeEnum,
   CoreCatalogueTypeEnum,
@@ -40,6 +41,7 @@ import { UserEntity } from '@auth/entities';
 import { FileService } from '@modules/common/file/file.service';
 import { RegulationResponseDto } from '@modules/core/shared-core/dto/process/regulation-response.dto';
 import { CatalogueDto } from '@modules/common/catalogue/dto';
+import { RoleEnum } from '@auth/enums';
 
 @Injectable()
 export class ProcessService {
@@ -429,7 +431,7 @@ export class ProcessService {
     assignment.registeredAt = new Date();
     assignment.dpaId = dpaId;
 
-    const availableInternalUser = await this.getAvailableInternalUser(dpaId);
+    const availableInternalUser = await this.getAvailableInternalUser(dpaId, processId);
 
     if (availableInternalUser) assignment.internalUser = availableInternalUser;
 
@@ -682,34 +684,71 @@ export class ProcessService {
     return establishmentContactPersonRepository.save(establishmentContactPerson);
   }
 
-  private async getAvailableInternalUser(dpaId: string): Promise<InternalUserEntity | null> {
+  private async getAvailableInternalUser(
+    dpaId: string,
+    processId: string,
+  ): Promise<InternalUserEntity | null> {
+    const process = await this.processRepository.findOne({
+      where: { id: processId },
+      relations: { activity: true },
+    });
+
+    if (!process) {
+      throw new NotFoundException({
+        message: 'Process not found',
+        error: 'Process not found',
+      });
+    }
+
+    let rolCode = RoleEnum.TECHNICIAN;
+    if (
+      process.activity.code === CatalogueActivitiesCodeEnum.guide_continent ||
+      process.activity.code === CatalogueActivitiesCodeEnum.guide_galapagos
+    ) {
+      rolCode = RoleEnum.GUIDE_TECHNICIAN;
+    }
+
     let internalUser = await this.internalUserRepository.findOne({
-      where: { isAvailable: true, internalDpaUser: { hasProcess: false, dpaId } },
+      where: {
+        user: { roles: { code: rolCode } },
+        isAvailable: true,
+        internalDpaUser: { hasProcess: false, dpaId },
+      },
     });
 
     if (!internalUser) {
       await this.internalDpaUserRepository
-        .createQueryBuilder()
+        .createQueryBuilder('internalDpaUser')
+        .innerJoin('internalDpaUser.user', 'user')
+        .innerJoin('user.roles', 'role')
         .update(InternalDpaUserEntity)
         .set({ hasProcess: false })
-        .where('dpa_id = :dpaId', { dpaId })
+        .where('internalDpaUser.dpaId = :dpaId', { dpaId })
+        .andWhere('role.code = :rolCode', { rolCode })
         .execute();
 
       // Reintentar obtener un usuario disponible
       internalUser = await this.internalUserRepository.findOne({
-        where: { isAvailable: true, internalDpaUser: { hasProcess: false, dpaId } },
+        where: {
+          user: { roles: { code: rolCode } },
+          isAvailable: true,
+          internalDpaUser: { hasProcess: false, dpaId },
+        },
       });
     }
 
     if (internalUser) {
       await this.internalDpaUserRepository
-        .createQueryBuilder()
+        .createQueryBuilder('internalDpaUser')
+        .innerJoin('internalDpaUser.user', 'user')
+        .innerJoin('user.roles', 'role')
         .update(InternalDpaUserEntity)
         .set({ hasProcess: true })
         .where('dpa_id = :dpaId AND internal_user_id = :internalUserId', {
           dpaId,
           internalUserId: internalUser.id,
         })
+        .andWhere('role.code = :rolCode', { rolCode })
         .execute();
     }
 
