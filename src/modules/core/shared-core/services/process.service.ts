@@ -719,15 +719,23 @@ export class ProcessService {
     });
 
     if (!internalUser) {
-      await this.internalDpaUserRepository
-        .createQueryBuilder('internalDpaUser')
-        .innerJoin('internalDpaUser.internalUser', 'internalUser')
-        .innerJoin('internalUser.user', 'user')
+      const subQuery = this.internalUserRepository
+        .createQueryBuilder('iu')
+        .select('iu.id')
+        .innerJoin('iu.user', 'user')
         .innerJoin('user.roles', 'role')
+        .where('role.code = :rolCode', { rolCode });
+
+      await this.internalDpaUserRepository
+        .createQueryBuilder()
         .update(InternalDpaUserEntity)
         .set({ hasProcess: false })
-        .where('internalDpaUser.dpaId = :dpaId', { dpaId })
-        .andWhere('role.code = :rolCode', { rolCode })
+        .where('dpaId = :dpaId', { dpaId })
+        .andWhere(`internalUserId IN (${subQuery.getQuery()})`)
+        .setParameters({
+          dpaId,
+          ...subQuery.getParameters(),
+        })
         .execute();
 
       // Reintentar obtener un usuario disponible
