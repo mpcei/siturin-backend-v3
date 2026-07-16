@@ -46,6 +46,7 @@ export class GuideTechnicianService {
   async findProcessesByUser(
     user: UserEntity,
     params: PaginationDto,
+    rolId: string,
   ): Promise<ServiceResponseHttpInterface> {
     const response = await this.assignmentRepository.findAndCount({
       where: { internalUser: { userId: user.id }, isCurrent: true },
@@ -144,6 +145,7 @@ export class GuideTechnicianService {
     user: UserEntity,
   ): Promise<boolean> {
     const processRepository = manager.getRepository(ProcessEntity);
+    const userRepository = manager.getRepository(UserEntity);
     const processStateRepository = manager.getRepository(ProcessStateEntity);
 
     const processStateInProcess = (await this.cataloguesService.findCache()).find(
@@ -158,12 +160,44 @@ export class GuideTechnicianService {
         item.type === CoreCatalogueTypeEnum.processes_state,
     );
 
+    const processStateInApproval = (await this.cataloguesService.findCache()).find(
+      (item) =>
+        item.code == CatalogueProcessesStateEnum.in_approval &&
+        item.type === CoreCatalogueTypeEnum.processes_state,
+    );
+
     if (!processStateInProcess) {
       throw new NotFoundException({
         message: 'No existe el estado En proceso',
         error: 'Estado del Trámite',
       });
     }
+
+    if (!processStateInReview) {
+      throw new NotFoundException({
+        message: 'No existe el estado En revisión',
+        error: 'Estado del Trámite',
+      });
+    }
+
+    if (!processStateInApproval) {
+      throw new NotFoundException({
+        message: 'No existe el estado En aprobación',
+        error: 'Estado del Trámite',
+      });
+    }
+
+    const userFind = await userRepository.findOne({
+      where: {
+        id: user.id,
+        roles: {
+          code: 'Tecnico',
+        },
+      },
+      relations: {
+        roles: true,
+      },
+    });
 
     const process = await processRepository.findOne({
       where: { id: processId },
@@ -174,13 +208,6 @@ export class GuideTechnicianService {
       throw new NotFoundException({
         message: 'No existe el Proceso',
         error: 'Proceso',
-      });
-    }
-
-    if (!processStateInReview) {
-      throw new NotFoundException({
-        message: 'No existe el estado En revisión',
-        error: 'Estado del Trámite',
       });
     }
 

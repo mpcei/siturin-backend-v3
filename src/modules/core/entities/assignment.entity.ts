@@ -95,6 +95,14 @@ export class AssignmentEntity {
   isCurrent: boolean;
 
   @Column({
+    name: 'rol_code',
+    type: 'varchar',
+    nullable: true,
+    comment: 'Codigo del rol al que pertenece el tramites',
+  })
+  rolCode: string;
+
+  @Column({
     name: 'registered_at',
     type: 'timestamptz',
     nullable: true,

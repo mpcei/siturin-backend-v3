@@ -27,8 +27,12 @@ export class GuideTechnicianController {
   @ApiOperation({ summary: 'Lista de tramites pendiente de revisión' })
   @UseInterceptors(AnyFilesInterceptor(), ParseMultipartInterceptor)
   @Get('processes')
-  async findProcessesByUser(@User() user: UserEntity, @Query() params: PaginationDto) {
-    const serviceResponse = await this.service.findProcessesByUser(user, params);
+  async findProcessesByUser(
+    @User() user: UserEntity,
+    @Query() params: PaginationDto,
+    @Param('rolId', ParseUUIDPipe) rolId: string,
+  ) {
+    const serviceResponse = await this.service.findProcessesByUser(user, params, rolId);
     return {
       data: serviceResponse.data,
       pagination: serviceResponse.pagination,
