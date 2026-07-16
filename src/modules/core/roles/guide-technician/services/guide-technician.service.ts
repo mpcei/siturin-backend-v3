@@ -47,7 +47,6 @@ export class GuideTechnicianService {
     user: UserEntity,
     params: PaginationDto,
   ): Promise<ServiceResponseHttpInterface> {
-    console.log('User', user);
     const response = await this.assignmentRepository.findAndCount({
       where: { internalUser: { userId: user.id }, isCurrent: true },
       relations: {

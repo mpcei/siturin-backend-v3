@@ -721,7 +721,8 @@ export class ProcessService {
     if (!internalUser) {
       await this.internalDpaUserRepository
         .createQueryBuilder('internalDpaUser')
-        .innerJoin('internalDpaUser.user', 'user')
+        .innerJoin('internalDpaUser.internalUser', 'internalUser')
+        .innerJoin('internalUser.user', 'user')
         .innerJoin('user.roles', 'role')
         .update(InternalDpaUserEntity)
         .set({ hasProcess: false })
