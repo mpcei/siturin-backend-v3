@@ -4,11 +4,13 @@ import {
   IsObject,
   IsOptional,
   IsString,
+  IsUUID,
   ValidateNested,
 } from 'class-validator';
 import { isNotEmptyValidationOptions, isStringValidationOptions } from '@utils/dto-validation';
 import { ProcessGuideEntity } from '@modules/core/entities/process-guide.entity';
 import { Type } from 'class-transformer';
+import { CatalogueEntity } from '@modules/common/catalogue/catalogue.entity';
 
 export class DocumentReviewDto {
   @IsArray()
@@ -18,10 +20,15 @@ export class DocumentReviewDto {
 
   @IsObject()
   @IsNotEmpty(isNotEmptyValidationOptions())
-  readonly processState: any;
+  readonly processState: CatalogueEntity;
 
-  @IsString(isStringValidationOptions())
-  readonly idProcess: string;
+  @IsUUID()
+  @IsNotEmpty(isNotEmptyValidationOptions())
+  readonly processId: string;
+
+  @IsUUID()
+  @IsNotEmpty(isNotEmptyValidationOptions())
+  readonly assignmentId: string;
 
   @IsOptional()
   @IsString(isStringValidationOptions())

@@ -27,6 +27,9 @@ import { CatalogueEntity } from '@modules/common/catalogue/catalogue.entity';
 import { CredentialEntity } from '@modules/core/entities/credential.entity';
 import { EmailService } from '@modules/core/shared-core/services/email.service';
 import { CataloguesService } from '@modules/common/catalogue/catalogue.service';
+import { RoleEnum } from '@auth/enums';
+import { DocumentReviewDto } from '@modules/core/roles/guide-technician/dto/guide-technician';
+import { ProcessGuideEntity } from '@modules/core/entities/process-guide.entity';
 
 @Injectable()
 export class GuideTechnicianService {
@@ -46,10 +49,10 @@ export class GuideTechnicianService {
   async findProcessesByUser(
     user: UserEntity,
     params: PaginationDto,
-    rolId: string,
+    rolCode: string,
   ): Promise<ServiceResponseHttpInterface> {
     const response = await this.assignmentRepository.findAndCount({
-      where: { internalUser: { userId: user.id }, isCurrent: true },
+      where: { rolCode: rolCode, internalUser: { userId: user.id }, isCurrent: true },
       relations: {
         process: {
           cadastre: { state: true },
@@ -76,9 +79,13 @@ export class GuideTechnicianService {
     };
   }
 
-  async findProcessById(user: UserEntity, processId: string): Promise<ResponseHttpInterface> {
+  async findProcessById(
+    user: UserEntity,
+    processId: string,
+    rolCode: string,
+  ): Promise<ResponseHttpInterface> {
     const find = await this.dataSource.transaction(async (manager) => {
-      return await this.saveProcessState(manager, processId, user);
+      return await this.saveProcessState(manager, processId, user, rolCode);
     });
 
     if (!find) {
@@ -143,9 +150,9 @@ export class GuideTechnicianService {
     manager: EntityManager,
     processId: string,
     user: UserEntity,
+    rolCode: string,
   ): Promise<boolean> {
     const processRepository = manager.getRepository(ProcessEntity);
-    const userRepository = manager.getRepository(UserEntity);
     const processStateRepository = manager.getRepository(ProcessStateEntity);
 
     const processStateInProcess = (await this.cataloguesService.findCache()).find(
@@ -166,38 +173,12 @@ export class GuideTechnicianService {
         item.type === CoreCatalogueTypeEnum.processes_state,
     );
 
-    if (!processStateInProcess) {
+    if (!processStateInProcess || !processStateInReview || !processStateInApproval) {
       throw new NotFoundException({
-        message: 'No existe el estado En proceso',
+        message: 'No existen todos los estados del trámite configurados.',
         error: 'Estado del Trámite',
       });
     }
-
-    if (!processStateInReview) {
-      throw new NotFoundException({
-        message: 'No existe el estado En revisión',
-        error: 'Estado del Trámite',
-      });
-    }
-
-    if (!processStateInApproval) {
-      throw new NotFoundException({
-        message: 'No existe el estado En aprobación',
-        error: 'Estado del Trámite',
-      });
-    }
-
-    const userFind = await userRepository.findOne({
-      where: {
-        id: user.id,
-        roles: {
-          code: 'Tecnico',
-        },
-      },
-      relations: {
-        roles: true,
-      },
-    });
 
     const process = await processRepository.findOne({
       where: { id: processId },
@@ -210,23 +191,99 @@ export class GuideTechnicianService {
         error: 'Proceso',
       });
     }
+    const currentState =
+      rolCode === RoleEnum.TECHNICIAN ? processStateInProcess : processStateInReview;
 
-    if (process.state.code === processStateInProcess.code) {
-      process.state = processStateInReview;
-      await processRepository.save(process);
+    const nextState =
+      rolCode === RoleEnum.TECHNICIAN ? processStateInReview : processStateInApproval;
 
-      const processState = processStateRepository.create();
-      processState.processId = processId;
-      processState.startedAt = new Date();
-      processState.userId = user.id;
-      processState.stateCode = processStateInReview.code;
-      processState.stateName = processStateInReview.name;
-      await processStateRepository.save(processState);
-
-      return true;
+    if (process.state.code !== currentState.code) {
+      return process.state.code === nextState.code;
     }
 
-    return process.state.code === processStateInReview.code;
+    process.state = nextState;
+    await processRepository.save(process);
+
+    await processStateRepository.save(
+      processStateRepository.create({
+        processId,
+        startedAt: new Date(),
+        userId: user.id,
+        stateCode: nextState.code,
+        stateName: nextState.name,
+      }),
+    );
+
+    return true;
+  }
+
+  async saveResultProcessTechnician(
+    payload: DocumentReviewDto,
+    user: UserEntity,
+  ): Promise<ResponseHttpInterface> {
+    const result = await this.dataSource.transaction(async (manager) => {
+      const result = await this.saveResult(manager, payload, user);
+
+      return result;
+    });
+
+    /*
+    if (!result) {
+      throw new Error();
+    }
+    const responseSendEmail = await this.emailService.sendProcessInactivationEmail(cadastre);
+
+    if (responseSendEmail) {
+      return {
+        data: cadastre,
+        title: responseSendEmail.title,
+        message: responseSendEmail.message,
+      };
+    }*/
+    return {
+      data: null,
+      title: 'Resultado guardado de manera exitosa',
+      message: 'Recuerde revisar su correo electronico de manera permanente',
+    };
+  }
+
+  private async saveResult(
+    manager: EntityManager,
+    payload: DocumentReviewDto,
+    user: UserEntity,
+  ): Promise<boolean> {
+    const processStateRepository = manager.getRepository(ProcessStateEntity);
+    const processRepository = manager.getRepository(ProcessEntity);
+    const processGuideRepository = manager.getRepository(ProcessGuideEntity);
+
+    await processStateRepository.save(
+      processStateRepository.create({
+        processId: payload.processId,
+        startedAt: new Date(),
+        userId: user.id,
+        stateCode: payload.processState.code,
+        stateName: payload.processState.name,
+      }),
+    );
+
+    const process = await processRepository.findOne({
+      where: { id: payload.processId },
+      relations: { state: true },
+    });
+
+    if (!process) {
+      throw new NotFoundException({
+        message: 'No existe el Proceso',
+        error: 'Proceso',
+      });
+    }
+
+    process.state = payload.processState;
+    await processRepository.save(process);
+
+    await processGuideRepository.save(payload.processGuides);
+
+    return true;
   }
 
   async createInactivation(

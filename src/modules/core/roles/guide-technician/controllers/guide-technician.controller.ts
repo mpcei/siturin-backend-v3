@@ -17,6 +17,7 @@ import { UserEntity } from '@auth/entities';
 import { PaginationDto } from '@utils/pagination';
 import { InactivationDto } from '@modules/core/roles/external/dto/process-guide/inactivation.dto';
 import { ResponseHttpInterface } from '@utils/interfaces';
+import { DocumentReviewDto } from '@modules/core/roles/guide-technician/dto/guide-technician';
 
 @ApiTags('Guide Technician')
 @Auth()
@@ -30,9 +31,9 @@ export class GuideTechnicianController {
   async findProcessesByUser(
     @User() user: UserEntity,
     @Query() params: PaginationDto,
-    @Param('rolId', ParseUUIDPipe) rolId: string,
+    @Query('rolCode') rolCode: string,
   ) {
-    const serviceResponse = await this.service.findProcessesByUser(user, params, rolId);
+    const serviceResponse = await this.service.findProcessesByUser(user, params, rolCode);
     return {
       data: serviceResponse.data,
       pagination: serviceResponse.pagination,
@@ -47,8 +48,25 @@ export class GuideTechnicianController {
   async findProcessById(
     @Param('processId', ParseUUIDPipe) processId: string,
     @User() user: UserEntity,
+    @Query('rolCode') rolCode: string,
   ) {
-    const serviceResponse = await this.service.findProcessById(user, processId);
+    const serviceResponse = await this.service.findProcessById(user, processId, rolCode);
+    return {
+      data: serviceResponse.data,
+      message: serviceResponse.message,
+      title: serviceResponse.title,
+    };
+  }
+
+  @ApiOperation({ summary: 'Registration Result Technician' })
+  @UseInterceptors(AnyFilesInterceptor(), ParseMultipartInterceptor)
+  @Post('processes/review')
+  async saveResultProcessTechnician(
+    @Body() payload: DocumentReviewDto,
+    @User() user: UserEntity,
+  ): Promise<ResponseHttpInterface> {
+    const serviceResponse = await this.service.saveResultProcessTechnician(payload, user);
+
     return {
       data: serviceResponse.data,
       message: serviceResponse.message,

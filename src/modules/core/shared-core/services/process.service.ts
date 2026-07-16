@@ -43,6 +43,11 @@ import { RegulationResponseDto } from '@modules/core/shared-core/dto/process/reg
 import { CatalogueDto } from '@modules/common/catalogue/dto';
 import { RoleEnum } from '@auth/enums';
 
+interface InternalUserRole {
+  availableInternalUser: InternalUserEntity | null;
+  rolCode: string;
+}
+
 @Injectable()
 export class ProcessService {
   constructor(
@@ -431,9 +436,16 @@ export class ProcessService {
     assignment.registeredAt = new Date();
     assignment.dpaId = dpaId;
 
-    const availableInternalUser = await this.getAvailableInternalUser(manager, dpaId, processId);
+    const { availableInternalUser, rolCode } = await this.getAvailableInternalUser(
+      manager,
+      dpaId,
+      processId,
+    );
 
-    if (availableInternalUser) assignment.internalUser = availableInternalUser;
+    if (availableInternalUser) {
+      assignment.internalUser = availableInternalUser;
+      assignment.rolCode = rolCode;
+    }
 
     return assignmentRepository.save(assignment);
   }
@@ -688,7 +700,7 @@ export class ProcessService {
     manager: EntityManager,
     dpaId: string,
     processId: string,
-  ): Promise<InternalUserEntity | null> {
+  ): Promise<InternalUserRole> {
     const processRepository = manager.getRepository(ProcessEntity);
     const process = await processRepository.findOne({
       where: { id: processId },
@@ -763,6 +775,6 @@ export class ProcessService {
         .execute();
     }
 
-    return internalUser;
+    return { availableInternalUser: internalUser, rolCode };
   }
 }
