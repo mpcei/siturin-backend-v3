@@ -431,7 +431,7 @@ export class ProcessService {
     assignment.registeredAt = new Date();
     assignment.dpaId = dpaId;
 
-    const availableInternalUser = await this.getAvailableInternalUser(dpaId, processId);
+    const availableInternalUser = await this.getAvailableInternalUser(manager, dpaId, processId);
 
     if (availableInternalUser) assignment.internalUser = availableInternalUser;
 
@@ -685,10 +685,12 @@ export class ProcessService {
   }
 
   private async getAvailableInternalUser(
+    manager: EntityManager,
     dpaId: string,
     processId: string,
   ): Promise<InternalUserEntity | null> {
-    const process = await this.processRepository.findOne({
+    const processRepository = manager.getRepository(ProcessEntity);
+    const process = await processRepository.findOne({
       where: { id: processId },
       relations: { activity: true },
     });
