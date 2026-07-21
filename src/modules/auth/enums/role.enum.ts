@@ -6,4 +6,5 @@ export enum RoleEnum {
   DAC = 'dac',
   GAD = 'gad',
   GUIDE_TECHNICIAN = 'guide_technician',
+  DIRECTOR = 'director',
 }

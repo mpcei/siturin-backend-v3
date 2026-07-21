@@ -14,6 +14,8 @@ import {
   CadastreEntity,
   CadastreStateEntity,
   InactivationCauseEntity,
+  InternalDpaUserEntity,
+  InternalUserEntity,
   ProcessEntity,
 } from '@modules/core/entities';
 import { PaginateFilterService } from '@utils/pagination/paginate-filter.service';
@@ -31,6 +33,11 @@ import { RoleEnum } from '@auth/enums';
 import { DocumentReviewDto } from '@modules/core/roles/guide-technician/dto/guide-technician';
 import { ProcessGuideEntity } from '@modules/core/entities/process-guide.entity';
 
+interface InternalUserRole {
+  availableInternalUser: InternalUserEntity | null;
+  rolCode: string;
+}
+
 @Injectable()
 export class GuideTechnicianService {
   private paginateFilterService: PaginateFilterService<CadastreEntity>;
@@ -43,6 +50,10 @@ export class GuideTechnicianService {
     private processRepository: Repository<ProcessEntity>,
     @Inject(CoreRepositoryEnum.ASSIGNMENT_REPOSITORY)
     private assignmentRepository: Repository<AssignmentEntity>,
+    @Inject(CoreRepositoryEnum.INTERNAL_USER_REPOSITORY)
+    private readonly internalUserRepository: Repository<InternalUserEntity>,
+    @Inject(CoreRepositoryEnum.INTERNAL_DPA_USER_REPOSITORY)
+    private readonly internalDpaUserRepository: Repository<InternalDpaUserEntity>,
     private readonly emailService: EmailService,
   ) {}
 
@@ -139,8 +150,13 @@ export class GuideTechnicianService {
 
       .getOne();
 
+    const lastAssigment = this.assignmentRepository.findOne({
+      where: { processId, rolCode: RoleEnum.GUIDE_TECHNICIAN },
+      order: { createdAt: 'desc' },
+    });
+
     return {
-      data: process,
+      data: { ...process, lastAssigment },
       title: 'Busqueda exitosa',
       message: '',
     };
@@ -221,14 +237,14 @@ export class GuideTechnicianService {
     payload: DocumentReviewDto,
     user: UserEntity,
   ): Promise<ResponseHttpInterface> {
-    const result = await this.dataSource.transaction(async (manager) => {
-      const result = await this.saveResult(manager, payload, user);
+    const process = await this.dataSource.transaction(async (manager) => {
+      const process = await this.saveResult(manager, payload, user);
+      const assignment = await this.saveAssignment(manager, payload, process);
 
-      return result;
+      return process;
     });
-
-    /*
-    if (!result) {
+/*
+    if (!process) {
       throw new Error();
     }
     const responseSendEmail = await this.emailService.sendProcessInactivationEmail(cadastre);
@@ -251,7 +267,7 @@ export class GuideTechnicianService {
     manager: EntityManager,
     payload: DocumentReviewDto,
     user: UserEntity,
-  ): Promise<boolean> {
+  ): Promise<ProcessEntity> {
     const processStateRepository = manager.getRepository(ProcessStateEntity);
     const processRepository = manager.getRepository(ProcessEntity);
     const processGuideRepository = manager.getRepository(ProcessGuideEntity);
@@ -268,7 +284,7 @@ export class GuideTechnicianService {
 
     const process = await processRepository.findOne({
       where: { id: payload.processId },
-      relations: { state: true },
+      relations: { state: true, establishment: { establishmentAddress: true } },
     });
 
     if (!process) {
@@ -283,7 +299,125 @@ export class GuideTechnicianService {
 
     await processGuideRepository.save(payload.processGuides);
 
-    return true;
+    return process;
+  }
+
+  async saveAssignment(manager: EntityManager, payload: DocumentReviewDto, process: ProcessEntity) {
+    const assignmentRepository = manager.getRepository(AssignmentEntity);
+
+    const assignment = await assignmentRepository.findOne({
+      where: { id: payload.assignmentId },
+    });
+
+    if (!assignment) {
+      throw new NotFoundException({
+        message: 'No existe la asignación del Tramite',
+        error: 'Asignación',
+      });
+    }
+
+    if (payload.processState.code === CatalogueProcessesStateEnum.reviewed) {
+      const assignmentNew = assignmentRepository.create();
+      assignmentNew.processId = payload.processId;
+      assignmentNew.isCurrent = true;
+      assignmentNew.registeredAt = new Date();
+      assignmentNew.dpaId = process.establishment.establishmentAddress.provinceId;
+      assignmentNew.observation = payload.observation;
+
+      const { availableInternalUser, rolCode } = await this.getAvailableInternalUser(
+        manager,
+        process.establishment.establishmentAddress.provinceId,
+        process.id,
+      );
+
+      if (availableInternalUser) {
+        assignmentNew.internalUser = availableInternalUser;
+        assignmentNew.rolCode = rolCode;
+      }
+
+      await assignmentRepository.save(assignmentNew);
+    }
+
+    assignment.isCurrent = false;
+    assignment.observation = payload.observation;
+
+    return assignmentRepository.save(assignment);
+  }
+
+  private async getAvailableInternalUser(
+    manager: EntityManager,
+    dpaId: string,
+    processId: string,
+  ): Promise<InternalUserRole> {
+    const processRepository = manager.getRepository(ProcessEntity);
+    const process = await processRepository.findOne({
+      where: { id: processId },
+      relations: { activity: true },
+    });
+
+    if (!process) {
+      throw new NotFoundException({
+        message: 'Process not found',
+        error: 'Process not found',
+      });
+    }
+
+    const rolCode = RoleEnum.DIRECTOR;
+
+    let internalUser = await this.internalUserRepository.findOne({
+      where: {
+        user: { roles: { code: rolCode } },
+        isAvailable: true,
+        internalDpaUser: { hasProcess: false, dpaId },
+      },
+    });
+
+    if (!internalUser) {
+      const subQuery = this.internalUserRepository
+        .createQueryBuilder('iu')
+        .select('iu.id')
+        .innerJoin('iu.user', 'user')
+        .innerJoin('user.roles', 'role')
+        .where('role.code = :rolCode', { rolCode });
+
+      await this.internalDpaUserRepository
+        .createQueryBuilder()
+        .update(InternalDpaUserEntity)
+        .set({ hasProcess: false })
+        .where('dpaId = :dpaId', { dpaId })
+        .andWhere(`internalUserId IN (${subQuery.getQuery()})`)
+        .setParameters({
+          dpaId,
+          ...subQuery.getParameters(),
+        })
+        .execute();
+
+      // Reintentar obtener un usuario disponible
+      internalUser = await this.internalUserRepository.findOne({
+        where: {
+          user: { roles: { code: rolCode } },
+          isAvailable: true,
+          internalDpaUser: { hasProcess: false, dpaId },
+        },
+      });
+    }
+
+    if (internalUser) {
+      await this.internalDpaUserRepository
+        .createQueryBuilder('internalDpaUser')
+        .innerJoin('internalDpaUser.user', 'user')
+        .innerJoin('user.roles', 'role')
+        .update(InternalDpaUserEntity)
+        .set({ hasProcess: true })
+        .where('dpa_id = :dpaId AND internal_user_id = :internalUserId', {
+          dpaId,
+          internalUserId: internalUser.id,
+        })
+        .andWhere('role.code = :rolCode', { rolCode })
+        .execute();
+    }
+
+    return { availableInternalUser: internalUser, rolCode };
   }
 
   async createInactivation(
