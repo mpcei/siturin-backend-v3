@@ -26,7 +26,6 @@ export class GuideTechnicianController {
   constructor(private service: GuideTechnicianService) {}
 
   @ApiOperation({ summary: 'Lista de tramites pendiente de revisión' })
-  @UseInterceptors(AnyFilesInterceptor(), ParseMultipartInterceptor)
   @Get('processes')
   async findProcessesByUser(
     @User() user: UserEntity,
@@ -43,7 +42,6 @@ export class GuideTechnicianController {
   }
 
   @ApiOperation({ summary: 'Tramite pendiente de revisión' })
-  @UseInterceptors(AnyFilesInterceptor(), ParseMultipartInterceptor)
   @Get('processes/:processId')
   async findProcessById(
     @Param('processId', ParseUUIDPipe) processId: string,
@@ -59,7 +57,6 @@ export class GuideTechnicianController {
   }
 
   @ApiOperation({ summary: 'Registration Result Technician' })
-  @UseInterceptors(AnyFilesInterceptor(), ParseMultipartInterceptor)
   @Post('processes/review')
   async saveResultProcessTechnician(
     @Body() payload: DocumentReviewDto,
@@ -75,7 +72,6 @@ export class GuideTechnicianController {
   }
 
   @ApiOperation({ summary: 'Registration Inactivation' })
-  @UseInterceptors(AnyFilesInterceptor(), ParseMultipartInterceptor)
   @Post('processes/inactivated')
   async createInactivation(
     @Body() payload: InactivationDto,
