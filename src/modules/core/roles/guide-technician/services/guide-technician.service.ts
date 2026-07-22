@@ -32,6 +32,7 @@ import { CataloguesService } from '@modules/common/catalogue/catalogue.service';
 import { RoleEnum } from '@auth/enums';
 import { DocumentReviewDto } from '@modules/core/roles/guide-technician/dto/guide-technician';
 import { ProcessGuideEntity } from '@modules/core/entities/process-guide.entity';
+import { FindProcessesDto } from '@modules/core/roles/guide-technician/dto/guide-technician/find-processes.dto';
 
 interface InternalUserRole {
   availableInternalUser: InternalUserEntity | null;
@@ -59,11 +60,15 @@ export class GuideTechnicianService {
 
   async findProcessesByUser(
     user: UserEntity,
-    params: PaginationDto,
-    rolCode: string,
+    params: FindProcessesDto,
   ): Promise<ServiceResponseHttpInterface> {
     const response = await this.assignmentRepository.findAndCount({
-      where: { rolCode: rolCode, internalUser: { userId: user.id }, isCurrent: true },
+      where: {
+        rolCode: params.rolCode,
+        internalUser: { userId: user.id },
+        isCurrent: params.isCurrent,
+        enabled: true,
+      },
       relations: {
         process: {
           cadastre: { state: true },
@@ -189,7 +194,18 @@ export class GuideTechnicianService {
         item.type === CoreCatalogueTypeEnum.processes_state,
     );
 
-    if (!processStateInProcess || !processStateInReview || !processStateInApproval) {
+    const processStateReviewed = (await this.cataloguesService.findCache()).find(
+      (item) =>
+        item.code == CatalogueProcessesStateEnum.reviewed &&
+        item.type === CoreCatalogueTypeEnum.processes_state,
+    );
+
+    if (
+      !processStateInProcess ||
+      !processStateInReview ||
+      !processStateInApproval ||
+      !processStateReviewed
+    ) {
       throw new NotFoundException({
         message: 'No existen todos los estados del trámite configurados.',
         error: 'Estado del Trámite',
@@ -208,14 +224,39 @@ export class GuideTechnicianService {
       });
     }
 
-    const currentState =
-      rolCode === RoleEnum.GUIDE_TECHNICIAN ? processStateInProcess : processStateInReview;
+    let currentState: CatalogueEntity | null = null;
+    let nextState: CatalogueEntity | null = null;
 
-    const nextState =
-      rolCode === RoleEnum.GUIDE_TECHNICIAN ? processStateInReview : processStateInApproval;
+    switch (rolCode) {
+      case RoleEnum.GUIDE_TECHNICIAN: {
+        currentState = processStateInProcess;
 
-    if (process.state.code !== currentState.code) {
-      return process.state.code === nextState.code;
+        nextState = processStateInReview;
+
+        if (process.state.code !== currentState.code) {
+          return process.state.code === nextState.code;
+        }
+
+        break;
+      }
+      case RoleEnum.DIRECTOR: {
+        currentState = processStateReviewed;
+
+        nextState = processStateInApproval;
+
+        if (process.state.code !== currentState.code) {
+          return process.state.code === nextState.code;
+        }
+
+        break;
+      }
+    }
+
+    if (!nextState) {
+      throw new NotFoundException({
+        error: '',
+        message: '',
+      });
     }
 
     process.state = nextState;
@@ -405,18 +446,29 @@ export class GuideTechnicianService {
     }
 
     if (internalUser) {
-      await this.internalDpaUserRepository
-        .createQueryBuilder('internalDpaUser')
-        .innerJoin('internalDpaUser.user', 'user')
-        .innerJoin('user.roles', 'role')
-        .update(InternalDpaUserEntity)
-        .set({ hasProcess: true })
-        .where('dpa_id = :dpaId AND internal_user_id = :internalUserId', {
-          dpaId,
+      const exists = await this.internalDpaUserRepository
+        .createQueryBuilder('idu')
+        .innerJoin('idu.internalUser', 'iu')
+        .innerJoin('iu.user', 'u')
+        .innerJoin('u.roles', 'r')
+        .where('idu.dpa_id = :dpaId', { dpaId })
+        .andWhere('idu.internal_user_id = :internalUserId', {
           internalUserId: internalUser.id,
         })
-        .andWhere('role.code = :rolCode', { rolCode })
-        .execute();
+        .andWhere('r.code = :rolCode', { rolCode })
+        .getExists();
+
+      if (exists) {
+        await this.internalDpaUserRepository.update(
+          {
+            dpa: { id: dpaId },
+            internalUser: { id: internalUser.id },
+          },
+          {
+            hasProcess: true,
+          },
+        );
+      }
     }
 
     return { availableInternalUser: internalUser, rolCode };

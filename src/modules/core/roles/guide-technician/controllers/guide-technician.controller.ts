@@ -18,6 +18,7 @@ import { PaginationDto } from '@utils/pagination';
 import { InactivationDto } from '@modules/core/roles/external/dto/process-guide/inactivation.dto';
 import { ResponseHttpInterface } from '@utils/interfaces';
 import { DocumentReviewDto } from '@modules/core/roles/guide-technician/dto/guide-technician';
+import { FindProcessesDto } from '@modules/core/roles/guide-technician/dto/guide-technician/find-processes.dto';
 
 @ApiTags('Guide Technician')
 @Auth()
@@ -27,12 +28,9 @@ export class GuideTechnicianController {
 
   @ApiOperation({ summary: 'Lista de tramites pendiente de revisión' })
   @Get('processes')
-  async findProcessesByUser(
-    @User() user: UserEntity,
-    @Query() params: PaginationDto,
-    @Query('rolCode') rolCode: string,
-  ) {
-    const serviceResponse = await this.service.findProcessesByUser(user, params, rolCode);
+  async findProcessesByUser(@User() user: UserEntity, @Query() params: FindProcessesDto) {
+    const serviceResponse = await this.service.findProcessesByUser(user, params);
+
     return {
       data: serviceResponse.data,
       pagination: serviceResponse.pagination,
