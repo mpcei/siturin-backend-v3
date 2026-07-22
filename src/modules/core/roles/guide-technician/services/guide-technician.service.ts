@@ -99,16 +99,19 @@ export class GuideTechnicianService {
     user: UserEntity,
     processId: string,
     rolCode: string,
+    isCurrent: boolean,
   ): Promise<ResponseHttpInterface> {
-    const find = await this.dataSource.transaction(async (manager) => {
-      return await this.saveProcessState(manager, processId, user, rolCode);
-    });
-
-    if (!find) {
-      throw new BadRequestException({
-        message: 'Trámite en estado diferente al requerido',
-        error: 'Estado Trámite',
+    if (isCurrent) {
+      const find = await this.dataSource.transaction(async (manager) => {
+        return await this.saveProcessState(manager, processId, user, rolCode);
       });
+
+      if (!find) {
+        throw new BadRequestException({
+          message: 'Trámite en estado diferente al requerido',
+          error: 'Estado Trámite',
+        });
+      }
     }
 
     const process = await this.processRepository

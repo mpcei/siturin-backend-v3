@@ -45,8 +45,9 @@ export class GuideTechnicianController {
     @Param('processId', ParseUUIDPipe) processId: string,
     @User() user: UserEntity,
     @Query('rolCode') rolCode: string,
+    @Query('isCurrent') isCurrent: boolean,
   ) {
-    const serviceResponse = await this.service.findProcessById(user, processId, rolCode);
+    const serviceResponse = await this.service.findProcessById(user, processId, rolCode,isCurrent);
     return {
       data: serviceResponse.data,
       message: serviceResponse.message,
