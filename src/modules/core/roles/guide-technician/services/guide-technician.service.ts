@@ -207,17 +207,19 @@ export class GuideTechnicianService {
         error: 'Proceso',
       });
     }
+
     const currentState =
-      rolCode === RoleEnum.TECHNICIAN ? processStateInProcess : processStateInReview;
+      rolCode === RoleEnum.GUIDE_TECHNICIAN ? processStateInProcess : processStateInReview;
 
     const nextState =
-      rolCode === RoleEnum.TECHNICIAN ? processStateInReview : processStateInApproval;
+      rolCode === RoleEnum.GUIDE_TECHNICIAN ? processStateInReview : processStateInApproval;
 
     if (process.state.code !== currentState.code) {
       return process.state.code === nextState.code;
     }
 
     process.state = nextState;
+
     await processRepository.save(process);
 
     await processStateRepository.save(
@@ -243,7 +245,7 @@ export class GuideTechnicianService {
 
       return process;
     });
-/*
+    /*
     if (!process) {
       throw new Error();
     }

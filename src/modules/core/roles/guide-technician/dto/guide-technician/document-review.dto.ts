@@ -14,7 +14,6 @@ import { CatalogueEntity } from '@modules/common/catalogue/catalogue.entity';
 
 export class DocumentReviewDto {
   @IsArray()
-  @ValidateNested({ each: true })
   @Type(() => ProcessGuideEntity)
   readonly processGuides: ProcessGuideEntity[];
 
