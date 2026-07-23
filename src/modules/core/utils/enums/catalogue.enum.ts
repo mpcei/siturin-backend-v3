@@ -14,6 +14,7 @@ export enum CoreCatalogueTypeEnum {
   adventure_tourism_modalities_air = 'adventure_tourism_modalities_air',
   adventure_tourism_modalities_land = 'adventure_tourism_modalities_land',
   adventure_tourism_modalities_water = 'adventure_tourism_modalities_water',
+  adventure_tourism_modalities_name = 'adventure_tourism_modalities_name',
   process_agency_permanent_physical_space = 'process_agency_permanent_physical_space',
   processes_local_type = 'processes_local_type',
   internal_inactivation_causes = 'internal_inactivation_causes',

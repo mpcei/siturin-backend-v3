@@ -742,7 +742,8 @@ export class ProcessGuideService {
         // });
         const modalitiesDB = await catalogueRepository
           .createQueryBuilder('catalogue')
-          .where('LOWER(catalogue.name) IN (:...names)', {
+          .where('catalogue.type = :type AND LOWER(catalogue.name) IN (:...names)', {
+            type: CoreCatalogueTypeEnum.adventure_tourism_modalities_name,
             names: modalitiesString,
           })
           .getMany();

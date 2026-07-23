@@ -183,6 +183,7 @@ export class EmailService {
           parish: true,
           establishmentContactPerson: true,
         },
+        type: true,
         activity: true,
         credentials: { classification: true },
       },
