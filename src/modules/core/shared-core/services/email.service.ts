@@ -92,7 +92,13 @@ export class EmailService {
     const process = await processRepository.findOne({
       where: { id: processId },
       relations: {
-        establishment: { ruc: true, province: true, canton: true, parish: true, credentials: true },
+        establishment: {
+          ruc: true,
+          province: true,
+          canton: true,
+          parish: true,
+          credentials: { classification: true },
+        },
         activity: true,
         type: true,
         establishmentAddress: true,
