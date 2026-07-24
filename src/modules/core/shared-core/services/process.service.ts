@@ -761,18 +761,29 @@ export class ProcessService {
     }
 
     if (internalUser) {
-      await this.internalDpaUserRepository
-        .createQueryBuilder('internalDpaUser')
-        .innerJoin('internalDpaUser.user', 'user')
-        .innerJoin('user.roles', 'role')
-        .update(InternalDpaUserEntity)
-        .set({ hasProcess: true })
-        .where('dpa_id = :dpaId AND internal_user_id = :internalUserId', {
-          dpaId,
+      const exists = await this.internalDpaUserRepository
+        .createQueryBuilder('idu')
+        .innerJoin('idu.internalUser', 'iu')
+        .innerJoin('iu.user', 'u')
+        .innerJoin('u.roles', 'r')
+        .where('idu.dpa_id = :dpaId', { dpaId })
+        .andWhere('idu.internal_user_id = :internalUserId', {
           internalUserId: internalUser.id,
         })
-        .andWhere('role.code = :rolCode', { rolCode })
-        .execute();
+        .andWhere('r.code = :rolCode', { rolCode })
+        .getExists();
+
+      if (exists) {
+        await this.internalDpaUserRepository.update(
+          {
+            dpa: { id: dpaId },
+            internalUser: { id: internalUser.id },
+          },
+          {
+            hasProcess: true,
+          },
+        );
+      }
     }
 
     return { availableInternalUser: internalUser, rolCode };
