@@ -21,7 +21,6 @@ import {
 import { PaginateFilterService } from '@utils/pagination/paginate-filter.service';
 import { FileEntity } from '@modules/common/file/file.entity';
 import { UserEntity } from '@auth/entities';
-import { PaginationDto } from '@utils/pagination';
 import { InactivationDto } from '@modules/core/roles/external/dto/process-guide/inactivation.dto';
 import { ConfigEnum } from '@utils/enums';
 import { ProcessStateEntity } from '@modules/core/entities/process-state.entity';
@@ -68,6 +67,7 @@ export class GuideTechnicianService {
         internalUser: { userId: user.id },
         isCurrent: params.isCurrent,
         enabled: true,
+        process: { establishment: { credentials: { enabled: true } } },
       },
       relations: {
         process: {

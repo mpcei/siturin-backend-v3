@@ -205,7 +205,12 @@ export class EstablishmentService {
 
   async findCadastreByEstablishment(establishmentId: string): Promise<any> {
     const cadastre = await this.repository.findOne({
-      where: { id: establishmentId },
+      where: {
+        id: establishmentId,
+        languages: { enabled: true },
+        adventureModalities: { enabled: true },
+        credentials: { enabled: true },
+      },
       relations: {
         establishmentContactPerson: true,
         process: { cadastre: { state: true }, activity: true },

@@ -363,6 +363,7 @@ export class ProcessGuideService {
           protectedArea.cantonId = item.canton.id;
           protectedArea.areaCode = item.areaCode;
           protectedArea.areaName = item.areaName;
+          protectedArea.enabled = false;
 
           const protectedAreaSave = await ProtectedAreaRepository.save(protectedArea);
         }
@@ -382,6 +383,7 @@ export class ProcessGuideService {
           adventureModality.modalityName = item2.modalityName;
           adventureModality.modalityCertificateCode = item2.modalityCertificateCode;
           adventureModality.modalityCertificateName = item2.modalityCertificateName;
+          adventureModality.enabled = false;
 
           const adventureModalitySave = await AdventureModalityRepository.save(adventureModality);
 
@@ -416,6 +418,7 @@ export class ProcessGuideService {
           language.levelCode = item.levelCode;
           language.levelName = item.levelName;
           language.motherLanguage = item.motherLanguage;
+          language.enabled = false;
 
           const languageSave = await LanguageRepository.save(language);
 
@@ -629,6 +632,7 @@ export class ProcessGuideService {
           languageSave.establishmentId = payload.establishment.id;
           languageSave.languageCode = language.code;
           languageSave.languageName = language.name;
+          languageSave.enabled = false;
           await languageRepository.save(languageSave);
         }
       }
@@ -716,6 +720,7 @@ export class ProcessGuideService {
               areaSave.establishmentId = payload.establishment.id;
               areaSave.areaCode = area.code;
               areaSave.areaName = area.name;
+              areaSave.enabled = false;
               await protectedAreaRepository.save(areaSave);
             }
           }
@@ -754,6 +759,7 @@ export class ProcessGuideService {
             modalitySave.establishmentId = payload.establishment.id;
             modalitySave.modalityCode = modality.code;
             modalitySave.modalityName = modality.name;
+            modalitySave.enabled = false;
             await modalityRepository.save(modalitySave);
           }
         }
