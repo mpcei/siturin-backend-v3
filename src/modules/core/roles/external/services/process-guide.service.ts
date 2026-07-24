@@ -685,6 +685,7 @@ export class ProcessGuideService {
       credential.origin = item.origin;
       credential.processId = process.id;
       credential.establishmentId = payload.establishment.id;
+      credential.enabled = false;
       const state = endedAt >= today ? stateCurrent : stateExpired;
       if (state) {
         credential.stateCode = state.code;
@@ -737,6 +738,8 @@ export class ProcessGuideService {
             areaSave.establishmentId = payload.establishment.id;
             areaSave.cantonId = dpa?.id;
             areaSave.provinceId = dpa.parentId;
+            areaSave.enabled = false;
+            await protectedAreaRepository.save(areaSave);
           }
         }
       }
