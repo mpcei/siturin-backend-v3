@@ -120,6 +120,17 @@ export class FileController {
     return this.filesService.download(id, user, req, res);
   }
 
+  @ApiOperation({ summary: 'Download File' })
+  @Get(':modelId/model-download')
+  async downloadByModel(
+    @Param('modelId') modelId: string,
+    @User() user: UserEntity,
+    @Req() req: Request,
+    @Res() res: Response,
+  ): Promise<void> {
+    return this.filesService.downloadByModel(modelId, user, req, res);
+  }
+
   @ApiOperation({ summary: 'Find By Model' })
   @Get('interfaces/:modelId')
   async findByModel(

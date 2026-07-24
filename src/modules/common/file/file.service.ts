@@ -204,6 +204,42 @@ export class FileService {
     stream.pipe(res);
   }
 
+  async downloadByModel(modelId: string, user: UserEntity, req: Request, res: Response) {
+    const file = await this.repository.findOneBy({ modelId });
+
+    if (!file) {
+      throw new NotFoundException();
+    }
+
+    const stream: any = await this.bucketService.getObject(file.path);
+
+    res.set({
+      'Content-Type': file.mimeType,
+      'Content-Disposition': `attachment; filename="${file.originalName}"`,
+      'Cache-Control': 'no-store',
+    });
+
+    const rawIp = (req.headers['x-forwarded-for'] as string) || req.socket.remoteAddress || '';
+    const cleanIp = rawIp.includes('::ffff:') ? rawIp.split('::ffff:')[1] : rawIp;
+
+    await this.fileDownloadLogRepository.save({
+      file,
+      user,
+      ipAddress: cleanIp === '::1' ? '127.0.0.1' : cleanIp,
+      userAgent: req.headers['user-agent'],
+    });
+
+    res.set({
+      'Content-Type': file.mimeType,
+      'Content-Disposition': `attachment; filename="${file.originalName}"`,
+      'X-File-Name': file.originalName,
+      'X-File-Extension': file.extension,
+      'Access-Control-Expose-Headers': 'Content-Disposition, X-File-Name, X-File-Extension',
+    });
+
+    stream.pipe(res);
+  }
+
   async findByModel(
     modelId: string,
     params?: FilterFileDto,
