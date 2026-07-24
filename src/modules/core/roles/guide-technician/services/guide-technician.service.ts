@@ -67,7 +67,6 @@ export class GuideTechnicianService {
         internalUser: { userId: user.id },
         isCurrent: params.isCurrent,
         enabled: true,
-        process: { establishment: { credentials: { enabled: true } } },
       },
       relations: {
         process: {
