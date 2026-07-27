@@ -109,7 +109,7 @@ export class CredentialEntity {
   /** Columns **/
   @Column({
     name: 'started_at',
-    type: 'timestamptz',
+    type: 'date',
     nullable: true,
     comment: 'Fecha de inicio de vigencia de la clasificacion',
   })
@@ -117,7 +117,7 @@ export class CredentialEntity {
 
   @Column({
     name: 'ended_at',
-    type: 'timestamptz',
+    type: 'date',
     nullable: true,
     comment: 'Fecha de fin de vigencia de la clasificacion',
   })

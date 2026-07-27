@@ -47,7 +47,7 @@ export class GuideTechnicianController {
     @Query('rolCode') rolCode: string,
     @Query('isCurrent') isCurrent: boolean,
   ) {
-    const serviceResponse = await this.service.findProcessById(user, processId, rolCode,isCurrent);
+    const serviceResponse = await this.service.findProcessById(user, processId, rolCode, isCurrent);
     return {
       data: serviceResponse.data,
       message: serviceResponse.message,
@@ -62,6 +62,21 @@ export class GuideTechnicianController {
     @User() user: UserEntity,
   ): Promise<ResponseHttpInterface> {
     const serviceResponse = await this.service.saveResultProcessTechnician(payload, user);
+
+    return {
+      data: serviceResponse.data,
+      message: serviceResponse.message,
+      title: serviceResponse.title,
+    };
+  }
+
+  @ApiOperation({ summary: 'Registration Result Technician' })
+  @Post('processes/review')
+  async saveResultProcessDirector(
+    @Body() payload: DocumentReviewDto,
+    @User() user: UserEntity,
+  ): Promise<ResponseHttpInterface> {
+    const serviceResponse = await this.service.saveResultProcessDirector(payload, user);
 
     return {
       data: serviceResponse.data,

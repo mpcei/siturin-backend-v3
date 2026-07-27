@@ -80,7 +80,7 @@ export class ProcessGuideService {
         process.id,
         payload.establishment.id,
       );
-      //const cadastre = await this.saveCadastre(manager, user, process);
+
       const establishment = await this.saveEstablishment(
         manager,
         payload.establishment,
@@ -283,44 +283,6 @@ export class ProcessGuideService {
 
     return await credentialRepository.save(credential);
   }
-
-  /*private async saveCadastre(
-    manager: EntityManager,
-    user: UserEntity,
-    process: ProcessEntity,
-  ): Promise<CadastreEntity> {
-    const cadastreRepository = manager.getRepository(CadastreEntity);
-    const catalogueRepository = manager.getRepository(CatalogueEntity);
-
-    const catalogue = await catalogueRepository.findOne({
-      where: {
-        code: CatalogueCadastresStateEnum.ratified,
-        type: CoreCatalogueTypeEnum.cadastre_states_state,
-      },
-    });
-
-    const cadastre = cadastreRepository.create();
-    cadastre.processId = process.id;
-    cadastre.registerNumber = '14528798457.002.10654789';
-    cadastre.registeredAt = new Date();
-    cadastre.systemOrigin = 'SITURIN';
-
-    if (catalogue) {
-      cadastre.stateId = catalogue.id;
-    }
-    const cadastreSave = await cadastreRepository.save(cadastre);
-
-    const cadastreStateRepository = manager.getRepository(CadastreStateEntity);
-    const cadastreState = cadastreStateRepository.create();
-    cadastreState.cadastreId = cadastreSave.id;
-    cadastreState.userId = user.id;
-    if (catalogue) {
-      cadastreState.stateId = catalogue.id;
-    }
-    await cadastreStateRepository.save(cadastreState);
-
-    return cadastreSave;
-  }*/
 
   private async saveProcessGuide(
     manager: EntityManager,

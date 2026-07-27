@@ -101,7 +101,6 @@ export enum CatalogueActivitiesCodeEnum {
   transport_galapagos = 'transport_galapagos',
   guide_galapagos = 'guide_galapagos',
   guide_continent = 'guide_continent',
-
 }
 
 export enum CatalogueCadastresStateEnum {
@@ -119,6 +118,7 @@ export enum CatalogueCredentialsStateEnum {
   expired = 'expired',
   expired_inactive = 'expired_inactive',
   in_progress = 'in_progress',
+  rejected = 'rejected',
 }
 export enum CatalogueSchoolPeriodStateEnum {
   OPEN = 'open',
@@ -212,7 +212,7 @@ export enum CatalogueProcessGuidesCodeEnum {
   document_vehicle_inspection = 'document_vehicle_inspection',
   accident_policy = 'accident_policy',
   guide_local = 'guide_local',
-  pane_guide = 'pane_guide'
+  pane_guide = 'pane_guide',
 }
 
 export enum CatalogueProfessionalTitlesLevelEnum {
@@ -220,4 +220,8 @@ export enum CatalogueProfessionalTitlesLevelEnum {
   tercer_nivel = 'tercer_nivel',
   cuarto_nivel = 'cuarto_nivel',
   phd = 'phd',
+}
+
+export enum OriginSystemEnum {
+  siturin = 'SITURIN V3',
 }

@@ -1,12 +1,15 @@
 import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { DataSource, EntityManager, Repository } from 'typeorm';
 import {
+  CatalogueActivitiesCodeEnum,
   CatalogueCadastresStateEnum,
   CatalogueCredentialsStateEnum,
   CatalogueInactivationCauseCodeEnum,
   CatalogueProcessesStateEnum,
+  CatalogueProcessesTypeEnum,
   CoreCatalogueTypeEnum,
   CoreRepositoryEnum,
+  OriginSystemEnum,
 } from '@modules/core/utils/enums';
 import { ResponseHttpInterface, ServiceResponseHttpInterface } from '@utils/interfaces';
 import {
@@ -32,6 +35,9 @@ import { RoleEnum } from '@auth/enums';
 import { DocumentReviewDto } from '@modules/core/roles/guide-technician/dto/guide-technician';
 import { ProcessGuideEntity } from '@modules/core/entities/process-guide.entity';
 import { FindProcessesDto } from '@modules/core/roles/guide-technician/dto/guide-technician/find-processes.dto';
+import { LanguageEntity } from '@modules/core/entities/language.entity';
+import { AdventureModalityEntity } from '@modules/core/entities/adventure-modality.entity';
+import { ProtectedAreaEntity } from '@modules/core/entities/protected-area.entity';
 
 interface InternalUserRole {
   availableInternalUser: InternalUserEntity | null;
@@ -283,7 +289,8 @@ export class GuideTechnicianService {
     user: UserEntity,
   ): Promise<ResponseHttpInterface> {
     const process = await this.dataSource.transaction(async (manager) => {
-      const process = await this.saveResult(manager, payload, user);
+      const process = await this.saveState(manager, payload, user);
+      await this.saveResultTechnician(manager, payload.processGuides, process);
       const assignment = await this.saveAssignment(manager, payload, process);
 
       return process;
@@ -308,14 +315,13 @@ export class GuideTechnicianService {
     };
   }
 
-  private async saveResult(
+  private async saveState(
     manager: EntityManager,
     payload: DocumentReviewDto,
     user: UserEntity,
   ): Promise<ProcessEntity> {
     const processStateRepository = manager.getRepository(ProcessStateEntity);
     const processRepository = manager.getRepository(ProcessEntity);
-    const processGuideRepository = manager.getRepository(ProcessGuideEntity);
 
     await processStateRepository.save(
       processStateRepository.create({
@@ -329,7 +335,7 @@ export class GuideTechnicianService {
 
     const process = await processRepository.findOne({
       where: { id: payload.processId },
-      relations: { state: true, establishment: { establishmentAddress: true } },
+      relations: { state: true, establishment: { establishmentAddress: true }, type: true },
     });
 
     if (!process) {
@@ -340,11 +346,45 @@ export class GuideTechnicianService {
     }
 
     process.state = payload.processState;
-    await processRepository.save(process);
+    return await processRepository.save(process);
 
-    await processGuideRepository.save(payload.processGuides);
+    //return process;
+  }
 
-    return process;
+  private async saveResultTechnician(
+    manager: EntityManager,
+    processGuides: ProcessGuideEntity[],
+    process: ProcessEntity,
+  ): Promise<boolean> {
+    const processGuideRepository = manager.getRepository(ProcessGuideEntity);
+    const languageRepository = manager.getRepository(LanguageEntity);
+    const modalityRepository = manager.getRepository(AdventureModalityEntity);
+    const protectedAreaRepository = manager.getRepository(ProtectedAreaEntity);
+
+    const languages = await languageRepository.find({ where: { processId: process.id } });
+    const modalities = await modalityRepository.find({ where: { processId: process.id } });
+    const areas = await protectedAreaRepository.find({ where: { processId: process.id } });
+
+    await processGuideRepository.save(processGuides);
+
+    if (process.state.code === CatalogueProcessesStateEnum.document_rejected) {
+      for (const language of languages) {
+        language.enabled = true;
+        await languageRepository.save(language);
+      }
+
+      for (const modality of modalities) {
+        modality.enabled = true;
+        await modalityRepository.save(modality);
+      }
+
+      for (const area of areas) {
+        area.enabled = true;
+        await protectedAreaRepository.save(area);
+      }
+    }
+
+    return true;
   }
 
   async saveAssignment(manager: EntityManager, payload: DocumentReviewDto, process: ProcessEntity) {
@@ -474,6 +514,245 @@ export class GuideTechnicianService {
     }
 
     return { availableInternalUser: internalUser, rolCode };
+  }
+
+  async saveResultProcessDirector(
+    payload: DocumentReviewDto,
+    user: UserEntity,
+  ): Promise<ResponseHttpInterface> {
+    const process = await this.dataSource.transaction(async (manager) => {
+      const process = await this.saveState(manager, payload, user);
+      await this.saveResultDirector(manager, process, user);
+      const assignment = await this.saveAssignment(manager, payload, process);
+
+      return process;
+    });
+    /*
+    if (!process) {
+      throw new Error();
+    }
+    const responseSendEmail = await this.emailService.sendProcessInactivationEmail(cadastre);
+
+    if (responseSendEmail) {
+      return {
+        data: cadastre,
+        title: responseSendEmail.title,
+        message: responseSendEmail.message,
+      };
+    }*/
+    return {
+      data: null,
+      title: 'Resultado guardado de manera exitosa',
+      message: 'Recuerde revisar su correo electronico de manera permanente',
+    };
+  }
+
+  private async saveResultDirector(
+    manager: EntityManager,
+    process: ProcessEntity,
+    user: UserEntity,
+  ): Promise<ProcessEntity> {
+    const languageRepository = manager.getRepository(LanguageEntity);
+    const modalityRepository = manager.getRepository(AdventureModalityEntity);
+    const protectedAreaRepository = manager.getRepository(ProtectedAreaEntity);
+    const credentialRepository = manager.getRepository(CredentialEntity);
+
+    const languages = await languageRepository.find({ where: { processId: process.id } });
+    const modalities = await modalityRepository.find({ where: { processId: process.id } });
+    const areas = await protectedAreaRepository.find({ where: { processId: process.id } });
+    const credentials = await credentialRepository.find({
+      where: { processId: process.id },
+      relations: { classification: true },
+    });
+
+    const credentialStateCurrent = (await this.cataloguesService.findCache()).find(
+      (item) =>
+        item.code == CatalogueCredentialsStateEnum.current &&
+        item.type === CoreCatalogueTypeEnum.credentials_state,
+    );
+
+    const credentialStateRejected = (await this.cataloguesService.findCache()).find(
+      (item) =>
+        item.code == CatalogueCredentialsStateEnum.rejected &&
+        item.type === CoreCatalogueTypeEnum.credentials_state,
+    );
+
+    if (!credentialStateCurrent || !credentialStateRejected) {
+      throw new NotFoundException({
+        message: 'No existen todos los estados de las credenciales configurados.',
+        error: 'Estado de la Credencial',
+      });
+    }
+
+    if (process.state.code === CatalogueProcessesStateEnum.approved) {
+      const cadastre = await this.saveCadastre(manager, user, process);
+
+      const value = cadastre.registerNumber;
+      const code = value.slice(13);
+
+      for (const language of languages) {
+        language.enabled = true;
+        await languageRepository.save(language);
+      }
+
+      for (const modality of modalities) {
+        modality.enabled = true;
+        await modalityRepository.save(modality);
+      }
+
+      for (const area of areas) {
+        area.enabled = true;
+        await protectedAreaRepository.save(area);
+      }
+
+      const currentDate = new Date();
+      const expirationDate = new Date(currentDate);
+      expirationDate.setFullYear(expirationDate.getFullYear() + 4);
+
+      for (const credential of credentials) {
+        const credentialNew = credentialRepository.create();
+
+        if (process.type.code === CatalogueProcessesTypeEnum.readmission) {
+          if (!credential.endedAt) {
+            credentialNew.startedAt = currentDate;
+            credentialNew.endedAt = expirationDate;
+          } else {
+            const endedAt = credential.endedAt;
+            if (endedAt >= currentDate) {
+              credentialNew.startedAt = credential.startedAt;
+              credentialNew.endedAt = credential.endedAt;
+            } else {
+              credentialNew.startedAt = currentDate;
+              credentialNew.endedAt = expirationDate;
+            }
+          }
+        } else {
+          credentialNew.startedAt = currentDate;
+          credentialNew.endedAt = expirationDate;
+        }
+
+        if (process.type.code === CatalogueProcessesTypeEnum.renewal_classification_update) {
+          const credentialExpired = await credentialRepository.findOne({
+            where: {
+              establishmentId: process.establishmentId,
+              classificationId: credential.classificationId,
+              enabled: true,
+            },
+          });
+          if (!credentialExpired) {
+            throw new NotFoundException({
+              message: 'No existe una credencial caducada',
+              error: 'Credencial',
+            });
+          }
+          await credentialRepository.softRemove(credentialExpired);
+        }
+
+        credentialNew.classificationId = credential.classificationId;
+        credentialNew.categoryId = credential.categoryId;
+        credentialNew.processId = credential.processId;
+        credentialNew.enabled = true;
+        credentialNew.establishmentId = credential.establishmentId;
+        credentialNew.geographicAreaId = credential.geographicAreaId;
+        credentialNew.startedAt = currentDate;
+        credentialNew.endedAt = expirationDate;
+        credentialNew.origin = OriginSystemEnum.siturin;
+        credentialNew.code = credential.classification.acronym + code;
+        credentialNew.stateCode = credentialStateCurrent.code;
+        credentialNew.stateName = credentialStateCurrent.name;
+        await credentialRepository.save(credentialNew);
+        await credentialRepository.softRemove(credential);
+      }
+    } else {
+      for (const language of languages) {
+        language.enabled = true;
+        await languageRepository.softRemove(language);
+      }
+
+      for (const modality of modalities) {
+        modality.enabled = true;
+        await modalityRepository.softRemove(modality);
+      }
+
+      for (const area of areas) {
+        await protectedAreaRepository.softRemove(area);
+      }
+
+      for (const credential of credentials) {
+        const { id, createdAt, updatedAt, ...credentialClone } = credential;
+
+        const credentialNew = credentialRepository.create(credentialClone);
+
+        credentialNew.stateCode = credentialStateRejected.code;
+        credentialNew.stateName = credentialStateRejected.name;
+
+        await credentialRepository.save(credentialNew);
+        await credentialRepository.softRemove(credential);
+      }
+    }
+
+    return process;
+  }
+
+  private async saveCadastre(
+    manager: EntityManager,
+    user: UserEntity,
+    process: ProcessEntity,
+  ): Promise<CadastreEntity> {
+    const cadastreRepository = manager.getRepository(CadastreEntity);
+
+    const catalogue = (await this.cataloguesService.findCache()).find(
+      (item) =>
+        item.code == CatalogueCadastresStateEnum.ratified &&
+        item.type === CoreCatalogueTypeEnum.cadastre_states_state,
+    );
+
+    const establishmentNumber = process?.establishment.number.padStart(3, '0');
+
+    const cadastreLast = await cadastreRepository
+      .createQueryBuilder('cadastres')
+      .innerJoin('cadastres.process', 'processes')
+      .innerJoin('processes.activity', 'activities')
+      .where('activities.code IN (:...activityCodes)', {
+        activityCodes: [
+          CatalogueActivitiesCodeEnum.guide_continent,
+          CatalogueActivitiesCodeEnum.guide_galapagos,
+        ],
+      })
+      .orderBy('processes.id', 'ASC')
+      .addOrderBy('SUBSTRING(cadastres.register_number, 21)', 'DESC')
+      .getOne();
+
+    const init = '10';
+    let sequential = '1';
+
+    if (cadastreLast) {
+      sequential = (parseInt(cadastreLast.registerNumber.substring(21)) + 1).toString();
+    }
+
+    sequential = `${init}${sequential.padStart(6, '0')}`;
+
+    const cadastre = cadastreRepository.create();
+    cadastre.processId = process.id;
+    cadastre.registerNumber = `${process?.establishment.ruc.number}.${establishmentNumber}.${sequential}`;
+    cadastre.registeredAt = new Date();
+    cadastre.systemOrigin = OriginSystemEnum.siturin;
+
+    if (catalogue) {
+      cadastre.state = catalogue;
+    }
+    const cadastreSave = await cadastreRepository.save(cadastre);
+
+    const cadastreStateRepository = manager.getRepository(CadastreStateEntity);
+    const cadastreState = cadastreStateRepository.create();
+    cadastreState.cadastreId = cadastreSave.id;
+    cadastreState.userId = user.id;
+    if (catalogue) {
+      cadastreState.stateId = catalogue.id;
+    }
+    await cadastreStateRepository.save(cadastreState);
+
+    return cadastreSave;
   }
 
   async createInactivation(
