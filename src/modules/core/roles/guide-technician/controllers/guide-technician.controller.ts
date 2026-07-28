@@ -1,18 +1,7 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Param,
-  ParseUUIDPipe,
-  Post,
-  Query,
-  UseInterceptors,
-} from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseUUIDPipe, Post, Query } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Auth, User } from '@auth/decorators';
 import { GuideTechnicianService } from '@modules/core/roles/guide-technician/services/guide-technician.service';
-import { AnyFilesInterceptor } from '@nestjs/platform-express';
-import { ParseMultipartInterceptor } from '@utils/interceptors';
 import { UserEntity } from '@auth/entities';
 import { PaginationDto } from '@utils/pagination';
 import { InactivationDto } from '@modules/core/roles/external/dto/process-guide/inactivation.dto';
@@ -82,6 +71,19 @@ export class GuideTechnicianController {
       data: serviceResponse.data,
       message: serviceResponse.message,
       title: serviceResponse.title,
+    };
+  }
+
+  @ApiOperation({ summary: 'Lista de establecimientos catastrados' })
+  @Get('cadastres')
+  async findCadastres(@Query() params: PaginationDto) {
+    const serviceResponse = await this.service.findCadastres(params);
+
+    return {
+      data: serviceResponse.data,
+      pagination: serviceResponse.pagination,
+      message: 'Consulta exitosa',
+      title: 'Consulta',
     };
   }
 

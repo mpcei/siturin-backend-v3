@@ -38,6 +38,7 @@ import { FindProcessesDto } from '@modules/core/roles/guide-technician/dto/guide
 import { LanguageEntity } from '@modules/core/entities/language.entity';
 import { AdventureModalityEntity } from '@modules/core/entities/adventure-modality.entity';
 import { ProtectedAreaEntity } from '@modules/core/entities/protected-area.entity';
+import { PaginationDto } from '@utils/pagination';
 
 interface InternalUserRole {
   availableInternalUser: InternalUserEntity | null;
@@ -52,6 +53,7 @@ export class GuideTechnicianService {
     @Inject(ConfigEnum.PG_DATA_SOURCE)
     private readonly dataSource: DataSource,
     private readonly cataloguesService: CataloguesService,
+
     @Inject(CoreRepositoryEnum.PROCESS_REPOSITORY)
     private processRepository: Repository<ProcessEntity>,
     @Inject(CoreRepositoryEnum.ASSIGNMENT_REPOSITORY)
@@ -60,6 +62,8 @@ export class GuideTechnicianService {
     private readonly internalUserRepository: Repository<InternalUserEntity>,
     @Inject(CoreRepositoryEnum.INTERNAL_DPA_USER_REPOSITORY)
     private readonly internalDpaUserRepository: Repository<InternalDpaUserEntity>,
+    @Inject(CoreRepositoryEnum.CADASTRE_REPOSITORY)
+    private readonly cadastreRepository: Repository<CadastreEntity>,
     private readonly emailService: EmailService,
   ) {}
 
@@ -350,9 +354,8 @@ export class GuideTechnicianService {
     }
 
     process.state = payload.processState;
-    return await processRepository.save(process);
 
-    //return process;
+    return await processRepository.save(process);
   }
 
   private async saveResultTechnician(
@@ -772,6 +775,44 @@ export class GuideTechnicianService {
     await cadastreStateRepository.save(cadastreState);
 
     return cadastreSave;
+  }
+
+  async findCadastres(params: PaginationDto): Promise<ServiceResponseHttpInterface> {
+    const response = await this.cadastreRepository.findAndCount({
+      where: {
+        process: {
+          activity: [
+            { code: CatalogueActivitiesCodeEnum.guide_continent },
+            { code: CatalogueActivitiesCodeEnum.guide_galapagos },
+          ],
+        },
+      },
+      relations: {
+        process: {
+          type: true,
+          state: true,
+          establishment: {
+            ruc: true,
+            establishmentContactPerson: true,
+            establishmentAddress: true,
+            credentials: { classification: true },
+            province: true,
+            canton: true,
+            parish: true,
+          },
+          credentials: { classification: true },
+          activity: true,
+        },
+        state: true,
+      },
+      skip: (params.page - 1) * params.limit,
+      take: params.limit,
+    });
+
+    return {
+      data: response[0],
+      pagination: { limit: params.limit, totalItems: response[1] },
+    };
   }
 
   async createInactivation(
