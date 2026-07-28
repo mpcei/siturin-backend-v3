@@ -36,7 +36,7 @@ export class InternalPdfSql {
     };
   }
 
-  async findRegisterCertificate(cadastreId: string): Promise<any> {
+  async findRegistrationCertificate(cadastreId: string): Promise<any> {
     const cadastre = await this.cadastreRepository.findOne({
       relations: {
         process: {
@@ -63,6 +63,7 @@ export class InternalPdfSql {
       },
     });
 
+    console.log(cadastre);
     return {
       cadastre,
       inactivationCauses: cadastre?.process.inactivationCauses, //inactivacion
@@ -83,49 +84,65 @@ export class InternalPdfSql {
       //
     };
   }
-  async findRegisterInactivation(cadastreId: string): Promise<any> {
+
+  async findRegistrationCertificateGuide(cadastreId: string): Promise<any> {
     const cadastre = await this.cadastreRepository.findOne({
       relations: {
         process: {
-          activity: true,
-          classification: true,
-          category: true,
-          inactivationCauseType: true,
-          establishmentAddress: { province: { zone: true }, canton: true, parish: true },
-          establishment: { ruc: { type: true } },
-          establishmentContactPerson: true, //suspencion, update
-          inactivationCauses: true,
+          establishment: {
+            ruc: { user: true, type: true },
+            credentials: { classification: true },
+            protectedAreas: true,
+            adventureModalities: true,
+          },
         },
-        cadastreState: true,
+        state: true,
       },
 
       where: { id: cadastreId },
-      order: {
-        cadastreState: { isCurrent: 'desc' },
-        process: {
-          establishmentAddress: { isCurrent: 'desc' },
-          establishmentContactPerson: { isCurrent: 'desc' },
-        },
-      },
     });
 
     return {
       cadastre,
-      inactivationCauses: cadastre?.process.inactivationCauses, //inactivacion
+      user: cadastre?.process.establishment.ruc.user,
+      classifications: cadastre?.process.establishment.credentials,
+      protectedAreas: cadastre?.process.establishment.protectedAreas,
+      adventureModalities: cadastre?.process.establishment.adventureModalities,
+    };
+  }
+
+  async findRegisterInactivation(cadastreId: string): Promise<any> {
+    const cadastre = await this.cadastreRepository.findOne({
+      relations: {
+        process: {
+          establishment: { ruc: true, province: { zone: true }, canton: true, parish: true },
+          activity: true,
+          establishmentAddress: true,
+          establishmentContactPerson: true,
+          credentials: { classification: true, category: true },
+          inactivationCauseType: true,
+          inactivationCauses: true,
+        },
+      },
+      where: { id: cadastreId },
+    });
+
+    return {
+      cadastre,
+      inactivationCauses: cadastre?.process.inactivationCauses,
       activity: cadastre?.process.activity,
-      classification: cadastre?.process.classification,
-      category: cadastre?.process.category,
+      classifications: cadastre?.process.credentials
+        .map((item) => item.classification.name)
+        .join(', '),
+      categories: cadastre?.process.credentials.map((item) => item.category.name).join(', '),
       inactivationCauseType: cadastre?.process.inactivationCauseType,
-      establishmentAddress: cadastre?.process.establishmentAddress,
-      zone: cadastre?.process.establishmentAddress.province.zone,
-      canton: cadastre?.process.establishmentAddress.canton,
-      parish: cadastre?.process.establishmentAddress.parish,
-      province: cadastre?.process.establishmentAddress.province,
+      zone: cadastre?.process.establishment.province.zone,
+      canton: cadastre?.process.establishment.canton,
+      parish: cadastre?.process.establishment.parish,
+      province: cadastre?.process.establishment.province,
       establishment: cadastre?.process.establishment,
       ruc: cadastre?.process.establishment.ruc,
-      establishmentContactPerson: cadastre?.process.establishmentContactPerson,
       registeredAt: cadastre?.process.registeredAt,
-      //
     };
   }
 
@@ -174,6 +191,7 @@ export class InternalPdfSql {
       //
     };
   }
+
   async findRegisterSuspension(cadastreId: string): Promise<any> {
     const cadastre = await this.cadastreRepository.findOne({
       relations: {
