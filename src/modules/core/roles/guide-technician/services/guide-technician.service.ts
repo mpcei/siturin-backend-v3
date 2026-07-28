@@ -335,7 +335,11 @@ export class GuideTechnicianService {
 
     const process = await processRepository.findOne({
       where: { id: payload.processId },
-      relations: { state: true, establishment: { establishmentAddress: true }, type: true },
+      relations: {
+        state: true,
+        establishment: { establishmentAddress: true, ruc: true },
+        type: true,
+      },
     });
 
     if (!process) {
