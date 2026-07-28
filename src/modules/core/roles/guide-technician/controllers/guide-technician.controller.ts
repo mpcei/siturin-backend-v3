@@ -70,8 +70,8 @@ export class GuideTechnicianController {
     };
   }
 
-  @ApiOperation({ summary: 'Registration Result Technician' })
-  @Post('processes/review')
+  @ApiOperation({ summary: 'Registration Result Director' })
+  @Post('processes/complete')
   async saveResultProcessDirector(
     @Body() payload: DocumentReviewDto,
     @User() user: UserEntity,

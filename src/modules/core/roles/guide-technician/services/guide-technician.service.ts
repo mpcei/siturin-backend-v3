@@ -163,7 +163,7 @@ export class GuideTechnicianService {
 
       .getOne();
 
-    const lastAssigment = this.assignmentRepository.findOne({
+    const lastAssigment = await this.assignmentRepository.findOne({
       where: { processId, rolCode: RoleEnum.GUIDE_TECHNICIAN },
       order: { createdAt: 'desc' },
     });
@@ -707,34 +707,49 @@ export class GuideTechnicianService {
         item.type === CoreCatalogueTypeEnum.cadastre_states_state,
     );
 
-    const establishmentNumber = process?.establishment.number.padStart(3, '0');
-
-    const cadastreLast = await cadastreRepository
+    const cadastreEstablishment = await cadastreRepository
       .createQueryBuilder('cadastres')
-      .innerJoin('cadastres.process', 'processes')
-      .innerJoin('processes.activity', 'activities')
-      .where('activities.code IN (:...activityCodes)', {
-        activityCodes: [
-          CatalogueActivitiesCodeEnum.guide_continent,
-          CatalogueActivitiesCodeEnum.guide_galapagos,
-        ],
-      })
-      .orderBy('processes.id', 'ASC')
-      .addOrderBy('SUBSTRING(cadastres.register_number, 21)', 'DESC')
+      .innerJoin('cadastres.process', 'process')
+      .innerJoin('process.establishment', 'establishment')
+      .where('establishment.id = :id', { id: process.establishment.id })
       .getOne();
 
-    const init = '10';
-    let sequential = '1';
+    let registerNumber = '';
+    if (!cadastreEstablishment) {
+      const establishmentNumber = process?.establishment.number.padStart(3, '0');
 
-    if (cadastreLast) {
-      sequential = (parseInt(cadastreLast.registerNumber.substring(21)) + 1).toString();
+      const cadastreLast = await cadastreRepository
+        .createQueryBuilder('cadastres')
+        .innerJoin('cadastres.process', 'processes')
+        .innerJoin('processes.activity', 'activities')
+        .where('activities.code IN (:...activityCodes)', {
+          activityCodes: [
+            CatalogueActivitiesCodeEnum.guide_continent,
+            CatalogueActivitiesCodeEnum.guide_galapagos,
+          ],
+        })
+        .orderBy('processes.id', 'ASC')
+        .addOrderBy('SUBSTRING(cadastres.register_number, 21)', 'DESC')
+        .getOne();
+
+      const init = '10';
+      let sequential = '1';
+
+      if (cadastreLast) {
+        sequential = (parseInt(cadastreLast.registerNumber.substring(21)) + 1).toString();
+      }
+
+      sequential = `${init}${sequential.padStart(6, '0')}`;
+
+      registerNumber = `${process?.establishment.ruc.number}.${establishmentNumber}.${sequential}`;
+    } else {
+      registerNumber = cadastreEstablishment.registerNumber;
+      await cadastreRepository.softRemove(cadastreEstablishment);
     }
-
-    sequential = `${init}${sequential.padStart(6, '0')}`;
 
     const cadastre = cadastreRepository.create();
     cadastre.processId = process.id;
-    cadastre.registerNumber = `${process?.establishment.ruc.number}.${establishmentNumber}.${sequential}`;
+    cadastre.registerNumber = registerNumber;
     cadastre.registeredAt = new Date();
     cadastre.systemOrigin = OriginSystemEnum.siturin;
 
