@@ -7,6 +7,10 @@ import { registerCertificateReport } from '@modules/reports/pdf/templates/intern
 import { registerInactivation } from './templates/internals/inactivation.report';
 import { registerSuspension } from './templates/internals/suspension.report';
 import { registerUpdate } from './templates/internals/update.report';
+import { guideInactivation } from '@modules/reports/pdf/templates/externals/guide-inactivation.report';
+import {
+  registrationCertificateGuideReport
+} from '@modules/reports/pdf/templates/internals/registration-certificate-guide.report';
 
 @Injectable()
 export class InternalPdfService {
@@ -27,19 +31,39 @@ export class InternalPdfService {
     }
   }
 
-  async generateRegisterCertificate({
+  async generateRegistrationCertificate({
     type = 'buffer',
     cadastreId,
   }: {
     type?: string;
     cadastreId: string;
   }): Promise<PDFKit.PDFDocument | Buffer> {
-    const data: any = await this.internalPdfSql.findRegisterCertificate(cadastreId);
+    const data: any = await this.internalPdfSql.findRegistrationCertificate(cadastreId);
 
     try {
       if (type === 'buffer')
         return this.printerService.createPdfBuffer(registerCertificateReport(data));
       else return this.printerService.createPdf(registerCertificateReport(data));
+    } catch (error) {
+      console.log(error);
+      throw new Error();
+    }
+  }
+
+  async generateRegistrationCertificateGuide({
+    type = 'buffer',
+    cadastreId,
+  }: {
+    type?: string;
+    cadastreId: string;
+  }): Promise<PDFKit.PDFDocument | Buffer> {
+    const data: any = await this.internalPdfSql.findRegistrationCertificateGuide(cadastreId);
+
+    console.log(data);
+    try {
+      if (type === 'buffer')
+        return this.printerService.createPdfBuffer(registrationCertificateGuideReport(data));
+      else return this.printerService.createPdf(registrationCertificateGuideReport(data));
     } catch (error) {
       console.log(error);
       throw new Error();
@@ -56,8 +80,8 @@ export class InternalPdfService {
     const data: any = await this.internalPdfSql.findRegisterInactivation(cadastreId);
 
     try {
-      if (type === 'buffer') return this.printerService.createPdfBuffer(registerInactivation(data));
-      else return this.printerService.createPdf(registerInactivation(data));
+      if (type === 'buffer') return this.printerService.createPdfBuffer(guideInactivation(data));
+      else return this.printerService.createPdf(guideInactivation(data));
     } catch (error) {
       console.log(error);
       throw new Error();

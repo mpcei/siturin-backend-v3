@@ -1,4 +1,4 @@
-import { Controller, Get, Header, Param, ParseUUIDPipe, Res } from '@nestjs/common';
+import { Controller, Get, Header, Param, ParseUUIDPipe, Query, Res } from '@nestjs/common';
 import { Response } from 'express';
 import { ApiTags } from '@nestjs/swagger';
 import { InternalPdfService } from '@modules/reports/pdf/internal-pdf.service';
@@ -16,17 +16,19 @@ export class InternalPdfController {
   async generateUsersReportBuffer() {
     return await this.internalPdfService.generateUsersReportBuffer();
   }
+
   @PublicRoute()
   @Header('Content-Type', 'application/pdf')
-  @Get('register-certificate/:cadastreId')
+  @Get('registration-certificate')
   async generateRegisterCertificate(
     @Res() response: Response,
-    @Param('cadastreId', ParseUUIDPipe) cadastreId: string,
+    @Query('cadastreId', ParseUUIDPipe) cadastreId: string,
   ) {
-    const pdfDoc: PDFKit.PDFDocument = (await this.internalPdfService.generateRegisterCertificate({
-      type: 'pdf',
-      cadastreId: cadastreId,
-    })) as PDFKit.PDFDocument;
+    const pdfDoc: PDFKit.PDFDocument =
+      (await this.internalPdfService.generateRegistrationCertificate({
+        type: 'pdf',
+        cadastreId: cadastreId,
+      })) as PDFKit.PDFDocument;
 
     pdfDoc.info.Title = 'Users Report';
     pdfDoc.pipe(response);
@@ -35,10 +37,28 @@ export class InternalPdfController {
 
   @PublicRoute()
   @Header('Content-Type', 'application/pdf')
-  @Get('inactivation/:cadastreId')
+  @Get('registration-certificate-guide')
+  async generateRegisterCertificateGuide(
+    @Res() response: Response,
+    @Query('cadastreId', ParseUUIDPipe) cadastreId: string,
+  ) {
+    const pdfDoc: PDFKit.PDFDocument =
+      (await this.internalPdfService.generateRegistrationCertificateGuide({
+        type: 'pdf',
+        cadastreId: cadastreId,
+      })) as PDFKit.PDFDocument;
+
+    pdfDoc.info.Title = 'Users Report';
+    pdfDoc.pipe(response);
+    pdfDoc.end();
+  }
+
+  @PublicRoute()
+  @Header('Content-Type', 'application/pdf')
+  @Get('inactivation')
   async generateInactivation(
     @Res() response: Response,
-    @Param('cadastreId', ParseUUIDPipe) cadastreId: string,
+    @Query('cadastreId', ParseUUIDPipe) cadastreId: string,
   ) {
     const pdfDoc: PDFKit.PDFDocument = (await this.internalPdfService.generateInactivation({
       type: 'pdf',

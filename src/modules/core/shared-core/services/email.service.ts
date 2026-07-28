@@ -64,7 +64,7 @@ export class EmailService {
     }
 
     // Generar el PDF y enviar el correo
-    const pdf = (await this.internalPdfService.generateRegisterCertificate({
+    const pdf = (await this.internalPdfService.generateRegistrationCertificate({
       cadastreId: cadastre.id,
     })) as Buffer;
 
