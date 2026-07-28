@@ -2,7 +2,7 @@ import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { EntityManager, Repository } from 'typeorm';
 import { AuthRepositoryEnum, MailSubjectEnum } from '@utils/enums';
 import { CoreRepositoryEnum, MailTemplateEnum } from '@modules/core/utils/enums';
-import { CadastreEntity, ProcessEntity } from '@modules/core/entities';
+import { AssignmentEntity, CadastreEntity, InternalUserEntity, ProcessEntity, } from '@modules/core/entities';
 import { UserEntity } from '@auth/entities';
 import { MailService } from '@modules/common/mail/mail.service';
 import { MailDataInterface } from '@modules/common/mail/interfaces/mail-data.interface';
@@ -17,6 +17,8 @@ export class EmailService {
     private readonly processRepository: Repository<ProcessEntity>,
     @Inject(AuthRepositoryEnum.USER_REPOSITORY)
     private readonly userRepository: Repository<UserEntity>,
+    @Inject(CoreRepositoryEnum.INTERNAL_USER_REPOSITORY)
+    private readonly internalUserRepository: Repository<InternalUserEntity>,
     private readonly internalPdfService: InternalPdfService,
     private readonly externalPdfService: ExternalPdfService,
   ) {}
@@ -233,6 +235,52 @@ export class EmailService {
       subject: MailSubjectEnum.EMAIL_PROCESS_REGISTRATION,
       template: MailTemplateEnum.PROCESS_REGISTRATION,
       attachments: [{ file: pdf, filename: `${cadastre.registerNumber}.pdf` }],
+      data,
+    };
+
+    await this.mailService.sendMail(mailData);
+
+    // Manejar posibles correos fallidos
+    if (invalidRecipients.length > 0) {
+      return {
+        title: 'No se pudo entregar a los siguientes correos',
+        message: invalidRecipients,
+      };
+    }
+  }
+
+  async sendDirectorEmail(process: ProcessEntity, assignment: AssignmentEntity) {
+    const internalUser = await this.internalUserRepository.findOne({
+      where: { id: assignment.internalUserId },
+      relations: { user: true },
+    });
+
+    if (!internalUser) {
+      throw new NotFoundException('Usuario Interno no encontrado');
+    }
+
+    // Preparar los datos del correo
+    const data = {
+      user: internalUser.user,
+      processType: process.type,
+    };
+
+    // Validar correos usando un metodo reutilizable
+    const { validRecipients, invalidRecipients } = this.extractValidEmails([
+      internalUser.user.email,
+    ]);
+
+    if (validRecipients.length === 0) {
+      return {
+        title: 'No se pudo entregar a ningún correo válid',
+        message: invalidRecipients,
+      };
+    }
+
+    const mailData: MailDataInterface = {
+      to: validRecipients,
+      subject: MailSubjectEnum.EMAIL_PROCESS_REGISTRATION,
+      template: MailTemplateEnum.PROCESS_REGISTRATION,
       data,
     };
 

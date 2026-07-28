@@ -292,26 +292,36 @@ export class GuideTechnicianService {
     payload: DocumentReviewDto,
     user: UserEntity,
   ): Promise<ResponseHttpInterface> {
-    const process = await this.dataSource.transaction(async (manager) => {
+    const { process, assignment } = await this.dataSource.transaction(async (manager) => {
       const process = await this.saveState(manager, payload, user);
       await this.saveResultTechnician(manager, payload.processGuides, process);
       const assignment = await this.saveAssignment(manager, payload, process);
 
-      return process;
+      return { process, assignment };
     });
-    /*
+
     if (!process) {
       throw new Error();
     }
-    const responseSendEmail = await this.emailService.sendProcessInactivationEmail(cadastre);
+    let responseSendEmail:
+      | {
+          title: string;
+          message: string[];
+        }
+      | undefined = undefined;
+    if (process.state.code === CatalogueProcessesStateEnum.reviewed) {
+      responseSendEmail = await this.emailService.sendDirectorEmail(process, assignment);
+    } else {
+      responseSendEmail = await this.emailService.sendDirectorEmail(process, assignment);
+    }
 
     if (responseSendEmail) {
       return {
-        data: cadastre,
+        data: null,
         title: responseSendEmail.title,
         message: responseSendEmail.message,
       };
-    }*/
+    }
     return {
       data: null,
       title: 'Resultado guardado de manera exitosa',
