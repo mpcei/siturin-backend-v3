@@ -312,7 +312,10 @@ export class GuideTechnicianService {
     if (process.state.code === CatalogueProcessesStateEnum.reviewed) {
       responseSendEmail = await this.emailService.sendDirectorEmail(process, assignment);
     } else {
-      responseSendEmail = await this.emailService.sendDirectorEmail(process, assignment);
+      responseSendEmail = await this.emailService.sendExternalDocumentRejectedEmail(
+        user,
+        payload.observation,
+      );
     }
 
     if (responseSendEmail) {

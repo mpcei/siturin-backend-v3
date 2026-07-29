@@ -2,7 +2,12 @@ import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { EntityManager, Repository } from 'typeorm';
 import { AuthRepositoryEnum, MailSubjectEnum } from '@utils/enums';
 import { CoreRepositoryEnum, MailTemplateEnum } from '@modules/core/utils/enums';
-import { AssignmentEntity, CadastreEntity, InternalUserEntity, ProcessEntity, } from '@modules/core/entities';
+import {
+  AssignmentEntity,
+  CadastreEntity,
+  InternalUserEntity,
+  ProcessEntity,
+} from '@modules/core/entities';
 import { UserEntity } from '@auth/entities';
 import { MailService } from '@modules/common/mail/mail.service';
 import { MailDataInterface } from '@modules/common/mail/interfaces/mail-data.interface';
@@ -279,8 +284,51 @@ export class EmailService {
 
     const mailData: MailDataInterface = {
       to: validRecipients,
-      subject: MailSubjectEnum.EMAIL_PROCESS_REGISTRATION,
-      template: MailTemplateEnum.PROCESS_REGISTRATION,
+      subject: MailSubjectEnum.EMAIL_PROCESS_IN_APPROVAL,
+      template: MailTemplateEnum.PROCESS_IN_APPROVAL,
+      data,
+    };
+
+    await this.mailService.sendMail(mailData);
+
+    // Manejar posibles correos fallidos
+    if (invalidRecipients.length > 0) {
+      return {
+        title: 'No se pudo entregar a los siguientes correos',
+        message: invalidRecipients,
+      };
+    }
+  }
+
+  async sendExternalDocumentRejectedEmail(user: UserEntity, observation: string) {
+    const externalUser = await this.userRepository.findOne({
+      where: { id: user.id },
+    });
+
+    if (!externalUser) {
+      throw new NotFoundException('Usuario externo no encontrado');
+    }
+
+    // Preparar los datos del correo
+    const data = {
+      user: externalUser,
+      observation,
+    };
+
+    // Validar correos usando un metodo reutilizable
+    const { validRecipients, invalidRecipients } = this.extractValidEmails([user.email]);
+
+    if (validRecipients.length === 0) {
+      return {
+        title: 'No se pudo entregar a ningún correo válid',
+        message: invalidRecipients,
+      };
+    }
+
+    const mailData: MailDataInterface = {
+      to: validRecipients,
+      subject: MailSubjectEnum.EMAIL_PROCESS_DOCUMENT_REJECTED,
+      template: MailTemplateEnum.PROCESS_DOCUMENT_REJECTED,
       data,
     };
 
