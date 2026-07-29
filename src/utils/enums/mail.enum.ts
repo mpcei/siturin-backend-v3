@@ -5,6 +5,8 @@ export enum MailSubjectEnum {
   INTERNAL_ACCOUNT_CREATED = `Bienvenido/a - Activación de cuenta`,
   EMAIL_VERIFICATION_RESEND = `Reenvío de correo de verificación`,
   EMAIL_PROCESS_REGISTRATION = 'Envio de solicitud',
+  EMAIL_PROCESS_IN_APPROVAL = 'Revisión de solicitud',
+  EMAIL_PROCESS_DOCUMENT_REJECTED = 'Solicitud rechazada',
 }
 
 export enum MailTemplateEnum {
