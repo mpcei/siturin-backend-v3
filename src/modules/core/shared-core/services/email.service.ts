@@ -237,8 +237,8 @@ export class EmailService {
 
     const mailData: MailDataInterface = {
       to: validRecipients,
-      subject: MailSubjectEnum.EMAIL_PROCESS_REGISTRATION,
-      template: MailTemplateEnum.PROCESS_REGISTRATION,
+      subject: MailSubjectEnum.EMAIL_PROCESS_INACTIVATION,
+      template: MailTemplateEnum.PROCESS_INACTIVATION,
       attachments: [{ file: pdf, filename: `${cadastre.registerNumber}.pdf` }],
       data,
     };
@@ -254,7 +254,7 @@ export class EmailService {
     }
   }
 
-  async sendDirectorEmail(process: ProcessEntity, assignment: AssignmentEntity) {
+  async sendDirectorReviewedEmail(process: ProcessEntity, assignment: AssignmentEntity) {
     const internalUser = await this.internalUserRepository.findOne({
       where: { id: assignment.internalUserId },
       relations: { user: true },
@@ -301,6 +301,102 @@ export class EmailService {
   }
 
   async sendExternalDocumentRejectedEmail(user: UserEntity, observation: string) {
+    const externalUser = await this.userRepository.findOne({
+      where: { id: user.id },
+    });
+
+    if (!externalUser) {
+      throw new NotFoundException('Usuario externo no encontrado');
+    }
+
+    // Preparar los datos del correo
+    const data = {
+      user: externalUser,
+      observation,
+    };
+
+    // Validar correos usando un metodo reutilizable
+    const { validRecipients, invalidRecipients } = this.extractValidEmails([user.email]);
+
+    if (validRecipients.length === 0) {
+      return {
+        title: 'No se pudo entregar a ningún correo válid',
+        message: invalidRecipients,
+      };
+    }
+
+    const mailData: MailDataInterface = {
+      to: validRecipients,
+      subject: MailSubjectEnum.EMAIL_PROCESS_DOCUMENT_REJECTED,
+      template: MailTemplateEnum.PROCESS_DOCUMENT_REJECTED,
+      data,
+    };
+
+    await this.mailService.sendMail(mailData);
+
+    // Manejar posibles correos fallidos
+    if (invalidRecipients.length > 0) {
+      return {
+        title: 'No se pudo entregar a los siguientes correos',
+        message: invalidRecipients,
+      };
+    }
+  }
+
+  async sendExternalApprovedEmail(
+    user: UserEntity,
+    process: ProcessEntity,
+    cadastre: CadastreEntity,
+  ) {
+    const userExternal = await this.userRepository.findOne({
+      where: { id: user.id },
+    });
+
+    if (!userExternal) {
+      throw new NotFoundException('Usuario no encontrado');
+    }
+
+    // Preparar los datos del correo
+    const data = {
+      user: userExternal,
+      process: process,
+      classifications: process.credentials.map((item) => item.classification.name).join(', '),
+      registerNumber: cadastre.registerNumber,
+      registeredAt: cadastre.registeredAt,
+    };
+
+    // Validar correos usando un metodo reutilizable
+    const { validRecipients, invalidRecipients } = this.extractValidEmails([
+      user.email,
+      process.establishment.establishmentContactPerson.email,
+    ]);
+
+    if (validRecipients.length === 0) {
+      return {
+        title: 'No se pudo entregar a ningún correo válid',
+        message: invalidRecipients,
+      };
+    }
+
+    const mailData: MailDataInterface = {
+      to: validRecipients,
+      subject: MailSubjectEnum.EMAIL_PROCESS_APPROVED,
+      template: MailTemplateEnum.PROCESS_IN_APPROVAL,
+      data,
+    };
+
+    await this.mailService.sendMail(mailData);
+
+    // Manejar posibles correos fallidos
+    if (invalidRecipients.length > 0) {
+      return {
+        title: 'No se pudo entregar a los siguientes correos',
+        message: invalidRecipients,
+      };
+    }
+  }
+
+  async sendExternalRejectedEmail(user: UserEntity, process: ProcessEntity, observation: string) {
     const externalUser = await this.userRepository.findOne({
       where: { id: user.id },
     });

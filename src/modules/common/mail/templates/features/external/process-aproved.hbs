@@ -1,0 +1,43 @@
+<p>Estimado/a {{data.establishment.ruc.legalName}},</p>
+
+<p>
+  Su solicitud de <b>Inactivación</b>, ha concluido con el siguiente resultado:
+</p>
+<p>
+  <b>Resultados de la solicitud:</b>b> {{data.establishment.ruc.legalName}}
+</p>
+<p>
+  <b>Información del guía de turismo:</b>b>
+</p>
+<p>
+<ul>
+  <li>R.U.C.: {{data.establishment.ruc.number}}</li>
+  <li>Razón Social: {{data.establishment.ruc.legalName}}</li>
+  <li>Número de Registro de Turismo: {{data.registerNumber}}</li>
+  <li>Fecha de Registro de Turismo: {{data.registeredAt}}</li>
+  <li>Clasificación: {{data.classifications}}</li>
+  <li>Provincia: {{data.process.establishment.province.name}}</li>
+  <li>Cantón: {{data.process.establishment.canton.name}}</li>
+  <li>Parroquia: {{data.process.establishment.parish.name}}</li>
+</ul>
+</p>
+{{#if (eq data.process.state.code 'rejected')}}
+  <p>
+  <b>Justificación del rechazo:</b> {{data.observation}}
+  </p>
+  {{/if}}
+<p><b>Notas:</b></p>
+<p>Con la finalidad de mejorar nuestros servicios, invitamos a realizar esta breve Encuesta de Satisfacción del
+  Servicio.
+</p>
+<p>Sus respuestas serán tratadas de forma confidencial y serán utilizadas para mejorar los productos y servicios que
+  le proporcionamos. <a href="https://forms.gle/KpdCEJGc58t3KNjr5">https://forms.gle/KpdCEJGc58t3KNjr5</a>
+</p>
+
+<p>
+  <b>Saludos Cordiales,</b>
+</p>
+<p>
+  "MINISTERIO DE PRODUCCIÓN, COMERCIO EXTERIOR E INVERSIONES"
+</p>
+

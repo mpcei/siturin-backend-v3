@@ -23,9 +23,9 @@ export const guideInactivation = (data: any): TDocumentDefinitions => {
     message = [
       'En la ciudad de ',
       { text: data.canton.name, bold: true },
-      ', el Ministerio de Turismo certifica que, de conformidad al cumplimiento del ',
-      { text: 'Acuerdo Ministerial No. 2017-042', bold: true },
-      ' se procedió a realizar las acciones de control (inspección) correspondientes al establecimiento ',
+      ', el Ministerio de Producción, Comercio Exterior e Inversiones certifica que, de conformidad al cumplimiento del ',
+      { text: 'Acuerdo Interministerial No. MAATE-MINTUR-2025-002', bold: true },
+      ' se procedió a aplicar el Art. 9 Inactivación de registro de turismo por oficio.',
       { text: data.establishment.tradeName, bold: true },
     ];
   }

@@ -14,6 +14,7 @@ import { InjectQueue } from '@nestjs/bullmq';
 import { CommonRepositoryEnum } from '@utils/enums';
 import { Repository } from 'typeorm';
 import { MailLogEntity } from '@modules/common/mail/mail-log.entity';
+import { helpers } from '@modules/common/mail/helpers';
 
 @Injectable()
 export class MailService implements OnModuleInit {
@@ -148,7 +149,7 @@ export class MailService implements OnModuleInit {
         rejected: response.rejected,
       };
     } catch (error) {
-      console.error('ERROR',error);
+      console.error('ERROR', error);
       if (error.responseCode === 535) {
         throw new MailSendException(
           'No se pudo enviar el correo',
@@ -177,6 +178,7 @@ export class MailService implements OnModuleInit {
           layoutsDir: `${this.folderPathsService.mailTemplates}/layouts`,
           partialsDir: `${this.folderPathsService.mailTemplates}/partials`,
           defaultLayout: 'main',
+          helpers,
         },
         viewPath: pathTemplates,
         extName: '.hbs',

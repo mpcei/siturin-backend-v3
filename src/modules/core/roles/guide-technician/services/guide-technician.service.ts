@@ -310,7 +310,7 @@ export class GuideTechnicianService {
         }
       | undefined = undefined;
     if (process.state.code === CatalogueProcessesStateEnum.reviewed) {
-      responseSendEmail = await this.emailService.sendDirectorEmail(process, assignment);
+      responseSendEmail = await this.emailService.sendDirectorReviewedEmail(process, assignment);
     } else {
       responseSendEmail = await this.emailService.sendExternalDocumentRejectedEmail(
         user,
@@ -354,8 +354,9 @@ export class GuideTechnicianService {
       where: { id: payload.processId },
       relations: {
         state: true,
-        establishment: { establishmentAddress: true, ruc: true },
+        establishment: { establishmentAddress: true, ruc: true, establishmentContactPerson: true },
         type: true,
+        credentials: { classification: true },
       },
     });
 
@@ -540,26 +541,43 @@ export class GuideTechnicianService {
     payload: DocumentReviewDto,
     user: UserEntity,
   ): Promise<ResponseHttpInterface> {
-    const process = await this.dataSource.transaction(async (manager) => {
+    const { process, cadastre } = await this.dataSource.transaction(async (manager) => {
       const process = await this.saveState(manager, payload, user);
-      await this.saveResultDirector(manager, process, user);
-      const assignment = await this.saveAssignment(manager, payload, process);
+      const cadastre = await this.saveResultDirector(manager, process, user);
+      await this.saveAssignment(manager, payload, process);
 
-      return process;
+      return { process, cadastre };
     });
-    /*
+
     if (!process) {
       throw new Error();
     }
-    const responseSendEmail = await this.emailService.sendProcessInactivationEmail(cadastre);
+    let responseSendEmail:
+      | {
+          title: string;
+          message: string[];
+        }
+      | undefined = undefined;
+    if (process.state.code === CatalogueProcessesStateEnum.approved && cadastre) {
+      responseSendEmail = await this.emailService.sendExternalApprovedEmail(
+        user,
+        process,
+        cadastre,
+      );
+    } else {
+      responseSendEmail = await this.emailService.sendExternalDocumentRejectedEmail(
+        user,
+        payload.observation,
+      );
+    }
 
     if (responseSendEmail) {
       return {
-        data: cadastre,
+        data: null,
         title: responseSendEmail.title,
         message: responseSendEmail.message,
       };
-    }*/
+    }
     return {
       data: null,
       title: 'Resultado guardado de manera exitosa',
@@ -571,7 +589,8 @@ export class GuideTechnicianService {
     manager: EntityManager,
     process: ProcessEntity,
     user: UserEntity,
-  ): Promise<ProcessEntity> {
+  ): Promise<CadastreEntity | null> {
+    let cadastre: CadastreEntity | null = null;
     const languageRepository = manager.getRepository(LanguageEntity);
     const modalityRepository = manager.getRepository(AdventureModalityEntity);
     const protectedAreaRepository = manager.getRepository(ProtectedAreaEntity);
@@ -605,7 +624,7 @@ export class GuideTechnicianService {
     }
 
     if (process.state.code === CatalogueProcessesStateEnum.approved) {
-      const cadastre = await this.saveCadastre(manager, user, process);
+      cadastre = await this.saveCadastre(manager, user, process);
 
       const value = cadastre.registerNumber;
       const code = value.slice(13);
@@ -711,7 +730,7 @@ export class GuideTechnicianService {
       }
     }
 
-    return process;
+    return cadastre;
   }
 
   private async saveCadastre(
@@ -882,7 +901,7 @@ export class GuideTechnicianService {
 
     const inactivationCauseType = await catalogueRepository.findOne({
       where: {
-        code: CatalogueInactivationCauseCodeEnum.peticion,
+        code: CatalogueInactivationCauseCodeEnum.oficio,
         type: CoreCatalogueTypeEnum.inactivation_cause_type,
       },
     });
