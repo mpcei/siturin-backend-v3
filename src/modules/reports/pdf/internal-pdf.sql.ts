@@ -105,7 +105,7 @@ export class InternalPdfSql {
     return {
       cadastre,
       user: cadastre?.process.establishment.ruc.user,
-      classifications: cadastre?.process.establishment.credentials,
+      credentials: cadastre?.process.establishment.credentials,
       protectedAreas: cadastre?.process.establishment.protectedAreas,
       adventureModalities: cadastre?.process.establishment.adventureModalities,
     };
