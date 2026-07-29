@@ -59,7 +59,6 @@ export class InternalPdfService {
   }): Promise<PDFKit.PDFDocument | Buffer> {
     const data: any = await this.internalPdfSql.findRegistrationCertificateGuide(cadastreId);
 
-    console.log(data);
     try {
       if (type === 'buffer')
         return this.printerService.createPdfBuffer(registrationCertificateGuideReport(data));
