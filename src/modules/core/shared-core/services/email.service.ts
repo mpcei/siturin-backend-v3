@@ -22,6 +22,8 @@ export class EmailService {
     private readonly processRepository: Repository<ProcessEntity>,
     @Inject(AuthRepositoryEnum.USER_REPOSITORY)
     private readonly userRepository: Repository<UserEntity>,
+    @Inject(CoreRepositoryEnum.CADASTRE_REPOSITORY)
+    private readonly cadastreRepository: Repository<CadastreEntity>,
     @Inject(CoreRepositoryEnum.INTERNAL_USER_REPOSITORY)
     private readonly internalUserRepository: Repository<InternalUserEntity>,
     private readonly internalPdfService: InternalPdfService,
@@ -343,17 +345,20 @@ export class EmailService {
     }
   }
 
-  async sendExternalApprovedEmail(
-    user: UserEntity,
-    process: ProcessEntity,
-    cadastre: CadastreEntity,
-  ) {
+  async sendExternalResultEmail(user: UserEntity, process: ProcessEntity, observation: string) {
     const userExternal = await this.userRepository.findOne({
       where: { id: user.id },
     });
 
-    if (!userExternal) {
-      throw new NotFoundException('Usuario no encontrado');
+    const cadastreEstablishment = await this.cadastreRepository
+      .createQueryBuilder('cadastres')
+      .innerJoin('cadastres.process', 'process')
+      .innerJoin('process.establishment', 'establishment')
+      .where('establishment.id = :id', { id: process.establishment.id })
+      .getOne();
+
+    if (!userExternal || !cadastreEstablishment) {
+      throw new NotFoundException('Usuario o Catastro no encontrado');
     }
 
     // Preparar los datos del correo
@@ -361,8 +366,9 @@ export class EmailService {
       user: userExternal,
       process: process,
       classifications: process.credentials.map((item) => item.classification.name).join(', '),
-      registerNumber: cadastre.registerNumber,
-      registeredAt: cadastre.registeredAt,
+      registerNumber: cadastreEstablishment.registerNumber,
+      registeredAt: cadastreEstablishment.registeredAt,
+      observation,
     };
 
     // Validar correos usando un metodo reutilizable
@@ -378,53 +384,16 @@ export class EmailService {
       };
     }
 
-    const mailData: MailDataInterface = {
-      to: validRecipients,
-      subject: MailSubjectEnum.EMAIL_PROCESS_APPROVED,
-      template: MailTemplateEnum.PROCESS_IN_APPROVAL,
-      data,
-    };
-
-    await this.mailService.sendMail(mailData);
-
-    // Manejar posibles correos fallidos
-    if (invalidRecipients.length > 0) {
-      return {
-        title: 'No se pudo entregar a los siguientes correos',
-        message: invalidRecipients,
-      };
-    }
-  }
-
-  async sendExternalRejectedEmail(user: UserEntity, process: ProcessEntity, observation: string) {
-    const externalUser = await this.userRepository.findOne({
-      where: { id: user.id },
-    });
-
-    if (!externalUser) {
-      throw new NotFoundException('Usuario externo no encontrado');
-    }
-
-    // Preparar los datos del correo
-    const data = {
-      user: externalUser,
-      observation,
-    };
-
-    // Validar correos usando un metodo reutilizable
-    const { validRecipients, invalidRecipients } = this.extractValidEmails([user.email]);
-
-    if (validRecipients.length === 0) {
-      return {
-        title: 'No se pudo entregar a ningún correo válid',
-        message: invalidRecipients,
-      };
-    }
+    // Generar el PDF y enviar el correo
+    const pdf = (await this.internalPdfService.generateRegistrationCertificateGuide({
+      cadastreId: cadastreEstablishment.id,
+    })) as Buffer;
 
     const mailData: MailDataInterface = {
       to: validRecipients,
-      subject: MailSubjectEnum.EMAIL_PROCESS_DOCUMENT_REJECTED,
-      template: MailTemplateEnum.PROCESS_DOCUMENT_REJECTED,
+      subject: MailSubjectEnum.EMAIL_PROCESS_RESULT,
+      template: MailTemplateEnum.PROCESS_RESULT,
+      attachments: [{ file: pdf, filename: `${cadastreEstablishment.registerNumber}.pdf` }],
       data,
     };
 

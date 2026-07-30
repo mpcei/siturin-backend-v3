@@ -7,7 +7,7 @@ export enum MailSubjectEnum {
   EMAIL_PROCESS_REGISTRATION = 'Envio de solicitud',
   EMAIL_PROCESS_INACTIVATION = 'Notificación Inactivación',
   EMAIL_PROCESS_IN_APPROVAL = 'Revisión de solicitud',
-  EMAIL_PROCESS_APPROVED = 'Resultado de la solicitud – Ministerio de Producción, Comercio Exterior e Inversiones',
+  EMAIL_PROCESS_RESULT = 'Resultado de la solicitud – Ministerio de Producción, Comercio Exterior e Inversiones',
   EMAIL_PROCESS_DOCUMENT_REJECTED = 'Solicitud rechazada',
 }
 

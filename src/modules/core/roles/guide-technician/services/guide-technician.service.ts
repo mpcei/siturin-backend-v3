@@ -381,27 +381,51 @@ export class GuideTechnicianService {
     const languageRepository = manager.getRepository(LanguageEntity);
     const modalityRepository = manager.getRepository(AdventureModalityEntity);
     const protectedAreaRepository = manager.getRepository(ProtectedAreaEntity);
+    const credentialRepository = manager.getRepository(CredentialEntity);
 
     const languages = await languageRepository.find({ where: { processId: process.id } });
     const modalities = await modalityRepository.find({ where: { processId: process.id } });
     const areas = await protectedAreaRepository.find({ where: { processId: process.id } });
+    const credentials = await credentialRepository.find({ where: { processId: process.id } });
+
+    const credentialStateRejected = (await this.cataloguesService.findCache()).find(
+      (item) =>
+        item.code == CatalogueCredentialsStateEnum.rejected &&
+        item.type === CoreCatalogueTypeEnum.credentials_state,
+    );
+
+    if (!credentialStateRejected) {
+      throw new NotFoundException({
+        message: 'No existen todos los estados de las credenciales configurados.',
+        error: 'Estado de la Credencial',
+      });
+    }
 
     await processGuideRepository.save(processGuides);
 
     if (process.state.code === CatalogueProcessesStateEnum.document_rejected) {
       for (const language of languages) {
-        language.enabled = true;
-        await languageRepository.save(language);
+        await languageRepository.softRemove(language);
       }
 
       for (const modality of modalities) {
-        modality.enabled = true;
-        await modalityRepository.save(modality);
+        await modalityRepository.softRemove(modality);
       }
 
       for (const area of areas) {
-        area.enabled = true;
-        await protectedAreaRepository.save(area);
+        await protectedAreaRepository.softRemove(area);
+      }
+
+      for (const credential of credentials) {
+        const { id, createdAt, updatedAt, ...credentialClone } = credential;
+
+        const credentialNew = credentialRepository.create(credentialClone);
+
+        credentialNew.stateCode = credentialStateRejected.code;
+        credentialNew.stateName = credentialStateRejected.name;
+
+        await credentialRepository.save(credentialNew);
+        await credentialRepository.softRemove(credential);
       }
     }
 
@@ -541,35 +565,22 @@ export class GuideTechnicianService {
     payload: DocumentReviewDto,
     user: UserEntity,
   ): Promise<ResponseHttpInterface> {
-    const { process, cadastre } = await this.dataSource.transaction(async (manager) => {
+    const process = await this.dataSource.transaction(async (manager) => {
       const process = await this.saveState(manager, payload, user);
-      const cadastre = await this.saveResultDirector(manager, process, user);
+      await this.saveResultDirector(manager, process, user);
       await this.saveAssignment(manager, payload, process);
 
-      return { process, cadastre };
+      return process;
     });
 
     if (!process) {
       throw new Error();
     }
-    let responseSendEmail:
-      | {
-          title: string;
-          message: string[];
-        }
-      | undefined = undefined;
-    if (process.state.code === CatalogueProcessesStateEnum.approved && cadastre) {
-      responseSendEmail = await this.emailService.sendExternalApprovedEmail(
-        user,
-        process,
-        cadastre,
-      );
-    } else {
-      responseSendEmail = await this.emailService.sendExternalDocumentRejectedEmail(
-        user,
-        payload.observation,
-      );
-    }
+    const responseSendEmail = await this.emailService.sendExternalResultEmail(
+      user,
+      process,
+      payload.observation,
+    );
 
     if (responseSendEmail) {
       return {
@@ -651,40 +662,63 @@ export class GuideTechnicianService {
       for (const credential of credentials) {
         const credentialNew = credentialRepository.create();
 
-        if (process.type.code === CatalogueProcessesTypeEnum.readmission) {
-          if (!credential.endedAt) {
-            credentialNew.startedAt = currentDate;
-            credentialNew.endedAt = expirationDate;
-          } else {
-            const endedAt = credential.endedAt;
-            if (endedAt >= currentDate) {
+        switch (process.type.code) {
+          case CatalogueProcessesTypeEnum.readmission: {
+            if (!credential.endedAt) {
+              credentialNew.startedAt = currentDate;
+              credentialNew.endedAt = expirationDate;
+            } else {
+              const endedAt = credential.endedAt;
+              credentialNew.startedAt = endedAt >= currentDate ? credential.startedAt : currentDate;
+              credentialNew.endedAt = endedAt >= currentDate ? credential.endedAt : expirationDate;
+              credentialNew.stateCode = credentialStateCurrent.code;
+              credentialNew.stateName = credentialStateCurrent.name;
+            }
+            break;
+          }
+          case CatalogueProcessesTypeEnum.registration: {
+            if (['MINTUR', 'SIETE', 'MAE'].includes(credential.origin)) {
               credentialNew.startedAt = credential.startedAt;
               credentialNew.endedAt = credential.endedAt;
+              credentialNew.stateCode = credential.stateCode;
+              credentialNew.stateName = credential.stateName;
             } else {
               credentialNew.startedAt = currentDate;
               credentialNew.endedAt = expirationDate;
+              credentialNew.stateCode = credentialStateCurrent.code;
+              credentialNew.stateName = credentialStateCurrent.name;
             }
+            break;
           }
-        } else {
-          credentialNew.startedAt = currentDate;
-          credentialNew.endedAt = expirationDate;
-        }
-
-        if (process.type.code === CatalogueProcessesTypeEnum.renewal_classification_update) {
-          const credentialExpired = await credentialRepository.findOne({
-            where: {
-              establishmentId: process.establishmentId,
-              classificationId: credential.classificationId,
-              enabled: true,
-            },
-          });
-          if (!credentialExpired) {
-            throw new NotFoundException({
-              message: 'No existe una credencial caducada',
-              error: 'Credencial',
+          case CatalogueProcessesTypeEnum.renewal_classification_update: {
+            const credentialExpired = await credentialRepository.findOne({
+              where: {
+                establishmentId: process.establishmentId,
+                classificationId: credential.classificationId,
+                enabled: true,
+              },
             });
+            if (!credentialExpired) {
+              throw new NotFoundException({
+                message: 'No existe una credencial caducada',
+                error: 'Credencial',
+              });
+            }
+            await credentialRepository.softRemove(credentialExpired);
+
+            credentialNew.startedAt = currentDate;
+            credentialNew.endedAt = expirationDate;
+            credentialNew.stateCode = credentialStateCurrent.code;
+            credentialNew.stateName = credentialStateCurrent.name;
+            break;
           }
-          await credentialRepository.softRemove(credentialExpired);
+          case CatalogueProcessesTypeEnum.new_classification_update: {
+            credentialNew.startedAt = currentDate;
+            credentialNew.endedAt = expirationDate;
+            credentialNew.stateCode = credentialStateCurrent.code;
+            credentialNew.stateName = credentialStateCurrent.name;
+            break;
+          }
         }
 
         credentialNew.classificationId = credential.classificationId;
@@ -697,19 +731,16 @@ export class GuideTechnicianService {
         credentialNew.endedAt = expirationDate;
         credentialNew.origin = OriginSystemEnum.siturin;
         credentialNew.code = credential.classification.acronym + code;
-        credentialNew.stateCode = credentialStateCurrent.code;
-        credentialNew.stateName = credentialStateCurrent.name;
+
         await credentialRepository.save(credentialNew);
         await credentialRepository.softRemove(credential);
       }
     } else {
       for (const language of languages) {
-        language.enabled = true;
         await languageRepository.softRemove(language);
       }
 
       for (const modality of modalities) {
-        modality.enabled = true;
         await modalityRepository.softRemove(modality);
       }
 
@@ -740,7 +771,7 @@ export class GuideTechnicianService {
   ): Promise<CadastreEntity> {
     const cadastreRepository = manager.getRepository(CadastreEntity);
 
-    const catalogue = (await this.cataloguesService.findCache()).find(
+    const stateRatified = (await this.cataloguesService.findCache()).find(
       (item) =>
         item.code == CatalogueCadastresStateEnum.ratified &&
         item.type === CoreCatalogueTypeEnum.cadastre_states_state,
@@ -754,6 +785,7 @@ export class GuideTechnicianService {
       .getOne();
 
     let registerNumber = '';
+    let registeredAt = new Date();
     if (!cadastreEstablishment) {
       const establishmentNumber = process?.establishment.number.padStart(3, '0');
 
@@ -783,17 +815,18 @@ export class GuideTechnicianService {
       registerNumber = `${process?.establishment.ruc.number}.${establishmentNumber}.${sequential}`;
     } else {
       registerNumber = cadastreEstablishment.registerNumber;
+      registeredAt = cadastreEstablishment.registeredAt;
       await cadastreRepository.softRemove(cadastreEstablishment);
     }
 
     const cadastre = cadastreRepository.create();
     cadastre.processId = process.id;
     cadastre.registerNumber = registerNumber;
-    cadastre.registeredAt = new Date();
+    cadastre.registeredAt = registeredAt;
     cadastre.systemOrigin = OriginSystemEnum.siturin;
 
-    if (catalogue) {
-      cadastre.state = catalogue;
+    if (stateRatified) {
+      cadastre.state = stateRatified;
     }
     const cadastreSave = await cadastreRepository.save(cadastre);
 
@@ -801,8 +834,8 @@ export class GuideTechnicianService {
     const cadastreState = cadastreStateRepository.create();
     cadastreState.cadastreId = cadastreSave.id;
     cadastreState.userId = user.id;
-    if (catalogue) {
-      cadastreState.stateId = catalogue.id;
+    if (stateRatified) {
+      cadastreState.stateId = stateRatified.id;
     }
     await cadastreStateRepository.save(cadastreState);
 
