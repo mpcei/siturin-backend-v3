@@ -11,6 +11,7 @@ import { guideInactivation } from '@modules/reports/pdf/templates/externals/guid
 import {
   registrationCertificateGuideReport
 } from '@modules/reports/pdf/templates/internals/registration-certificate-guide.report';
+import { testReport } from '@modules/reports/pdf/templates/internals/test';
 
 @Injectable()
 export class InternalPdfService {
@@ -115,6 +116,26 @@ export class InternalPdfService {
     try {
       if (type === 'buffer') return this.printerService.createPdfBuffer(registerSuspension(data));
       else return this.printerService.createPdf(registerSuspension(data));
+    } catch (error) {
+      console.log(error);
+      throw new Error();
+    }
+  }
+
+  async test({
+    type = 'buffer',
+  }: {
+    type?: string;
+  }): Promise<PDFKit.PDFDocument | Buffer> {
+    const data: any =
+      {
+        name:'hfhfhgf',
+        credentials:[{startedAt:'65465', classification:{name:''}}]
+      }
+
+    try {
+      if (type === 'buffer') return this.printerService.createPdfBuffer(testReport(data));
+      else return this.printerService.createPdf(testReport(data));
     } catch (error) {
       console.log(error);
       throw new Error();

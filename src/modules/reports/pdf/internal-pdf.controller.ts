@@ -103,4 +103,18 @@ export class InternalPdfController {
     pdfDoc.pipe(response);
     pdfDoc.end();
   }
+
+  @PublicRoute()
+  @Header('Content-Type', 'application/pdf')
+  @Get('test')
+  async test(
+    @Res() response: Response) {
+    const pdfDoc: PDFKit.PDFDocument = (await this.internalPdfService.test({
+      type: 'pdf',
+    })) as PDFKit.PDFDocument;
+
+    pdfDoc.info.Title = 'Users Report';
+    pdfDoc.pipe(response);
+    pdfDoc.end();
+  }
 }
