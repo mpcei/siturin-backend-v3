@@ -1,5 +1,5 @@
 import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { DataSource, EntityManager, Repository } from 'typeorm';
+import { DataSource, EntityManager, IsNull, Repository } from 'typeorm';
 import {
   CatalogueActivitiesCodeEnum,
   CatalogueCadastresStateEnum,
@@ -242,9 +242,7 @@ export class GuideTechnicianService {
     switch (rolCode) {
       case RoleEnum.GUIDE_TECHNICIAN: {
         currentState = processStateInProcess;
-
         nextState = processStateInReview;
-
         if (process.state.code !== currentState.code) {
           return process.state.code === nextState.code;
         }
@@ -253,9 +251,7 @@ export class GuideTechnicianService {
       }
       case RoleEnum.DIRECTOR: {
         currentState = processStateReviewed;
-
         nextState = processStateInApproval;
-
         if (process.state.code !== currentState.code) {
           return process.state.code === nextState.code;
         }
@@ -263,17 +259,22 @@ export class GuideTechnicianService {
         break;
       }
     }
-
     if (!nextState) {
       throw new NotFoundException({
         error: '',
         message: '',
       });
     }
-
     process.state = nextState;
-
     await processRepository.save(process);
+
+    const processStateCurrent = await processStateRepository.findOne({
+      where: { processId: process.id, endedAt: IsNull() },
+    });
+    if (processStateCurrent) {
+      processStateCurrent.endedAt = new Date();
+      await processStateRepository.save(processStateCurrent);
+    }
 
     await processStateRepository.save(
       processStateRepository.create({
@@ -339,6 +340,14 @@ export class GuideTechnicianService {
   ): Promise<ProcessEntity> {
     const processStateRepository = manager.getRepository(ProcessStateEntity);
     const processRepository = manager.getRepository(ProcessEntity);
+
+    const processStateCurrent = await processStateRepository.findOne({
+      where: { processId: payload.processId, endedAt: IsNull() },
+    });
+    if (processStateCurrent) {
+      processStateCurrent.endedAt = new Date();
+      await processStateRepository.save(processStateCurrent);
+    }
 
     await processStateRepository.save(
       processStateRepository.create({
