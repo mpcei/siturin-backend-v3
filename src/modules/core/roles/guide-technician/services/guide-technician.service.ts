@@ -736,8 +736,6 @@ export class GuideTechnicianService {
         credentialNew.enabled = true;
         credentialNew.establishmentId = credential.establishmentId;
         credentialNew.geographicAreaId = credential.geographicAreaId;
-        credentialNew.startedAt = currentDate;
-        credentialNew.endedAt = expirationDate;
         credentialNew.origin = OriginSystemEnum.siturin;
         credentialNew.code = credential.classification.acronym + code;
 
