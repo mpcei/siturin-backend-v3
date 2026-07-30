@@ -7,21 +7,8 @@ export const testReport = (data: any): TDocumentDefinitions => {
     pageSize: 'A4',
 
     content: [
-      {
-        stack: [
-          buildPersonalInformation(data),
-          buildCredentialTable(data),
-          buildComplementaryInformation(data),
-        ],
-        margin: [0, 40, 0, 0],
-      },
-      {
-        pageBreak: 'before',
-        text: '',
-      },
       buildQR(data),
       buildImportant(),
-      buildSignature(data),
     ],
 
     background: (currentPage: number) => {

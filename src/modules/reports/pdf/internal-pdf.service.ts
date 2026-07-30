@@ -130,7 +130,8 @@ export class InternalPdfService {
     const data: any =
       {
         name:'hfhfhgf',
-        credentials:[{startedAt:'65465', classification:{name:''}}]
+        credentials:[{startedAt:'65465', classification:{name:''}}],
+        cadastre:{registerNumber:'hgfhghgf'}
       }
 
     try {
