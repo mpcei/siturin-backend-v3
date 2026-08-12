@@ -211,7 +211,7 @@ export class EstablishmentService {
       },
       relations: {
         establishmentContactPerson: true,
-        process: { cadastre: { state: true }, activity: true, credentials: true },
+        process: { cadastre: { state: true }, activity: true },
         credentials: { classification: true, geographicArea: true },
         languages: true,
         adventureModalities: true,
@@ -222,6 +222,18 @@ export class EstablishmentService {
       },
       order: {
         establishmentContactPerson: { isCurrent: 'desc' },
+      },
+    });
+
+    const establishment = await this.repository.findOne({
+      where: {
+        id: establishmentId,
+      },
+      relations: {
+        process: { credentials: true },
+      },
+      order: {
+        process: { credentials: { createdAt: 'desc' } },
       },
     });
 
@@ -240,6 +252,7 @@ export class EstablishmentService {
     return {
       ...cadastre,
       currentProcess: process,
+      currentCredentials: establishment?.process?.credentials,
     };
   }
 }
