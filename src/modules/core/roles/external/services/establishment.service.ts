@@ -211,7 +211,7 @@ export class EstablishmentService {
       },
       relations: {
         establishmentContactPerson: true,
-        process: { cadastre: { state: true }, activity: true },
+        process: { cadastre: { state: true }, activity: true, credentials: true },
         credentials: { classification: true, geographicArea: true },
         languages: true,
         adventureModalities: true,
