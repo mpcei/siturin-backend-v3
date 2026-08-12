@@ -1,7 +1,6 @@
-import { Controller, Get, Header, Param, ParseUUIDPipe, Query, Res } from '@nestjs/common';
+import { Controller, Get, Header, ParseUUIDPipe, Query, Res } from '@nestjs/common';
 import { Response } from 'express';
 import { ApiTags } from '@nestjs/swagger';
-import { InternalPdfService } from '@modules/reports/pdf/internal-pdf.service';
 import { PublicRoute } from '@auth/decorators';
 import { InternalExcelService } from '@modules/reports/excel/internal-excel.service';
 

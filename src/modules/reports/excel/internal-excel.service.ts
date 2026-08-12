@@ -18,7 +18,7 @@ export class InternalExcelService {
     const data = await this.sql.findProcesses(cadastreId);
 
     try {
-      return this.printerService.createXlsxBuffer(processesReport(data.processes));
+      return this.printerService.createXlsxBuffer(processesReport(data));
     } catch (error) {
       console.log(error);
       throw new Error();

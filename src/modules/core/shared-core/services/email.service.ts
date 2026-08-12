@@ -302,27 +302,28 @@ export class EmailService {
     }
   }
 
-  async sendExternalDocumentRejectedEmail(user: UserEntity, observation: string) {
-    const externalUser = await this.userRepository.findOne({
-      where: { id: user.id },
+  async sendExternalDocumentRejectedEmail(process: ProcessEntity, observation: string) {
+    const processUser = await this.processRepository.findOne({
+      where: { id: process.id },
+      relations: { establishment: { ruc: { user: true } } },
     });
 
-    if (!externalUser) {
-      throw new NotFoundException('Usuario externo no encontrado');
+    if (!processUser) {
+      throw new NotFoundException('Tramite no encontrado');
     }
 
     // Preparar los datos del correo
     const data = {
-      user: externalUser,
+      user: processUser.establishment.ruc.user,
       observation,
     };
 
     // Validar correos usando un metodo reutilizable
-    const { validRecipients, invalidRecipients } = this.extractValidEmails([user.email]);
+    const { validRecipients, invalidRecipients } = this.extractValidEmails([data.user.email]);
 
     if (validRecipients.length === 0) {
       return {
-        title: 'No se pudo entregar a ningún correo válid',
+        title: 'No se pudo entregar a ningún correo válido',
         message: invalidRecipients,
       };
     }
@@ -345,10 +346,15 @@ export class EmailService {
     }
   }
 
-  async sendExternalResultEmail(user: UserEntity, process: ProcessEntity, observation: string) {
-    const userExternal = await this.userRepository.findOne({
-      where: { id: user.id },
+  async sendExternalResultEmail(process: ProcessEntity, observation: string) {
+    const processUser = await this.processRepository.findOne({
+      where: { id: process.id },
+      relations: { establishment: { ruc: { user: true } } },
     });
+
+    if (!processUser) {
+      throw new NotFoundException('Tramite no encontrado');
+    }
 
     const cadastreEstablishment = await this.cadastreRepository
       .createQueryBuilder('cadastres')
@@ -357,13 +363,13 @@ export class EmailService {
       .where('establishment.id = :id', { id: process.establishment.id })
       .getOne();
 
-    if (!userExternal || !cadastreEstablishment) {
-      throw new NotFoundException('Usuario o Catastro no encontrado');
+    if (!processUser || !cadastreEstablishment) {
+      throw new NotFoundException('Tramite o Catastro no encontrado');
     }
 
     // Preparar los datos del correo
     const data = {
-      user: userExternal,
+      user: processUser.establishment.ruc.user,
       process: process,
       classifications: process.credentials.map((item) => item.classification.name).join(', '),
       registerNumber: cadastreEstablishment.registerNumber,
@@ -373,7 +379,7 @@ export class EmailService {
 
     // Validar correos usando un metodo reutilizable
     const { validRecipients, invalidRecipients } = this.extractValidEmails([
-      user.email,
+      data.user.email,
       process.establishment.establishmentContactPerson.email,
     ]);
 

@@ -314,7 +314,7 @@ export class GuideTechnicianService {
       responseSendEmail = await this.emailService.sendDirectorReviewedEmail(process, assignment);
     } else {
       responseSendEmail = await this.emailService.sendExternalDocumentRejectedEmail(
-        user,
+        process,
         payload.observation,
       );
     }
@@ -586,7 +586,6 @@ export class GuideTechnicianService {
       throw new Error();
     }
     const responseSendEmail = await this.emailService.sendExternalResultEmail(
-      user,
       process,
       payload.observation,
     );
