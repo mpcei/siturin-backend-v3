@@ -1,11 +1,15 @@
 import { Global, Module } from '@nestjs/common';
-import { CatalogueModule } from '@modules/common/catalogue/catalogue.module';
-import { FileModule } from '@modules/common/file/file.module';
-import { MailModule } from '@modules/common/mail/mail.module';
+import { InternalExcelController } from '@modules/reports/excel/internal-excel.controller';
+import { PrinterService } from '@modules/reports/excel/printer.service';
+import { InternalExcelService } from '@modules/reports/excel/internal-excel.service';
+import { InternalExcelSql } from '@modules/reports/excel/internal-excel.sql';
+import { coreProviders } from '@modules/core/core.provider';
 
 @Global()
 @Module({
-  imports: [CatalogueModule, FileModule, MailModule],
-  exports: [CatalogueModule, FileModule, MailModule],
+  controllers: [InternalExcelController],
+  imports: [],
+  providers: [...coreProviders, InternalExcelService, InternalExcelSql, PrinterService],
+  exports: [InternalExcelService],
 })
 export class ExcelModule {}
