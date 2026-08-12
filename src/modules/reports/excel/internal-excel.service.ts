@@ -14,9 +14,8 @@ export class InternalExcelService {
     @Inject(envConfig.KEY) private configService: ConfigType<typeof envConfig>,
   ) {}
 
-  async generateProcesses({ cadastreId }: { cadastreId: string }): Promise<Buffer> {
-    const data = await this.sql.findProcesses(cadastreId);
-
+  async generateProcesses(userId: string, rolCode: string, isCurrent: boolean): Promise<Buffer> {
+    const data = await this.sql.findProcesses(userId, rolCode, isCurrent);
     try {
       return this.printerService.createXlsxBuffer(processesReport(data));
     } catch (error) {

@@ -1,18 +1,14 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { EntityManager, Repository } from 'typeorm';
 import { AuthRepositoryEnum, MailSubjectEnum } from '@utils/enums';
-import { CoreRepositoryEnum, MailTemplateEnum } from '@modules/core/utils/enums';
-import {
-  AssignmentEntity,
-  CadastreEntity,
-  InternalUserEntity,
-  ProcessEntity,
-} from '@modules/core/entities';
+import { CatalogueProcessesStateEnum, CoreRepositoryEnum, MailTemplateEnum, } from '@modules/core/utils/enums';
+import { AssignmentEntity, CadastreEntity, InternalUserEntity, ProcessEntity, } from '@modules/core/entities';
 import { UserEntity } from '@auth/entities';
 import { MailService } from '@modules/common/mail/mail.service';
 import { MailDataInterface } from '@modules/common/mail/interfaces/mail-data.interface';
 import { InternalPdfService } from '@modules/reports/pdf/internal-pdf.service';
 import { ExternalPdfService } from '@modules/reports/pdf/external-pdf.service';
+import { CatalogueEntity } from '@modules/common/catalogue/catalogue.entity';
 
 @Injectable()
 export class EmailService {
@@ -346,7 +342,11 @@ export class EmailService {
     }
   }
 
-  async sendExternalResultEmail(process: ProcessEntity, observation: string) {
+  async sendExternalResultEmail(
+    process: ProcessEntity,
+    processState: CatalogueEntity,
+    observation: string,
+  ) {
     const processUser = await this.processRepository.findOne({
       where: { id: process.id },
       relations: { establishment: { ruc: { user: true } } },
@@ -390,16 +390,20 @@ export class EmailService {
       };
     }
 
-    // Generar el PDF y enviar el correo
-    const pdf = (await this.internalPdfService.generateRegistrationCertificateGuide({
-      cadastreId: cadastreEstablishment.id,
-    })) as Buffer;
+    let attachments: any[] = [];
+    if (processState.code === CatalogueProcessesStateEnum.approved) {
+      // Generar el PDF y enviar el correo
+      const pdf = (await this.internalPdfService.generateRegistrationCertificateGuide({
+        cadastreId: cadastreEstablishment.id,
+      })) as Buffer;
+      attachments = [{ file: pdf, filename: `${cadastreEstablishment.registerNumber}.pdf` }];
+    }
 
     const mailData: MailDataInterface = {
       to: validRecipients,
       subject: MailSubjectEnum.EMAIL_PROCESS_RESULT,
       template: MailTemplateEnum.PROCESS_RESULT,
-      attachments: [{ file: pdf, filename: `${cadastreEstablishment.registerNumber}.pdf` }],
+      attachments,
       data,
     };
 

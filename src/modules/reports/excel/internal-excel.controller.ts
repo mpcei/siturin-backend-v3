@@ -1,8 +1,10 @@
-import { Controller, Get, Header, ParseUUIDPipe, Query, Res } from '@nestjs/common';
+import { Controller, Get, Header, Query, Res } from '@nestjs/common';
 import { Response } from 'express';
 import { ApiTags } from '@nestjs/swagger';
-import { PublicRoute } from '@auth/decorators';
+import { PublicRoute, User } from '@auth/decorators';
 import { InternalExcelService } from '@modules/reports/excel/internal-excel.service';
+import { UserEntity } from '@auth/entities';
+import { FindProcessesDto } from '@modules/core/roles/guide-technician/dto/guide-technician/find-processes.dto';
 
 @ApiTags('Internal EXCEL Reports')
 @Controller('reports/excel/internals')
@@ -14,11 +16,14 @@ export class InternalExcelController {
   @Get('technician-guide/processes')
   async generateProcessesByTechnicianGuide(
     @Res() response: Response,
-    @Query('cadastreId', ParseUUIDPipe) cadastreId: string,
+    @User() user: UserEntity,
+    @Query() params: FindProcessesDto,
   ) {
-    const excelBuffer = await this.service.generateProcesses({
-      cadastreId,
-    });
+    const excelBuffer = await this.service.generateProcesses(
+      user.id,
+      params.rolCode,
+      params.isCurrent,
+    );
 
     response.setHeader(
       'Content-Disposition',

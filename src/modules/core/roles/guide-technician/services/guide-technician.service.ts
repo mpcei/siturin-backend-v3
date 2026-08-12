@@ -587,6 +587,7 @@ export class GuideTechnicianService {
     }
     const responseSendEmail = await this.emailService.sendExternalResultEmail(
       process,
+      payload.processState,
       payload.observation,
     );
 

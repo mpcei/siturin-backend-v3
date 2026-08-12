@@ -82,7 +82,7 @@ export class MailService implements OnModuleInit {
   async sendRealMail(mailData: MailDataInterface) {
     const mailAttachments: Attachment[] = [];
 
-    if (mailData?.attachments) {
+    if (mailData?.attachments?.length) {
       mailData.attachments.forEach((attachment) => {
         const content = Buffer.isBuffer(attachment.file)
           ? attachment.file
