@@ -230,10 +230,10 @@ export class EstablishmentService {
         id: establishmentId,
       },
       relations: {
-        process: { credentials: true },
+        process: { credentials: { classification: true }, assignment: true },
       },
       order: {
-        process: { credentials: { createdAt: 'desc' } },
+        process: { credentials: { createdAt: 'desc' }, assignment: { createdAt: 'desc' } },
       },
     });
 
@@ -253,6 +253,7 @@ export class EstablishmentService {
       ...cadastre,
       currentProcess: process,
       currentCredentials: establishment?.process?.credentials,
+      currentAssignment: establishment?.process?.assignment,
     };
   }
 }
