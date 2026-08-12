@@ -207,6 +207,7 @@ export class EstablishmentService {
     const cadastre = await this.repository.findOne({
       where: {
         id: establishmentId,
+        credentials: { enabled: true },
       },
       relations: {
         establishmentContactPerson: true,
