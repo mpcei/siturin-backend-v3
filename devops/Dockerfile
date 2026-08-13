@@ -20,6 +20,7 @@ RUN npm ci --omit=dev
 
 COPY --from=build /app/dist ./dist
 COPY --from=build /app/storage/resources ./storage/resources
+COPY --from=build /app/public/fonts ./public/fonts
 
 EXPOSE 3000
 
