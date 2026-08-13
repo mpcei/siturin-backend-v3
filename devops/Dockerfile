@@ -19,6 +19,8 @@ COPY package*.json ./
 RUN npm ci --omit=dev
 
 COPY --from=build /app/dist ./dist
+COPY --from=build /app/storage/resources ./storage/resources
+COPY --from=build /app/public ./public
 
 EXPOSE 3000
 
