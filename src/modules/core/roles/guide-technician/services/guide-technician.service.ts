@@ -84,7 +84,9 @@ export class GuideTechnicianService {
       registerNumber,
       establishmentNumber,
       legalName,
-      address,
+      province,
+      canton,
+      parish,
       classification,
       processType,
       cadastreState,
@@ -102,9 +104,15 @@ export class GuideTechnicianService {
     if (legalName) {
       where.process = { establishment: { ruc: { legalName: ILike(`%${legalName}%`) } } };
     }
-    // if (address) {
-    //   where.process = { establishment: { ruc: { legalName: ILike(`%${legalName}%`) } } };
-    // }
+    if (province) {
+      where.process = { establishment: { province: { name: ILike(`%${province}%`) } } };
+    }
+    if (canton) {
+      where.process = { establishment: { canton: { name: ILike(`%${canton}%`) } } };
+    }
+    if (parish) {
+      where.process = { establishment: { parish: { name: ILike(`%${parish}%`) } } };
+    }
     if (classification) {
       where.process = { credentials: { classification: { name: ILike(`%${classification}%`) } } };
     }

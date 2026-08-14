@@ -30,7 +30,15 @@ export class FindProcessesDto extends PickType(PaginationDto, ['page', 'limit', 
 
   @IsOptional()
   @IsString(isStringValidationOptions())
-  address: string;
+  province: string;
+
+  @IsOptional()
+  @IsString(isStringValidationOptions())
+  canton: string;
+
+  @IsOptional()
+  @IsString(isStringValidationOptions())
+  parish: string;
 
   @IsOptional()
   @IsString(isStringValidationOptions())
