@@ -1,5 +1,13 @@
 import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { DataSource, EntityManager, IsNull, Repository } from 'typeorm';
+import {
+  Between,
+  DataSource,
+  EntityManager,
+  FindOptionsWhere,
+  ILike,
+  IsNull,
+  Repository,
+} from 'typeorm';
 import {
   CatalogueActivitiesCodeEnum,
   CatalogueCadastresStateEnum,
@@ -39,6 +47,7 @@ import { LanguageEntity } from '@modules/core/entities/language.entity';
 import { AdventureModalityEntity } from '@modules/core/entities/adventure-modality.entity';
 import { ProtectedAreaEntity } from '@modules/core/entities/protected-area.entity';
 import { PaginationDto } from '@utils/pagination';
+import { endOfDay, parseISO, startOfDay } from 'date-fns';
 
 interface InternalUserRole {
   availableInternalUser: InternalUserEntity | null;
@@ -71,12 +80,54 @@ export class GuideTechnicianService {
     user: UserEntity,
     params: FindProcessesDto,
   ): Promise<ServiceResponseHttpInterface> {
+    const {
+      registerNumber,
+      establishmentNumber,
+      legalName,
+      address,
+      classification,
+      processType,
+      cadastreState,
+      registerProcess,
+    } = params;
+
+    const where: FindOptionsWhere<AssignmentEntity> = {};
+
+    if (registerNumber) {
+      where.process = { cadastre: { registerNumber: ILike(`%${registerNumber}%`) } };
+    }
+    if (establishmentNumber) {
+      where.process = { establishment: { number: ILike(`%${establishmentNumber}%`) } };
+    }
+    if (legalName) {
+      where.process = { establishment: { ruc: { legalName: ILike(`%${legalName}%`) } } };
+    }
+    // if (address) {
+    //   where.process = { establishment: { ruc: { legalName: ILike(`%${legalName}%`) } } };
+    // }
+    if (classification) {
+      where.process = { credentials: { classification: { name: ILike(`%${classification}%`) } } };
+    }
+    if (processType) {
+      where.process = { type: { name: ILike(`%${processType}%`) } };
+    }
+    if (cadastreState) {
+      where.process = { cadastre: { state: { name: ILike(`%${cadastreState}%`) } } };
+    }
+    if (registerProcess) {
+      const registerProcessParse = parseISO(registerProcess);
+      const startedAt = startOfDay(registerProcessParse);
+      const endedAt = endOfDay(registerProcessParse);
+      where.process = { registeredAt: Between(startedAt, endedAt) };
+    }
+
     const response = await this.assignmentRepository.findAndCount({
       where: {
         rolCode: params.rolCode,
         internalUser: { userId: user.id },
         isCurrent: params.isCurrent,
         enabled: true,
+        ...where,
       },
       relations: {
         process: {
