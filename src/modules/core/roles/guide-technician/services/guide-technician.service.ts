@@ -1108,7 +1108,7 @@ export class GuideTechnicianService {
     const catalogueRepository = manager.getRepository(CatalogueEntity);
 
     const credentialsOld = await credentialRepository.find({
-      where: { establishmentId: payload.establishmentId },
+      where: { establishmentId: payload.establishmentId, enabled: true },
     });
 
     if (credentialsOld.length === 0) {

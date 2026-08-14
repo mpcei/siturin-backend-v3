@@ -221,6 +221,7 @@ export class EstablishmentService {
         parish: true,
       },
       order: {
+        process: { createdAt: 'desc' },
         establishmentContactPerson: { isCurrent: 'desc' },
       },
     });
@@ -233,7 +234,11 @@ export class EstablishmentService {
         process: { credentials: { classification: true }, assignment: true },
       },
       order: {
-        process: { credentials: { createdAt: 'desc' }, assignment: { createdAt: 'desc' } },
+        process: {
+          createdAt: 'desc',
+          credentials: { createdAt: 'desc' },
+          assignment: { createdAt: 'desc' },
+        },
       },
     });
 
