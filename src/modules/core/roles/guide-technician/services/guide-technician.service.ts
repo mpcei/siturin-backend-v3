@@ -24,6 +24,7 @@ import {
   AssignmentEntity,
   CadastreEntity,
   CadastreStateEntity,
+  EstablishmentEntity,
   InactivationCauseEntity,
   InternalDpaUserEntity,
   InternalUserEntity,
@@ -838,6 +839,7 @@ export class GuideTechnicianService {
     process: ProcessEntity,
   ): Promise<CadastreEntity> {
     const cadastreRepository = manager.getRepository(CadastreEntity);
+    const establishmentRepository = manager.getRepository(EstablishmentEntity);
 
     const stateRatified = (await this.cataloguesService.findCache()).find(
       (item) =>
@@ -851,6 +853,8 @@ export class GuideTechnicianService {
       .innerJoin('process.establishment', 'establishment')
       .where('establishment.id = :id', { id: process.establishment.id })
       .getOne();
+
+    await establishmentRepository.update(process.establishment.id, { isCadastre: true });
 
     let registerNumber = '';
     let registeredAt = new Date();

@@ -151,7 +151,6 @@ export class ProcessGuideService {
     establishment.referenceStreet = establishmentLoad.referenceStreet;
     establishment.latitude = establishmentLoad.latitude;
     establishment.longitude = establishmentLoad.longitude;
-    establishment.isCadastre = true;
 
     await establishmentRepository.save(establishment);
 
