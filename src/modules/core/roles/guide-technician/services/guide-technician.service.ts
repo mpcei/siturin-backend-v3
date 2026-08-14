@@ -90,7 +90,8 @@ export class GuideTechnicianService {
       classification,
       processType,
       cadastreState,
-      registerProcess,
+      startedAt,
+      endedAt,
     } = params;
 
     const where: FindOptionsWhere<AssignmentEntity> = {};
@@ -122,11 +123,12 @@ export class GuideTechnicianService {
     if (cadastreState) {
       where.process = { cadastre: { state: { name: ILike(`%${cadastreState}%`) } } };
     }
-    if (registerProcess) {
-      const registerProcessParse = parseISO(registerProcess);
-      const startedAt = startOfDay(registerProcessParse);
-      const endedAt = endOfDay(registerProcessParse);
-      where.process = { registeredAt: Between(startedAt, endedAt) };
+    if (startedAt && endedAt) {
+      const startedAtParse = parseISO(startedAt);
+      const endedAtProcessParse = parseISO(endedAt);
+      const initDate = startOfDay(startedAtParse);
+      const finishDate = endOfDay(endedAtProcessParse);
+      where.process = { registeredAt: Between(initDate, finishDate) };
     }
 
     const response = await this.assignmentRepository.findAndCount({
