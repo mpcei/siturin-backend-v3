@@ -724,7 +724,9 @@ export class GuideTechnicianService {
 
       for (const area of areas) {
         area.enabled = true;
+        console.log('1 area');
         await protectedAreaRepository.save(area);
+        console.log('2 area');
       }
 
       const currentDate = new Date();
