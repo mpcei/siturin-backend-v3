@@ -646,6 +646,7 @@ export class GuideTechnicianService {
     if (!process) {
       throw new Error();
     }
+
     const responseSendEmail = await this.emailService.sendExternalResultEmail(
       process,
       payload.processState,
@@ -659,6 +660,7 @@ export class GuideTechnicianService {
         message: responseSendEmail.message,
       };
     }
+
     return {
       data: null,
       title: 'Resultado guardado de manera exitosa',
@@ -886,7 +888,7 @@ export class GuideTechnicianService {
       registerNumber = `${process?.establishment.ruc.number}.${establishmentNumber}.${sequential}`;
     } else {
       registerNumber = cadastreEstablishment.registerNumber;
-      registeredAt = cadastreEstablishment.registeredAt;
+      registeredAt = new Date(cadastreEstablishment.registeredAt);
       await cadastreRepository.softRemove(cadastreEstablishment);
     }
 
