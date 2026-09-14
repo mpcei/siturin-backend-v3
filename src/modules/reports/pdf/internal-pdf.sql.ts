@@ -99,7 +99,7 @@ export class InternalPdfSql {
         state: true,
       },
 
-      where: { id: cadastreId },
+      where: { id: cadastreId, process: { establishment: { credentials: { enabled: true } } } },
     });
 
     return {
