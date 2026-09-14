@@ -901,17 +901,22 @@ export class GuideTechnicianService {
     if (stateRatified) {
       cadastre.state = stateRatified;
     }
+
     const cadastreSave = await cadastreRepository.save(cadastre);
 
     const cadastreStateRepository = manager.getRepository(CadastreStateEntity);
     const cadastreState = cadastreStateRepository.create();
     cadastreState.cadastreId = cadastreSave.id;
     cadastreState.userId = user.id;
+
     if (stateRatified) {
       cadastreState.stateId = stateRatified.id;
     }
-    await cadastreStateRepository.save(cadastreState);
 
+    console.log('1');
+
+    await cadastreStateRepository.save(cadastreState);
+    console.log('2');
     return cadastreSave;
   }
 
