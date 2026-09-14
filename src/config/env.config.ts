@@ -67,5 +67,9 @@ export const envConfig = registerAs('envConfig', () => {
       urlDinardap: process.env.URL_DINARDAP,
       urlInterno: process.env.URL_INTERNO,
     },
+    ministerio: {
+      upperName: process.env.MINISTERIO_NAME_UPPER,
+      capitalName: process.env.MINISTERIO_NAME_CAPITAL,
+    },
   };
 });

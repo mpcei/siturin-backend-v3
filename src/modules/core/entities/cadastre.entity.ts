@@ -136,6 +136,7 @@ export class CadastreEntity {
       return;
     }
 
+    console.log(this.registeredAt);
     this.registeredAt = new Date(
       `${this.registeredAt.getUTCFullYear()}-${this.registeredAt.getUTCMonth() + 1}-${this.registeredAt.getUTCDate()}`,
     );
