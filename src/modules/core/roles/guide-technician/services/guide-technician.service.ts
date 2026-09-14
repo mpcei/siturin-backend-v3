@@ -712,16 +712,19 @@ export class GuideTechnicianService {
       const value = cadastre.registerNumber;
       const code = value.slice(13);
 
+      console.log('language 1');
       for (const language of languages) {
         language.enabled = true;
         await languageRepository.save(language);
       }
 
+      console.log('modalities 1');
       for (const modality of modalities) {
         modality.enabled = true;
         await modalityRepository.save(modality);
       }
 
+      console.log('area 1');
       for (const area of areas) {
         area.enabled = true;
         console.log('1 area');
@@ -804,6 +807,7 @@ export class GuideTechnicianService {
         credentialNew.origin = OriginSystemEnum.siturin;
         credentialNew.code = credential.classification.acronym + code;
 
+        console.log('crdential 1');
         await credentialRepository.save(credentialNew);
         await credentialRepository.softRemove(credential);
       }
@@ -861,6 +865,7 @@ export class GuideTechnicianService {
 
     let registerNumber = '';
     let registeredAt = new Date();
+
     if (!cadastreEstablishment) {
       const establishmentNumber = process?.establishment.number.padStart(3, '0');
 
@@ -903,8 +908,9 @@ export class GuideTechnicianService {
     if (stateRatified) {
       cadastre.state = stateRatified;
     }
-
+    console.log('cadastre 1');
     const cadastreSave = await cadastreRepository.save(cadastre);
+    console.log('cadastre 2');
 
     const cadastreStateRepository = manager.getRepository(CadastreStateEntity);
     const cadastreState = cadastreStateRepository.create();
