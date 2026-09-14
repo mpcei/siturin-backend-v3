@@ -18,6 +18,7 @@ import { ConfigType } from '@nestjs/config';
 import { CataloguesService } from '@modules/common/catalogue/catalogue.service';
 import { retry } from 'rxjs/operators';
 import { isEqual } from 'date-fns';
+import { CatalogueTypeEnum } from '@utils/enums';
 
 interface SriEstablishment {
   numero: string;
@@ -204,10 +205,17 @@ export class EstablishmentService {
   }
 
   async findCadastreByEstablishment(establishmentId: string): Promise<any> {
+    const approved = (await this.cataloguesService.findCache()).find(
+      (item) =>
+        item.code === CatalogueProcessesStateEnum.approved &&
+        item.type === CoreCatalogueTypeEnum.processes_state,
+    );
+
     const cadastre = await this.repository.findOne({
       where: {
         id: establishmentId,
         credentials: { enabled: true },
+        process: { stateId: approved?.id },
       },
       relations: {
         establishmentContactPerson: true,
