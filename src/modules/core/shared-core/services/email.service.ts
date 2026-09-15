@@ -377,6 +377,8 @@ export class EmailService {
       observation,
     };
 
+    console.log('data', data);
+
     // Validar correos usando un metodo reutilizable
     const { validRecipients, invalidRecipients } = this.extractValidEmails([
       data.user.email,

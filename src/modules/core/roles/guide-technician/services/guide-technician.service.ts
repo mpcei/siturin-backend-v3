@@ -638,8 +638,9 @@ export class GuideTechnicianService {
     const process = await this.dataSource.transaction(async (manager) => {
       const process = await this.saveState(manager, payload, user);
       await this.saveResultDirector(manager, process, user);
+      console.log('fin resutl director');
       await this.saveAssignment(manager, payload, process);
-
+      console.log('fin save assignment');
       return process;
     });
 
@@ -647,12 +648,17 @@ export class GuideTechnicianService {
       throw new Error();
     }
 
+    console.log('send email 1');
+    console.log('process', process);
+    console.log('processState', payload.processState);
+    console.log('observation', payload.observation);
     const responseSendEmail = await this.emailService.sendExternalResultEmail(
       process,
       payload.processState,
       payload.observation,
     );
 
+    console.log(responseSendEmail);
     if (responseSendEmail) {
       return {
         data: null,
@@ -660,7 +666,7 @@ export class GuideTechnicianService {
         message: responseSendEmail.message,
       };
     }
-
+    console.log('send email 2');
     return {
       data: null,
       title: 'Resultado guardado de manera exitosa',

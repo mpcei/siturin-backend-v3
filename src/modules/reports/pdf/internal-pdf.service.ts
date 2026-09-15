@@ -8,9 +8,7 @@ import { registerInactivation } from './templates/internals/inactivation.report'
 import { registerSuspension } from './templates/internals/suspension.report';
 import { registerUpdate } from './templates/internals/update.report';
 import { guideInactivation } from '@modules/reports/pdf/templates/externals/guide-inactivation.report';
-import {
-  registrationCertificateGuideReport
-} from '@modules/reports/pdf/templates/internals/registration-certificate-guide.report';
+import { registrationCertificateGuideReport } from '@modules/reports/pdf/templates/internals/registration-certificate-guide.report';
 import { testReport } from '@modules/reports/pdf/templates/internals/test';
 
 @Injectable()
@@ -59,7 +57,7 @@ export class InternalPdfService {
     cadastreId: string;
   }): Promise<PDFKit.PDFDocument | Buffer> {
     const data: any = await this.internalPdfSql.findRegistrationCertificateGuide(cadastreId);
-
+    console.log('data pdf aql', data);
     try {
       if (type === 'buffer')
         return this.printerService.createPdfBuffer(registrationCertificateGuideReport(data));
@@ -122,17 +120,12 @@ export class InternalPdfService {
     }
   }
 
-  async test({
-    type = 'buffer',
-  }: {
-    type?: string;
-  }): Promise<PDFKit.PDFDocument | Buffer> {
-    const data: any =
-      {
-        name:'hfhfhgf',
-        credentials:[{startedAt:'65465', classification:{name:''}}],
-        cadastre:{registerNumber:'hgfhghgf'}
-      }
+  async test({ type = 'buffer' }: { type?: string }): Promise<PDFKit.PDFDocument | Buffer> {
+    const data: any = {
+      name: 'hfhfhgf',
+      credentials: [{ startedAt: '65465', classification: { name: '' } }],
+      cadastre: { registerNumber: 'hgfhghgf' },
+    };
 
     try {
       if (type === 'buffer') return this.printerService.createPdfBuffer(testReport(data));
