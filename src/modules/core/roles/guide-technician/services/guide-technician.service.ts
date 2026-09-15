@@ -138,6 +138,7 @@ export class GuideTechnicianService {
         rolCode: params.rolCode,
         internalUser: { userId: user.id },
 
+        ...where,
       },
       relations: {
         process: {
