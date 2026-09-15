@@ -131,7 +131,8 @@ export class GuideTechnicianService {
       where.process = { registeredAt: Between(initDate, finishDate) };
     }
 
-    console.log('where', user.id);
+    console.log('userId', user.id);
+    console.log('where', where);
     const response = await this.assignmentRepository.findAndCount({
       where: {
         rolCode: params.rolCode,
