@@ -137,8 +137,6 @@ export class GuideTechnicianService {
       where: {
         rolCode: params.rolCode,
         internalUser: { userId: user.id },
-        isCurrent: params.isCurrent,
-        enabled: true,
 
       },
       relations: {
