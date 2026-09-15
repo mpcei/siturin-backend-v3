@@ -131,6 +131,7 @@ export class GuideTechnicianService {
       where.process = { registeredAt: Between(initDate, finishDate) };
     }
 
+    console.log('where', user.id);
     const response = await this.assignmentRepository.findAndCount({
       where: {
         rolCode: params.rolCode,
@@ -140,20 +141,7 @@ export class GuideTechnicianService {
         ...where,
       },
       relations: {
-        process: {
-          cadastre: { state: true },
-          type: true,
-          state: true,
-          establishment: {
-            ruc: true,
-            establishmentContactPerson: true,
-            credentials: { classification: true },
-            province: true,
-            canton: true,
-            parish: true,
-          },
-          credentials: { classification: true },
-        },
+
       },
       skip: (params.page - 1) * params.limit,
       take: params.limit,
@@ -638,9 +626,9 @@ export class GuideTechnicianService {
     const process = await this.dataSource.transaction(async (manager) => {
       const process = await this.saveState(manager, payload, user);
       await this.saveResultDirector(manager, process, user);
-      console.log('fin resutl director');
+
       await this.saveAssignment(manager, payload, process);
-      console.log('fin save assignment');
+
       return process;
     });
 
@@ -648,17 +636,12 @@ export class GuideTechnicianService {
       throw new Error();
     }
 
-    console.log('send email 1');
-    console.log('process', process);
-    console.log('processState', payload.processState);
-    console.log('observation', payload.observation);
     const responseSendEmail = await this.emailService.sendExternalResultEmail(
       process,
       payload.processState,
       payload.observation,
     );
 
-    console.log(responseSendEmail);
     if (responseSendEmail) {
       return {
         data: null,
@@ -666,7 +649,7 @@ export class GuideTechnicianService {
         message: responseSendEmail.message,
       };
     }
-    console.log('send email 2');
+
     return {
       data: null,
       title: 'Resultado guardado de manera exitosa',
@@ -718,24 +701,19 @@ export class GuideTechnicianService {
       const value = cadastre.registerNumber;
       const code = value.slice(13);
 
-      console.log('language 1');
       for (const language of languages) {
         language.enabled = true;
         await languageRepository.save(language);
       }
 
-      console.log('modalities 1');
       for (const modality of modalities) {
         modality.enabled = true;
         await modalityRepository.save(modality);
       }
 
-      console.log('area 1');
       for (const area of areas) {
         area.enabled = true;
-        console.log('1 area');
         await protectedAreaRepository.save(area);
-        console.log('2 area');
       }
 
       const currentDate = new Date();
@@ -803,7 +781,7 @@ export class GuideTechnicianService {
             break;
           }
         }
-        console.log('crdential 1');
+
         credentialNew.classificationId = credential.classificationId;
         credentialNew.categoryId = credential.categoryId;
         credentialNew.processId = credential.processId;
@@ -815,7 +793,6 @@ export class GuideTechnicianService {
 
         await credentialRepository.save(credentialNew);
         await credentialRepository.softRemove(credential);
-        console.log('crdential 2');
       }
     } else {
       for (const language of languages) {
@@ -842,8 +819,6 @@ export class GuideTechnicianService {
         await credentialRepository.softRemove(credential);
       }
     }
-
-    console.log('fin resutl director');
 
     return cadastre;
   }
@@ -916,9 +891,8 @@ export class GuideTechnicianService {
     if (stateRatified) {
       cadastre.state = stateRatified;
     }
-    console.log('cadastre 1');
+
     const cadastreSave = await cadastreRepository.save(cadastre);
-    console.log('cadastre 2');
 
     const cadastreStateRepository = manager.getRepository(CadastreStateEntity);
     const cadastreState = cadastreStateRepository.create();
@@ -929,10 +903,8 @@ export class GuideTechnicianService {
       cadastreState.stateId = stateRatified.id;
     }
 
-    console.log('1');
-
     await cadastreStateRepository.save(cadastreState);
-    console.log('2');
+
     return cadastreSave;
   }
 
