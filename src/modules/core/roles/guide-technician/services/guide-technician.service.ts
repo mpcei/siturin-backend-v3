@@ -797,7 +797,7 @@ export class GuideTechnicianService {
             break;
           }
         }
-
+        console.log('crdential 1');
         credentialNew.classificationId = credential.classificationId;
         credentialNew.categoryId = credential.categoryId;
         credentialNew.processId = credential.processId;
@@ -807,9 +807,9 @@ export class GuideTechnicianService {
         credentialNew.origin = OriginSystemEnum.siturin;
         credentialNew.code = credential.classification.acronym + code;
 
-        console.log('crdential 1');
         await credentialRepository.save(credentialNew);
         await credentialRepository.softRemove(credential);
+        console.log('crdential 2');
       }
     } else {
       for (const language of languages) {
@@ -836,6 +836,8 @@ export class GuideTechnicianService {
         await credentialRepository.softRemove(credential);
       }
     }
+
+    console.log('fin resutl director');
 
     return cadastre;
   }
