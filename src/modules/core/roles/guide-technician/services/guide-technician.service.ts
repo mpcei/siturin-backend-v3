@@ -136,9 +136,26 @@ export class GuideTechnicianService {
       where: {
         rolCode: params.rolCode,
         internalUser: { userId: user.id },
+        isCurrent: params.isCurrent,
+        enabled: true,
 
       },
-
+      relations: {
+        process: {
+          cadastre: { state: true },
+          type: true,
+          state: true,
+          establishment: {
+            ruc: true,
+            establishmentContactPerson: true,
+            credentials: { classification: true },
+            province: true,
+            canton: true,
+            parish: true,
+          },
+          credentials: { classification: true },
+        },
+      },
       skip: (params.page - 1) * params.limit,
       take: params.limit,
     });
