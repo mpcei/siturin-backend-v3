@@ -133,11 +133,13 @@ export class GuideTechnicianService {
 
     console.log('userId', user.id);
     console.log('where', where);
+    console.log('params.isCurrent', params.isCurrent);
     const response = await this.assignmentRepository.findAndCount({
       where: {
         rolCode: params.rolCode,
         internalUser: { userId: user.id },
-
+        isCurrent: params.isCurrent,
+        enabled: true,
         ...where,
       },
       relations: {
