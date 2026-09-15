@@ -106,8 +106,12 @@ export class InternalPdfSql {
       cadastre,
       user: cadastre?.process.establishment.ruc.user,
       credentials: cadastre?.process.establishment.credentials,
-      protectedAreas: cadastre?.process.establishment.protectedAreas,
-      adventureModalities: cadastre?.process.establishment.adventureModalities,
+      protectedAreas: cadastre?.process.establishment.protectedAreas
+        .map((item) => item.areaCode)
+        .join(', '),
+      adventureModalities: cadastre?.process.establishment.adventureModalities
+        .map((item) => item.modalityName)
+        .join(', '),
     };
   }
 
