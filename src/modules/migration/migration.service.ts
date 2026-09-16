@@ -1,13 +1,23 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { DataSource, IsNull, Not, Repository } from 'typeorm';
 import {
   AuthRepositoryEnum,
+  CatalogueUsersSexEnum,
   CommonRepositoryEnum,
   ConfigEnum,
   GuideRepositoryEnum,
 } from '@utils/enums';
 
-import { CoreRepositoryEnum } from '@modules/core/utils/enums';
+import {
+  CatalogueActivitiesCodeEnum,
+  CatalogueCadastresStateEnum,
+  CatalogueCredentialsStateEnum,
+  CatalogueInactivationCauseCodeEnum,
+  CatalogueProcessesStateEnum,
+  CatalogueProcessesTypeEnum,
+  CoreCatalogueTypeEnum,
+  CoreRepositoryEnum,
+} from '@modules/core/utils/enums';
 
 import * as XLSX from 'xlsx';
 
@@ -17,6 +27,7 @@ import {
   AssignmentEntity,
   BreachCauseEntity,
   CadastreEntity,
+  CadastreStateEntity,
   CategoryConfigurationEntity,
   CategoryEntity,
   ClassificationEntity,
@@ -68,12 +79,22 @@ import { format } from 'date-fns';
 import { BucketService } from '@modules/common/bucket/bucket.service';
 import { RequirementConfigurationEntity } from '@modules/core/entities/requirement-configuration.entity';
 import { ModelCatalogueEntity } from '@modules/common/catalogue/model-catalogue.entity';
+import { firstValueFrom } from 'rxjs';
+import { envConfig } from '@config';
+import { ConfigType } from '@nestjs/config';
+import { HttpService } from '@nestjs/axios';
+import { LanguageEntity } from '@modules/core/entities/language.entity';
+import { AdventureModalityEntity } from '@modules/core/entities/adventure-modality.entity';
+import { ProtectedAreaEntity } from '@modules/core/entities/protected-area.entity';
+import { CredentialEntity } from '@modules/core/entities/credential.entity';
 
 @Injectable()
 export class MigrationService {
   constructor(
     @Inject(ConfigEnum.PG_DATA_SOURCE_SITURIN_OLD)
     private readonly dataSource: DataSource,
+    @Inject(ConfigEnum.PG_DATA_SOURCE)
+    private readonly dataSourceV3: DataSource,
     @Inject(CoreRepositoryEnum.OBSERVATION_REPOSITORY)
     private readonly observationRepository: Repository<ObservationEntity>,
     @Inject(CoreRepositoryEnum.ESTABLISHMENT_ADDRESS_REPOSITORY)
@@ -176,6 +197,8 @@ export class MigrationService {
     private readonly fileRepository: Repository<FileEntity>,
     @Inject(GuideRepositoryEnum.REQUIREMENT_CONFIGURATION_REPOSITORY)
     private readonly requirementConfigurationRepository: Repository<RequirementConfigurationEntity>,
+    @Inject(envConfig.KEY) private configService: ConfigType<typeof envConfig>,
+    private readonly httpService: HttpService,
     private readonly bucketService: BucketService,
   ) {}
 
@@ -2243,5 +2266,333 @@ export class MigrationService {
     }
 
     return { data: null };
+  }
+
+  async migrateGuideGobEc(file: Express.Multer.File) {
+    const catalogues = await this.catalogueRepository.find();
+    const dpa = await this.dpaRepository.find();
+    const users = await this.userRepository.find();
+    const activities = await this.activityRepository.find();
+    const classifications = await this.classificationRepository.find();
+    const categories = await this.categoryRepository.find();
+
+    const workbook = XLSX.read(file.buffer, { type: 'buffer' });
+    const sheetName = workbook.SheetNames[0]; //review
+    const dataExcel: any[] = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
+
+    const stateRuc = catalogues.find((x) => x.type === 'rucs_state' && x.code === 'activo');
+    const stateEstablishment = catalogues.find(
+      (x) => x.type === 'establishments_state' && x.code === 'abierto',
+    );
+    const dpaTypeProvince = catalogues.find((x) => x.type === 'dpa_types' && x.code === 'province');
+    const dpaTypeCanton = catalogues.find((x) => x.type === 'dpa_types' && x.code === 'canton');
+    const dpaTypeParish = catalogues.find((x) => x.type === 'dpa_types' && x.code === 'parish');
+    const identificationType = catalogues.find(
+      (x) => x.type === 'users_identification_type' && x.code === '2',
+    );
+    const stateExpired = catalogues.find(
+      (item) =>
+        item.code == CatalogueCredentialsStateEnum.expired &&
+        item.type == CoreCatalogueTypeEnum.credentials_state,
+    );
+
+    const stateCurrent = catalogues.find(
+      (item) =>
+        item.code == CatalogueCredentialsStateEnum.current &&
+        item.type == CoreCatalogueTypeEnum.credentials_state,
+    );
+
+    const typeProcess = catalogues.find(
+      (item) =>
+        item.code == CatalogueProcessesTypeEnum.registration &&
+        item.type == CoreCatalogueTypeEnum.processes_type,
+    );
+
+    const stateProcess = catalogues.find(
+      (item) =>
+        item.code == CatalogueProcessesStateEnum.completed &&
+        item.type == CoreCatalogueTypeEnum.processes_state,
+    );
+
+    const stateCadastre = catalogues.find(
+      (item) =>
+        item.code == CatalogueCadastresStateEnum.ratified &&
+        item.type == CoreCatalogueTypeEnum.cadastre_states_state,
+    );
+
+    const geographicArea = catalogues.find((item) => item.code == 'continent');
+
+    const guide = activities.find(
+      (item) => item.code == CatalogueActivitiesCodeEnum.guide_continent,
+    );
+
+    if (!typeProcess || !stateProcess || !stateCadastre || !guide || !geographicArea) {
+      throw new NotFoundException(
+        'No hay estado del proceso o catastro o no hay typo de tramite o la actividad guianza, o area geografica continente',
+      );
+    }
+
+    if (!stateRuc || !stateEstablishment) {
+      throw new NotFoundException(
+        'No hay estado ruc activo o estado estblecimiento estado abierto',
+      );
+    }
+    if (!identificationType) {
+      throw new NotFoundException('No hay tipo identificación ruc');
+    }
+    if (!dpaTypeProvince || !dpaTypeCanton || !dpaTypeParish) {
+      throw new NotFoundException('No hay tipo de DPA para provincia, canton o parroquia');
+    }
+
+    for (const data of dataExcel) {
+      await this.dataSourceV3.transaction(async (manager) => {
+        const userRepository = manager.getRepository(UserEntity);
+        const rucRepository = manager.getRepository(RucEntity);
+        const establishmentRepository = manager.getRepository(EstablishmentEntity);
+        const processRepository = manager.getRepository(ProcessEntity);
+        const languageRepository = manager.getRepository(LanguageEntity);
+        const adventureModalityRepository = manager.getRepository(AdventureModalityEntity);
+        const protectedAreaRepository = manager.getRepository(ProtectedAreaEntity);
+        const credentialRepository = manager.getRepository(CredentialEntity);
+        const cadastreRepository = manager.getRepository(CadastreEntity);
+        const cadastreStateRepository = manager.getRepository(CadastreStateEntity);
+
+        const user = users.find((x) => x.ruc == data['ruc']);
+        if (user) {
+          throw new NotFoundException({
+            error: 'Usuario ya existe',
+            message: 'El usuario con ruc' + user.ruc + 'ya existe',
+          });
+        }
+
+        //Crear user
+        const newUser = userRepository.create();
+
+        const cedula = data['ruc'].substring(0, 10);
+        const url = `${this.configService.externalApis.urlDinardap}/registro-civil/${cedula}`;
+        const response = await firstValueFrom(this.httpService.get(url));
+        const rc = response.data.data;
+
+        const nationality = catalogues.find(
+          (item) => item.name?.trim().toLowerCase() === rc.nacionalidad?.trim().toLowerCase(),
+        );
+        if (nationality?.id) newUser.nationality = nationality;
+
+        const sex = catalogues.find(
+          (item) => item.name?.trim().toLowerCase() === rc.sexo?.trim().toLowerCase(),
+        );
+        if (sex?.id) newUser.sex = sex;
+
+        const [day, month, year] = rc.fechaNacimiento.split('/').map(Number);
+        newUser.birthdate = new Date(year, month - 1, day);
+        newUser.identificationTypeId = identificationType.id;
+        newUser.email = data['email'];
+        newUser.emailVerifiedAt = new Date();
+        newUser.identification = data['ruc'];
+        newUser.name = data['razon_social'];
+        newUser.password = data['ruc'];
+        newUser.passwordChanged = false;
+        newUser.username = data['email'];
+        if (
+          data['total_mujeres_discapacidad'] === '1' ||
+          data['total_hombres_discapacidad'] === '1'
+        )
+          newUser.hasDisability = true;
+        const userSave = await userRepository.save(newUser);
+
+        //Crear ruc
+        const newRuc = rucRepository.create();
+
+        newRuc.stateId = stateRuc.id;
+        newRuc.number = data['ruc'];
+        newRuc.legalName = data['razon_social'];
+        const rucSave = await rucRepository.save(newRuc);
+
+        //Crear establishment
+        const newEstablishment = establishmentRepository.create();
+
+        const province = dpa.find(
+          (x) => x.name === data['provincia'] && x.typeId === dpaTypeProvince.id,
+        );
+
+        const canton = dpa.find((x) => x.name === data['canton'] && x.typeId === dpaTypeCanton.id);
+
+        const parish = dpa.find(
+          (x) => x.name === data['parroquia'] && x.typeId === dpaTypeParish.id,
+        );
+
+        if (!province || !canton || !parish) {
+          throw new NotFoundException('No se encontro la provincia, el canton o la parroquia');
+        }
+
+        newEstablishment.rucId = rucSave.id;
+        newEstablishment.stateId = stateEstablishment.id;
+        newEstablishment.provinceId = province.id;
+        newEstablishment.cantonId = canton.id;
+        newEstablishment.parishId = parish.id;
+        newEstablishment.number = data['numero_establecimiento'];
+        newEstablishment.mainStreet = data['calle_principal'];
+        newEstablishment.numberStreet = data['numero_casa'];
+        newEstablishment.secondaryStreet = data['calle_secundaria'];
+        newEstablishment.referenceStreet = data['referencia'];
+        newEstablishment.latitude = data['latitud'];
+        newEstablishment.longitude = data['longitud'];
+        newEstablishment.isCadastre = true;
+
+        const establishmentSave = await establishmentRepository.save(newEstablishment);
+
+        //Crear Process
+        const newProcess = processRepository.create();
+
+        newProcess.activityId = guide.id;
+        newProcess.establishmentId = establishmentSave.id;
+        newProcess.typeId = typeProcess.id;
+        newProcess.stateId = stateProcess.id;
+        newProcess.registeredAt = new Date();
+        newProcess.startedAt = new Date();
+        newProcess.endedAt = new Date();
+        if (userSave.sex?.code === CatalogueUsersSexEnum.female) {
+          newProcess.totalWomen = 1;
+          if (userSave.hasDisability) newProcess.totalWomenDisability = 1;
+        } else {
+          newProcess.totalMen = 1;
+          if (userSave.hasDisability) newProcess.totalMenDisability = 1;
+        }
+        const processSave = await processRepository.save(newProcess);
+
+        //Crear Languaje
+        const languajes = data['idiomas'] ? data['idiomas'].split(',').map((x) => x.trim()) : [];
+
+        for (const languaje of languajes) {
+          const result = catalogues.find(
+            (item) =>
+              item.name?.trim().toLowerCase() === languaje?.trim().toLowerCase() &&
+              item.type === 'guide_languages_name',
+          );
+          if (result) {
+            const newLanguaje = languageRepository.create();
+            newLanguaje.establishmentId = establishmentSave.id;
+            newLanguaje.processId = processSave.id;
+            newLanguaje.languageCode = result.code;
+            newLanguaje.languageName = result.name;
+            await languageRepository.save(newLanguaje);
+          }
+        }
+
+        //Crear Adventure Modality
+        const modalities = data['modalidades']
+          ? data['modalidades'].split(',').map((x) => x.trim())
+          : [];
+        for (const modality of modalities) {
+          const result = catalogues.find(
+            (item) =>
+              item.name?.trim().toLowerCase() === modality?.trim().toLowerCase() &&
+              item.type === 'adventure_tourism_modalities_name',
+          );
+          if (result) {
+            const newModality = adventureModalityRepository.create();
+            newModality.establishmentId = establishmentSave.id;
+            newModality.processId = processSave.id;
+            newModality.modalityCode = result.code;
+            newModality.modalityName = result.name;
+            await adventureModalityRepository.save(newModality);
+          }
+        }
+
+        //Crear Protected Area
+        const areas = data['areas_protegidas']
+          ? data['areas_protegidas'].split(',').map((x) => x.trim())
+          : [];
+        for (const area of areas) {
+          const result = catalogues.find(
+            (item) =>
+              item.name?.trim().toLowerCase() === area?.trim().toLowerCase() &&
+              item.type === 'protected_areas_name',
+          );
+          if (result) {
+            const newProtectedArea = protectedAreaRepository.create();
+            newProtectedArea.establishmentId = establishmentSave.id;
+            newProtectedArea.processId = processSave.id;
+            newProtectedArea.areaCode = result.code;
+            newProtectedArea.areaName = result.name;
+            await protectedAreaRepository.save(newProtectedArea);
+          }
+        }
+
+        //Crear credential
+        const clasificationList = data['clasificacion'].split(',').map((x) => x.trim());
+        const initDates = String(data['fecha_inicio'])
+          .split(',')
+          .map((x) => x.trim());
+        const endDates = String(data['fecha_fin'])
+          .split(',')
+          .map((x) => x.trim());
+
+        if (
+          clasificationList.length !== initDates.length ||
+          clasificationList.length !== endDates.length
+        ) {
+          throw new NotFoundException(
+            'La cantidad de clasificaciones, fechas de inicio y fechas de fin debe coincidir.',
+          );
+        }
+
+        for (let i = 0; i < clasificationList.length; i++) {
+          const clasification = clasificationList[i];
+          const initDate = initDates[i];
+          const endDate = new Date(endDates[i]);
+
+          endDate.setHours(0, 0, 0, 0);
+
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+
+          const result = classifications.find(
+            (item) => item.name?.trim().toLowerCase() === clasification?.trim().toLowerCase(),
+          );
+          if (result) {
+            const newCredential = credentialRepository.create();
+            const category = categories.find((item) => item.classificationId === result.id);
+            if (!category) {
+              throw new NotFoundException('No esxite la categoria para' + result.name);
+            }
+            newCredential.establishmentId = establishmentSave.id;
+            newCredential.processId = processSave.id;
+            newCredential.classificationId = result.id;
+            newCredential.categoryId = category?.id;
+            newCredential.startedAt = new Date(initDate);
+            newCredential.endedAt = new Date(endDate);
+            newCredential.origin = data['origen'];
+            newCredential.geographicAreaId = geographicArea.id;
+            const state = endDate >= today ? stateCurrent : stateExpired;
+            if (state) {
+              newCredential.stateCode = state.code;
+              newCredential.stateName = state.name;
+            }
+
+            await credentialRepository.save(newCredential);
+          }
+        }
+
+        //Crear Cadastre
+        const newCadastre = cadastreRepository.create();
+        newCadastre.processId = processSave.id;
+        newCadastre.registerNumber = data['numero_registro'];
+        newCadastre.registeredAt = new Date(data['fecha_registro']);
+        newCadastre.systemOrigin = data['origen'];
+        newCadastre.stateId = stateCadastre.id;
+
+        const cadastreSave = await cadastreRepository.save(newCadastre);
+
+        //Crear Cadastre State
+        const newCadastreState = cadastreStateRepository.create();
+        newCadastreState.cadastreId = cadastreSave.id;
+        newCadastreState.stateId = stateCadastre.id;
+        newCadastreState.isCurrent = true;
+
+        await cadastreStateRepository.save(newCadastreState);
+      });
+    }
+    return null;
   }
 }

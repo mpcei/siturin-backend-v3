@@ -607,4 +607,23 @@ export class MigrationController {
       title: 'created',
     };
   }
+
+  @PublicRoute()
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: memoryStorage(),
+    }),
+  )
+  @Post('excel-gobec-migrations')
+  async migrateGuideGobEc(
+    @UploadedFile() file: Express.Multer.File,
+  ): Promise<ResponseHttpInterface> {
+    const responseService = await this.migrationService.migrateGuideGobEc(file);
+
+    return {
+      data: responseService,
+      message: 'excel-gobec-migrations',
+      title: 'created',
+    };
+  }
 }
