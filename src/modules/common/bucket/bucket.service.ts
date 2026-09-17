@@ -93,6 +93,29 @@ export class BucketService implements OnModuleInit, BucketInterface {
     return (await this.s3.send(command)).Body;
   }
 
+  async getObjectBuffer(key: string): Promise<{
+    buffer: Buffer;
+    contentType: string;
+  }> {
+    const command = new GetObjectCommand({
+      Bucket: this.configService.bucket.name,
+      Key: key,
+    });
+
+    const response = await this.s3.send(command);
+
+    if (!response.Body) {
+      throw new Error(`No se encontró el archivo: ${key}`);
+    }
+
+    const buffer = Buffer.from(await response.Body.transformToByteArray());
+
+    return {
+      buffer,
+      contentType: response.ContentType ?? 'application/octet-stream',
+    };
+  }
+
   async generatePresignedUrl(key: string) {
     const command = new GetObjectCommand({
       Bucket: this.configService.bucket.name,

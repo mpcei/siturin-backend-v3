@@ -10,12 +10,14 @@ import { registerUpdate } from './templates/internals/update.report';
 import { guideInactivation } from '@modules/reports/pdf/templates/externals/guide-inactivation.report';
 import { registrationCertificateGuideReport } from '@modules/reports/pdf/templates/internals/registration-certificate-guide.report';
 import { testReport } from '@modules/reports/pdf/templates/internals/test';
+import { BucketService } from '@modules/common/bucket/bucket.service';
 
 @Injectable()
 export class InternalPdfService {
   constructor(
     private readonly internalPdfSql: InternalPdfSql,
     private readonly printerService: PrinterService,
+    private readonly bucketService: BucketService,
     @Inject(envConfig.KEY) private configService: ConfigType<typeof envConfig>,
   ) {}
 
@@ -57,11 +59,20 @@ export class InternalPdfService {
     cadastreId: string;
   }): Promise<PDFKit.PDFDocument | Buffer> {
     const data: any = await this.internalPdfSql.findRegistrationCertificateGuide(cadastreId);
-    console.log('data pdf aql', data);
+
     try {
-      if (type === 'buffer')
-        return this.printerService.createPdfBuffer(registrationCertificateGuideReport(data));
-      else return this.printerService.createPdf(registrationCertificateGuideReport(data));
+      const avatar = data?.user?.avatar;
+
+      let avatarDataUri: string | undefined;
+
+      const { buffer, contentType } = await this.bucketService.getObjectBuffer(avatar);
+
+      avatarDataUri = `data:${contentType};base64,${buffer.toString('base64')}`;
+
+      const report = registrationCertificateGuideReport(data, avatarDataUri, this.configService.externalUrl.documentValidator);
+
+      if (type === 'buffer') return this.printerService.createPdfBuffer(report);
+      else return this.printerService.createPdf(report);
     } catch (error) {
       console.log(error);
       throw new Error();

@@ -1,6 +1,10 @@
 import { Content, StyleDictionary, TDocumentDefinitions } from 'pdfmake/interfaces';
 
-export const registrationCertificateGuideReport = (data: any): TDocumentDefinitions => {
+export const registrationCertificateGuideReport = (
+  data: any,
+  avatarDataUri?: string,
+  documentValidatorUrl?: string,
+): TDocumentDefinitions => {
   return {
     pageOrientation: 'portrait',
     pageMargins: [30, 140, 30, 40],
@@ -9,7 +13,7 @@ export const registrationCertificateGuideReport = (data: any): TDocumentDefiniti
     content: [
       {
         stack: [
-          buildPersonalInformation(data),
+          buildPersonalInformation(data, avatarDataUri),
           buildCredentialTable(data),
           buildComplementaryInformation(data),
         ],
@@ -19,7 +23,7 @@ export const registrationCertificateGuideReport = (data: any): TDocumentDefiniti
         pageBreak: 'before',
         text: '',
       },
-      buildQR(data),
+      buildQR(data, documentValidatorUrl),
       buildImportant(),
       buildSignature(data),
     ],
@@ -134,10 +138,10 @@ export const styles: StyleDictionary = {
   },
 };
 
-const buildPersonalInformation = (data: any): Content => ({
+const buildPersonalInformation = (data: any, avatarDataUri): Content => ({
   stack: [
     {
-      image: `./storage/resources/reports/images/guide.png`,
+      image: avatarDataUri,
       fit: [120, 140],
       alignment: 'center',
     },
@@ -213,10 +217,10 @@ const buildComplementaryInformation = (data: any): Content => ({
   ],
 });
 
-const buildQR = (data: any): Content => ({
+const buildQR = (data: any, documentValidatorUrl): Content => ({
   stack: [
     {
-      qr: `https://registro.turismo.gob.ec/consulta/${data.cadastre.registerNumber}`,
+      qr: `${documentValidatorUrl}${data.cadastre.registerNumber}`,
       fit: 100,
       alignment: 'center',
     },

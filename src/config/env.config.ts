@@ -62,11 +62,16 @@ export const envConfig = registerAs('envConfig', () => {
       region: process.env.BUCKET_REGION,
     },
 
+    externalUrl: {
+      documentValidator: process.env.URL_DOCUMENT_VALIDATOR,
+    },
+
     externalApis: {
       urlLDAP: process.env.URL_LDAP,
       urlDinardap: process.env.URL_DINARDAP,
       urlInterno: process.env.URL_INTERNO,
     },
+
     ministerio: {
       upperName: process.env.MINISTERIO_NAME_UPPER,
       capitalName: process.env.MINISTERIO_NAME_CAPITAL,
