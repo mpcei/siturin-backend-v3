@@ -213,6 +213,7 @@ export enum CatalogueProcessGuidesCodeEnum {
   accident_policy = 'accident_policy',
   guide_local = 'guide_local',
   pane_guide = 'pane_guide',
+  photo = 'photo',
 }
 
 export enum CatalogueProfessionalTitlesLevelEnum {

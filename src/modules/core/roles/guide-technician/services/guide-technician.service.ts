@@ -15,6 +15,7 @@ import {
   CatalogueInactivationCauseCodeEnum,
   CatalogueProcessesStateEnum,
   CatalogueProcessesTypeEnum,
+  CatalogueProcessGuidesCodeEnum,
   CoreCatalogueTypeEnum,
   CoreRepositoryEnum,
   OriginSystemEnum,
@@ -684,6 +685,9 @@ export class GuideTechnicianService {
     const credentialRepository = manager.getRepository(CredentialEntity);
     const establishmentRepository = manager.getRepository(EstablishmentEntity);
     const establishmentAddressRepository = manager.getRepository(EstablishmentAddressEntity);
+    const processGuideRepository = manager.getRepository(ProcessGuideEntity);
+    const fileRepository = manager.getRepository(FileEntity);
+    const userRepository = manager.getRepository(UserEntity);
 
     const languages = await languageRepository.find({ where: { processId: process.id } });
     const modalities = await modalityRepository.find({ where: { processId: process.id } });
@@ -720,10 +724,12 @@ export class GuideTechnicianService {
       //Save Establishment
       const establishment = await establishmentRepository.findOne({
         where: { id: process.establishmentId },
+        relations: { ruc: { user: true } },
       });
 
       const establishmentAddress = await establishmentAddressRepository.findOne({
         where: { processId: process.id },
+        relations: { province: true, canton: true, parish: true },
       });
 
       if (!establishment || !establishmentAddress) {
@@ -741,6 +747,22 @@ export class GuideTechnicianService {
       establishment.longitude = establishmentAddress.longitude;
 
       await establishmentRepository.save(establishment);
+
+      //Save photo user
+      const photo = CatalogueProcessGuidesCodeEnum.photo;
+      const processGuide = await processGuideRepository.findOne({
+        where: { processId: process.id, requirement: { code: photo } },
+      });
+      if (!processGuide) {
+        throw new NotFoundException('No existe requisito de foto');
+      }
+      const file = await fileRepository.findOne({ where: { modelId: processGuide.id } });
+      if (!file) {
+        throw new NotFoundException('No existe el file de foto');
+      }
+      const userExternal = establishment.ruc.user;
+      userExternal.avatar = file.path;
+      await userRepository.save(userExternal);
 
       for (const language of languages) {
         language.enabled = true;
