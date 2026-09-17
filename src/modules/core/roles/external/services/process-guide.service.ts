@@ -86,6 +86,7 @@ export class ProcessGuideService {
         payload.establishment,
         payload.user,
         process.id,
+        process.typeId,
       );
       const processGuide = await this.saveProcessGuide(
         manager,
@@ -127,6 +128,7 @@ export class ProcessGuideService {
     establishmentLoad: EstablishmentDto,
     user: UserDto,
     processId: string,
+    processTypeId: string,
   ): Promise<EstablishmentEntity> {
     const establishmentRepository = manager.getRepository(EstablishmentEntity);
     const establishmentAddressRepository = manager.getRepository(EstablishmentAddressEntity);
@@ -138,21 +140,27 @@ export class ProcessGuideService {
       where: { id: establishmentLoad.id },
     });
 
-    if (!establishment) {
-      throw new NotFoundException();
-    }
-    establishment.id = establishmentLoad.id;
-    establishment.provinceId = establishmentLoad.province.id;
-    establishment.cantonId = establishmentLoad.canton.id;
-    establishment.parishId = establishmentLoad.parish.id;
-    establishment.mainStreet = establishmentLoad.mainStreet;
-    establishment.numberStreet = establishmentLoad.numberStreet;
-    establishment.secondaryStreet = establishmentLoad.secondaryStreet;
-    establishment.referenceStreet = establishmentLoad.referenceStreet;
-    establishment.latitude = establishmentLoad.latitude;
-    establishment.longitude = establishmentLoad.longitude;
+    const processType = (await this.cataloguesService.findCache()).find(
+      (item) => item.id === processTypeId,
+    );
 
-    await establishmentRepository.save(establishment);
+    if (!establishment || !processType) {
+      throw new NotFoundException('No existe el establecimiento o el tipo de proceso');
+    }
+    if (processType.code === CatalogueProcessesTypeEnum.registration) {
+      establishment.id = establishmentLoad.id;
+      establishment.provinceId = establishmentLoad.province.id;
+      establishment.cantonId = establishmentLoad.canton.id;
+      establishment.parishId = establishmentLoad.parish.id;
+      establishment.mainStreet = establishmentLoad.mainStreet;
+      establishment.numberStreet = establishmentLoad.numberStreet;
+      establishment.secondaryStreet = establishmentLoad.secondaryStreet;
+      establishment.referenceStreet = establishmentLoad.referenceStreet;
+      establishment.latitude = establishmentLoad.latitude;
+      establishment.longitude = establishmentLoad.longitude;
+
+      await establishmentRepository.save(establishment);
+    }
 
     const establishmentAddress = establishmentAddressRepository.create();
     establishmentAddress.establishmentId = establishmentLoad.id;
@@ -497,6 +505,7 @@ export class ProcessGuideService {
         payload.establishment,
         payload.user,
         process.id,
+        process.typeId,
       );
       const processGuide = await this.saveWithOriginProcessGuide(
         manager,
@@ -796,6 +805,7 @@ export class ProcessGuideService {
         payload.establishment,
         payload.user,
         process.id,
+        process.typeId,
       );
       const processGuide = await this.saveWithOriginProcessGuide(
         manager,
@@ -1284,6 +1294,7 @@ export class ProcessGuideService {
         payload.establishment,
         payload.user,
         process.id,
+        process.typeId,
       );
       const processGuide = await this.saveProcessGuide(
         manager,
@@ -1340,6 +1351,7 @@ export class ProcessGuideService {
         payload.establishment,
         payload.user,
         process.id,
+        process.typeId,
       );
       const processGuide = await this.saveProcessGuide(
         manager,
@@ -1397,6 +1409,7 @@ export class ProcessGuideService {
         payload.establishment,
         payload.user,
         process.id,
+        process.typeId,
       );
       const processGuide = await this.saveProcessGuide(
         manager,

@@ -24,6 +24,7 @@ import {
   AssignmentEntity,
   CadastreEntity,
   CadastreStateEntity,
+  EstablishmentAddressEntity,
   EstablishmentEntity,
   InactivationCauseEntity,
   InternalDpaUserEntity,
@@ -144,13 +145,15 @@ export class GuideTechnicianService {
           cadastre: { state: true },
           type: true,
           state: true,
-          establishment: {
-            ruc: true,
-            establishmentContactPerson: true,
-            credentials: { classification: true },
+          establishmentAddress: {
             province: true,
             canton: true,
             parish: true,
+          },
+          establishmentContactPerson: true,
+          establishment: {
+            ruc: true,
+            credentials: { classification: true },
           },
           credentials: { classification: true },
         },
@@ -679,6 +682,8 @@ export class GuideTechnicianService {
     const modalityRepository = manager.getRepository(AdventureModalityEntity);
     const protectedAreaRepository = manager.getRepository(ProtectedAreaEntity);
     const credentialRepository = manager.getRepository(CredentialEntity);
+    const establishmentRepository = manager.getRepository(EstablishmentEntity);
+    const establishmentAddressRepository = manager.getRepository(EstablishmentAddressEntity);
 
     const languages = await languageRepository.find({ where: { processId: process.id } });
     const modalities = await modalityRepository.find({ where: { processId: process.id } });
@@ -709,9 +714,33 @@ export class GuideTechnicianService {
 
     if (process.state.code === CatalogueProcessesStateEnum.approved) {
       cadastre = await this.saveCadastre(manager, user, process);
-
       const value = cadastre.registerNumber;
       const code = value.slice(13);
+
+      //Save Establishment
+      const establishment = await establishmentRepository.findOne({
+        where: { id: process.establishmentId },
+      });
+
+      const establishmentAddress = await establishmentAddressRepository.findOne({
+        where: { processId: process.id },
+      });
+
+      if (!establishment || !establishmentAddress) {
+        throw new NotFoundException('No existe el establecimiento o establecimiento direccion');
+      }
+
+      establishment.provinceId = establishmentAddress.province.id;
+      establishment.cantonId = establishmentAddress.canton.id;
+      establishment.parishId = establishmentAddress.parish.id;
+      establishment.mainStreet = establishmentAddress.mainStreet;
+      establishment.numberStreet = establishmentAddress.numberStreet;
+      establishment.secondaryStreet = establishmentAddress.secondaryStreet;
+      establishment.referenceStreet = establishmentAddress.referenceStreet;
+      establishment.latitude = establishmentAddress.latitude;
+      establishment.longitude = establishmentAddress.longitude;
+
+      await establishmentRepository.save(establishment);
 
       for (const language of languages) {
         language.enabled = true;
@@ -944,8 +973,6 @@ export class GuideTechnicianService {
           state: true,
           establishment: {
             ruc: true,
-            establishmentContactPerson: true,
-            establishmentAddress: true,
             credentials: { classification: true },
             province: true,
             canton: true,
