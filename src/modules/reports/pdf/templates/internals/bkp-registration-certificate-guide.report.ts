@@ -1,8 +1,20 @@
-import { Content, StyleDictionary, TableLayout, TDocumentDefinitions } from 'pdfmake/interfaces';
+import { Content, StyleDictionary, TDocumentDefinitions, TableLayout } from 'pdfmake/interfaces';
 
-// Medidas en puntos (pt) para 6cm x 10cm (Portrait)
-const CREDENTIAL_WIDTH = 155.91;
-const CREDENTIAL_HEIGHT = 240.94;
+const CREDENTIAL_WIDTH = 156;
+const CREDENTIAL_HEIGHT = 241;
+
+const cutGuideLayout: TableLayout = {
+  hLineWidth: () => 0.5,
+  vLineWidth: () => 0.5,
+  hLineColor: () => '#9CA3AF',
+  vLineColor: () => '#9CA3AF',
+  hLineStyle: () => ({ dash: { length: 4, space: 4 } }),
+  vLineStyle: () => ({ dash: { length: 4, space: 4 } }),
+  paddingLeft: () => 2,
+  paddingRight: () => 2,
+  paddingTop: () => 2,
+  paddingBottom: () => 2,
+};
 
 const customHorizontalLayout: TableLayout = {
   // Grosor de las líneas
@@ -30,8 +42,8 @@ const customHorizontalLayout: TableLayout = {
   // Espaciado interno (padding) para que respire el texto
   paddingLeft: () => 0,
   paddingRight: () => 0,
-  paddingTop: () => 0, // Da un respiro arriba del texto
-  paddingBottom: () => 0, // Da un respiro abajo del texto
+  paddingTop: () => 2, // Da un respiro arriba del texto
+  paddingBottom: () => 2, // Da un respiro abajo del texto
 };
 
 export const registrationCertificateGuideReport = (
@@ -41,46 +53,109 @@ export const registrationCertificateGuideReport = (
 ): TDocumentDefinitions => {
   return {
     pageOrientation: 'portrait',
-    // Márgenes reducidos significativamente: [Izquierda, Arriba, Derecha, Abajo]
-    pageMargins: [5, 2, 5, 2],
-    // Tamaño personalizado
-    pageSize: { width: CREDENTIAL_WIDTH, height: CREDENTIAL_HEIGHT },
+    pageSize: 'A4',
+    pageMargins: [40, 40, 40, 40],
 
     content: [
-      buildPersonalInformation(data, avatarDataUri),
-      buildCredentialTable(data),
-      buildComplementaryInformation(data),
       {
-        pageBreak: 'before',
-        text: '',
+        text: 'CREDENCIALES LISTAS PARA RECORTAR',
+        fontSize: 12,
+        bold: true,
+        alignment: 'left',
+        margin: [0, 0, 0, 20],
       },
-      buildQR(data, documentValidatorUrl),
-      buildImportant(),
-      buildSignature(data),
+      {
+        alignment: 'center',
+        columns: [
+          // =======================
+          // CARA 1: FRENTE
+          // =======================
+          {
+            width: CREDENTIAL_WIDTH + 20,
+            table: {
+              widths: [CREDENTIAL_WIDTH],
+              heights: [CREDENTIAL_HEIGHT],
+              body: [
+                [
+                  {
+                    border: [true, true, true, true],
+                    stack: [
+                      // 1. Imagen de fondo renderizada primero
+                      {
+                        image:
+                          './storage/resources/reports/layouts/background_certificate_guide_1.png',
+                        width: CREDENTIAL_WIDTH,
+                        height: CREDENTIAL_HEIGHT,
+                      },
+                      // 2. Contenedor de texto superpuesto
+                      {
+                        stack: [
+                          buildPersonalInformation(data, avatarDataUri),
+                          buildCredentialTable(data),
+                          buildComplementaryInformation(data),
+                        ],
+                        // El margen negativo "jala" el texto hacia arriba exactamente el mismo tamaño de la imagen
+                        margin: [0, -CREDENTIAL_HEIGHT + 15, 0, 0],
+                      },
+                    ],
+                  },
+                ],
+              ],
+            },
+            layout: cutGuideLayout,
+          },
+
+          // ESPACIO ENTRE LAS DOS CREDENCIALES
+          { width: 20, text: '' },
+
+          // =======================
+          // CARA 2: REVERSO
+          // =======================
+          {
+            width: CREDENTIAL_WIDTH + 20,
+            table: {
+              widths: [CREDENTIAL_WIDTH],
+              heights: [CREDENTIAL_HEIGHT],
+              body: [
+                [
+                  {
+                    border: [true, true, true, true],
+                    stack: [
+                      // 1. Imagen de fondo del reverso
+                      {
+                        image:
+                          './storage/resources/reports/layouts/background_certificate_guide_2.png',
+                        alignment: 'left',
+                        width: CREDENTIAL_WIDTH,
+                        height: CREDENTIAL_HEIGHT,
+                      },
+                      // 2. Contenedor de texto superpuesto
+                      {
+                        stack: [
+                          buildQR(data, documentValidatorUrl),
+                          buildImportant(),
+                          buildSignature(data),
+                        ],
+                        // Margen negativo
+                        margin: [0, -CREDENTIAL_HEIGHT + 40, 0, 0],
+                      },
+                    ],
+                  },
+                ],
+              ],
+            },
+            layout: cutGuideLayout,
+          },
+        ],
+      },
     ],
 
-    background: (currentPage: number) => {
-      // Los fondos deben ajustarse al tamaño exacto de la credencial
-      if (currentPage === 1) {
-        return {
-          image: './storage/resources/reports/layouts/background_certificate_guide_1.png',
-          width: CREDENTIAL_WIDTH,
-          height: CREDENTIAL_HEIGHT,
-        };
-      } else if (currentPage === 2) {
-        return {
-          image: './storage/resources/reports/layouts/background_certificate_guide_2.png',
-          width: CREDENTIAL_WIDTH,
-          height: CREDENTIAL_HEIGHT,
-        };
-      }
-      return null;
-    },
-
+    // Eliminamos la propiedad background: (currentPage) => {...} global.
     styles: styles,
   };
 };
 
+// ... (Aquí van las funciones buildPersonalInformation, buildImportant, etc. que te pasé antes)
 export const styles: StyleDictionary = {
   // Tamaños de fuente drásticamente reducidos para entrar en 6x10 cm
   headerTitle: {
@@ -89,6 +164,7 @@ export const styles: StyleDictionary = {
     bold: true,
     color: '#2A3280', // Azul oscuro
     alignment: 'center',
+    margin: [0, 5, 0, 0],
   },
   headerSubtitle: {
     font: 'Montserrat',
@@ -96,6 +172,7 @@ export const styles: StyleDictionary = {
     bold: true,
     color: '#70738A', // Azul/morado más claro (como en tu imagen)
     alignment: 'center',
+    margin: [0, 0, 0, 0],
   },
   title: {
     fontSize: 8,
@@ -110,7 +187,7 @@ export const styles: StyleDictionary = {
     color: '#1F2937',
   },
   personName: {
-    fontSize: 6,
+    fontSize: 7,
     bold: true,
     alignment: 'center',
     color: '#000000',
@@ -138,7 +215,7 @@ export const styles: StyleDictionary = {
     color: '#000000',
     fillColor: '#E5E7EB',
     alignment: 'left',
-    margin: [1, 0, 0, 0],
+    margin: [0, 2, 0, 2],
   },
   tableText: {
     fontSize: 4,
@@ -180,20 +257,20 @@ const buildPersonalInformation = (data: any, avatarDataUri): Content => ({
             { text: 'REGISTRO DE TURISMO', style: 'headerTitle' },
             { text: `Nro. ${data.cadastre.registerNumber}`, style: 'registration' },
           ],
-          margin: [0, 20, 0, 0], // Margen superior para alinear un poco con la foto
+          margin: [0, 0, 0, 0], // Margen superior para alinear un poco con la foto
         },
       ],
     },
     {
       // Columna derecha: Foto
-      width: 50, // Ancho fijo para la columna de la foto
+      width: 45, // Ancho fijo para la columna de la foto
       image: avatarDataUri,
-      fit: [74, 85], // Tamaño de la foto
+      fit: [45, 55], // Tamaño de la foto
       alignment: 'center',
     },
     { text: 'GUÍA DE TURISMO', style: 'headerSubtitle' },
     {
-      text: data.user.name,
+      text: 'VILLALOBOS NARANJO ENRIQUETA PIEDAD DE LOS ANGELES',
       style: 'personName',
       margin: [0, 4, 0, 2],
     },
@@ -256,7 +333,7 @@ const buildQR = (data: any, documentValidatorUrl): Content => ({
       qr: `${documentValidatorUrl}${data.cadastre.registerNumber}`,
       fit: 50, // QR reducido
       alignment: 'center',
-      margin: [0, 30, 0, 0],
+      margin: [0, 10, 0, 0],
     },
   ],
 });
@@ -294,11 +371,6 @@ const buildSignature = (data: any): Content => ({
       fit: [45, 25], // Firma reducida
       style: 'signature',
       margin: [0, 15, 0, 2],
-    },
-    {
-      text: 'Firma institucional',
-      style: 'signature',
-      margin: [0, 2, 0, 2],
     },
     {
       text: `DIRECTOR/A ZONAL 6 - DZ6`,

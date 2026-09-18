@@ -107,10 +107,10 @@ export class InternalPdfSql {
       user: cadastre?.process.establishment.ruc.user,
       credentials: cadastre?.process.establishment.credentials,
       protectedAreas: cadastre?.process.establishment.protectedAreas
-        .map((item) => item.areaName)
+        .map((item) => item.areaCode)
         .join(', '),
       adventureModalities: cadastre?.process.establishment.adventureModalities
-        .map((item) => item.modalityName)
+        .map((item) => item.modalityCode)
         .join(', '),
     };
   }
