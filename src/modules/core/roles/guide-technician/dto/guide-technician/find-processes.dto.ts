@@ -55,4 +55,8 @@ export class FindProcessesDto extends PickType(PaginationDto, ['page', 'limit', 
   @IsOptional()
   @IsString(isStringValidationOptions())
   endedAt: string;
+
+  @IsOptional()
+  @IsString(isStringValidationOptions())
+  search: string;
 }

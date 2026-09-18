@@ -972,23 +972,43 @@ export class GuideTechnicianService {
   }
 
   async findCadastres(params: FindProcessesDto): Promise<ServiceResponseHttpInterface> {
-    const { registerNumber } = params;
+    const { page, limit } = params;
+    let { search } = params;
+    search = search.trim();
 
-    const where: FindOptionsWhere<CadastreEntity> = {};
+    // 1. Extraemos la condición obligatoria (AND) para no repetir código
+    const baseProcessCondition = {
+      activity: [
+        { code: CatalogueActivitiesCodeEnum.guide_continent },
+        { code: CatalogueActivitiesCodeEnum.guide_galapagos },
+      ],
+    };
 
-    if (registerNumber) {
-      where.registerNumber = ILike(`%${registerNumber}%`);
-    }
+    // 2. Armamos el where. Si hay search, devolvemos un arreglo (OR). Si no, un objeto simple.
+    const where: FindOptionsWhere<CadastreEntity>[] | FindOptionsWhere<CadastreEntity> = search
+      ? [
+          {
+            // Condición OR 1: Busca por registerNumber Y tiene las actividades requeridas
+            registerNumber: ILike(`%${search}%`),
+            process: baseProcessCondition,
+          },
+          {
+            // Condición OR 2: Busca por legalName Y tiene las actividades requeridas
+            process: {
+              ...baseProcessCondition,
+              establishment: {
+                ruc: { legalName: ILike(`%${search}%`) },
+              },
+            },
+          },
+        ]
+      : {
+          // Si no hay search, solo filtramos por las actividades
+          process: baseProcessCondition,
+        };
+
     const response = await this.cadastreRepository.findAndCount({
-      where: {
-        ...where,
-        process: {
-          activity: [
-            { code: CatalogueActivitiesCodeEnum.guide_continent },
-            { code: CatalogueActivitiesCodeEnum.guide_galapagos },
-          ],
-        },
-      },
+      where, // Pasamos el where ya construido
       relations: {
         process: {
           type: true,
@@ -1005,8 +1025,8 @@ export class GuideTechnicianService {
         },
         state: true,
       },
-      skip: (params.page - 1) * params.limit,
-      take: params.limit,
+      skip: (page - 1) * limit,
+      take: limit,
     });
 
     return {
