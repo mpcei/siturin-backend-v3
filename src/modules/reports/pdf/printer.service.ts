@@ -10,6 +10,12 @@ const fonts = {
     italics: join(process.cwd(), 'public/fonts/roboto/Roboto-Italic.ttf'),
     bolditalics: join(process.cwd(), 'public/fonts/roboto/Roboto-MediumItalic.ttf'),
   },
+  Montserrat: {
+    normal: join(process.cwd(), 'public/fonts/montserrat/Montserrat-Regular.ttf'),
+    bold: join(process.cwd(), 'public/fonts/montserrat/Montserrat-Black.ttf'),
+    italics: join(process.cwd(), 'public/fonts/montserrat/Montserrat-Italic.ttf'),
+    bolditalics: join(process.cwd(), 'public/fonts/montserrat/Montserrat-MediumItalic.ttf'),
+  },
 };
 
 @Injectable()

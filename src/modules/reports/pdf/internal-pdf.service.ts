@@ -62,6 +62,7 @@ export class InternalPdfService {
 
     try {
       const avatar = data?.user?.avatar;
+      console.log(avatar);
 
       let avatarDataUri: string | undefined;
 
