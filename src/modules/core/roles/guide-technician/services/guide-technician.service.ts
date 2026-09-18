@@ -206,11 +206,11 @@ export class GuideTechnicianService {
 
       // Process States
       .leftJoinAndSelect('process.processStates', 'processStates')
+      .leftJoinAndSelect('process.establishmentContactPerson', 'establishmentContactPerson')
+      .leftJoinAndSelect('process.establishmentAddress', 'establishmentAddress')
 
       // Establishment
       .leftJoinAndSelect('process.establishment', 'establishment')
-      .leftJoinAndSelect('establishment.establishmentContactPerson', 'establishmentContactPerson')
-      .leftJoinAndSelect('establishment.establishmentAddress', 'establishmentAddress')
       .leftJoinAndSelect('establishmentAddress.province', 'province')
       .leftJoinAndSelect('establishmentAddress.canton', 'canton')
       .leftJoinAndSelect('establishmentAddress.parish', 'parish')
