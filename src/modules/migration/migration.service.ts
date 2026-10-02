@@ -12,7 +12,6 @@ import {
   CatalogueActivitiesCodeEnum,
   CatalogueCadastresStateEnum,
   CatalogueCredentialsStateEnum,
-  CatalogueInactivationCauseCodeEnum,
   CatalogueProcessesStateEnum,
   CatalogueProcessesTypeEnum,
   CoreCatalogueTypeEnum,
@@ -79,7 +78,7 @@ import { format } from 'date-fns';
 import { BucketService } from '@modules/common/bucket/bucket.service';
 import { RequirementConfigurationEntity } from '@modules/core/entities/requirement-configuration.entity';
 import { ModelCatalogueEntity } from '@modules/common/catalogue/model-catalogue.entity';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, retry, timeout, timer } from 'rxjs';
 import { envConfig } from '@config';
 import { ConfigType } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
@@ -657,6 +656,27 @@ export class MigrationService {
     const catalogues = await this.catalogueRepository.find();
 
     for (const item of data) {
+      //ruc sin user
+      let entityUser = await this.userRepository.findOneBy({
+        identification: item.numero,
+      });
+
+      if (!entityUser) {
+        entityUser = this.userRepository.create();
+        entityUser.createdAt = item.created_at || new Date();
+        entityUser.updatedAt = item.updated_at || new Date();
+        entityUser.deletedAt = item.deleted_at;
+        entityUser.idTemp = item.id;
+        entityUser.email = `${item.numero}@migradositurin.com`;
+        entityUser.identification = item.numero;
+        entityUser.maxAttempts = 5;
+        entityUser.name = item.razon_social;
+        entityUser.username = `${item.numero}@migradositurin.com`;
+        entityUser.password = item.numero;
+
+        await this.userRepository.save(entityUser);
+      }
+
       const exists = table.find((register) => register.idTemp == item.id);
 
       if (!exists) {
@@ -2268,7 +2288,55 @@ export class MigrationService {
     return { data: null };
   }
 
-  async migrateGuideGobEc(file: Express.Multer.File) {
+  async migrateExcelParish(file: Express.Multer.File) {
+    const catalogues = await this.catalogueRepository.find();
+    const allDpa = await this.dpaRepository.find();
+
+    const workbook = XLSX.read(file.buffer, { type: 'buffer' });
+    const sheetName = workbook.SheetNames[0];
+    const dataExcel: any[] = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
+
+    const dpaTypeParish = catalogues.find((x) => x.type === 'dpa_types' && x.code === 'parish');
+    if (!dpaTypeParish) {
+      throw new NotFoundException('No hay tipo de DPA para parroquia');
+    }
+
+    for (const data of dataExcel) {
+      const canton = allDpa.find((x) => x.code === data['codigo'].toString().substring(0, 4));
+
+      if (!canton) {
+        throw new NotFoundException('No hay tipo de DPA para el codigo');
+      }
+
+      const modelDpa = this.dpaRepository.create({
+        parentId: canton.id,
+        typeId: dpaTypeParish.id,
+        code: data['codigo'],
+        name: data['descripcion'],
+      });
+      await this.dpaRepository.save(modelDpa);
+    }
+    return null;
+  }
+
+  compareWords(wordOne: unknown, wordTwo: unknown): boolean {
+    const normalizer = (text: unknown): string => {
+      if (text === null || text === undefined) {
+        return '';
+      }
+
+      return String(text)
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/\s+/g, ' ')
+        .trim()
+        .toLowerCase();
+    };
+
+    return normalizer(wordOne) === normalizer(wordTwo);
+  }
+
+  async migrateGuideGobEcBck(file: Express.Multer.File) {
     const catalogues = await this.catalogueRepository.find();
     const dpa = await this.dpaRepository.find();
     const users = await this.userRepository.find();
@@ -2343,9 +2411,11 @@ export class MigrationService {
     if (!dpaTypeProvince || !dpaTypeCanton || !dpaTypeParish) {
       throw new NotFoundException('No hay tipo de DPA para provincia, canton o parroquia');
     }
-
-    for (const data of dataExcel) {
-      await this.dataSourceV3.transaction(async (manager) => {
+    await this.dataSourceV3.transaction(async (manager) => {
+      let i = 0;
+      for (const data of dataExcel) {
+        i++;
+        console.log('fila: ', i);
         const userRepository = manager.getRepository(UserEntity);
         const rucRepository = manager.getRepository(RucEntity);
         const establishmentRepository = manager.getRepository(EstablishmentEntity);
@@ -2411,18 +2481,25 @@ export class MigrationService {
         //Crear establishment
         const newEstablishment = establishmentRepository.create();
 
+        console.log(data['provincia']);
         const province = dpa.find(
-          (x) => x.name === data['provincia'] && x.typeId === dpaTypeProvince.id,
+          (x) => this.compareWords(x.name, data['provincia']) && x.typeId === dpaTypeProvince.id,
+        );
+        console.log(province);
+
+        const canton = dpa.find(
+          (x) => this.compareWords(x.name, data['canton']) && x.typeId === dpaTypeCanton.id,
         );
 
-        const canton = dpa.find((x) => x.name === data['canton'] && x.typeId === dpaTypeCanton.id);
-
         const parish = dpa.find(
-          (x) => x.name === data['parroquia'] && x.typeId === dpaTypeParish.id,
+          (x) => this.compareWords(x.name, data['parroquia']) && x.typeId === dpaTypeParish.id,
         );
 
         if (!province || !canton || !parish) {
-          throw new NotFoundException('No se encontro la provincia, el canton o la parroquia');
+          throw new NotFoundException({
+            error: 'No se encontro la provincia, el canton o la parroquia',
+            message: `${province} ${canton} ${parish}`,
+          });
         }
 
         newEstablishment.rucId = rucSave.id;
@@ -2591,8 +2668,799 @@ export class MigrationService {
         newCadastreState.isCurrent = true;
 
         await cadastreStateRepository.save(newCadastreState);
+      }
+    });
+    return null;
+  }
+
+  // --------------------------------------------------
+  // MÉTODO AUXILIAR
+  // --------------------------------------------------
+  private normalizeText(value: any): string {
+    return String(value ?? '')
+      .trim()
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '');
+  }
+
+  async migrateGuideGobEc(file: Express.Multer.File) {
+    // ============================================================
+    // CONFIGURACIÓN
+    // ============================================================
+
+    const CONCURRENCY = 5;
+    const DINARDAP_TIMEOUT = 10000; // 10 segundos
+    const DINARDAP_RETRIES = 2;
+
+    // ============================================================
+    // CARGAR CATÁLOGOS
+    // ============================================================
+
+    const [catalogues, dpa, users, activities, classifications, categories] = await Promise.all([
+      this.catalogueRepository.find(),
+      this.dpaRepository.find(),
+      this.userRepository.find(),
+      this.activityRepository.find(),
+      this.classificationRepository.find(),
+      this.categoryRepository.find(),
+    ]);
+
+    // ============================================================
+    // LEER EXCEL
+    // ============================================================
+
+    const workbook = XLSX.read(file.buffer, {
+      type: 'buffer',
+    });
+
+    const sheetName = workbook.SheetNames[0];
+
+    if (!sheetName) {
+      throw new NotFoundException('El archivo Excel no contiene hojas.');
+    }
+
+    const dataExcel: any[] = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
+
+    if (!dataExcel.length) {
+      throw new NotFoundException('El archivo Excel no contiene registros.');
+    }
+
+    // ============================================================
+    // CATÁLOGOS PRINCIPALES
+    // ============================================================
+
+    const stateRuc = catalogues.find((x) => x.type === 'rucs_state' && x.code === 'activo');
+
+    const stateEstablishment = catalogues.find(
+      (x) => x.type === 'establishments_state' && x.code === 'abierto',
+    );
+
+    const dpaTypeProvince = catalogues.find((x) => x.type === 'dpa_types' && x.code === 'province');
+
+    const dpaTypeCanton = catalogues.find((x) => x.type === 'dpa_types' && x.code === 'canton');
+
+    const dpaTypeParish = catalogues.find((x) => x.type === 'dpa_types' && x.code === 'parish');
+
+    const identificationType = catalogues.find(
+      (x) => x.type === 'users_identification_type' && x.code === '2',
+    );
+
+    const stateExpired = catalogues.find(
+      (item) =>
+        item.code === CatalogueCredentialsStateEnum.expired &&
+        item.type === CoreCatalogueTypeEnum.credentials_state,
+    );
+
+    const stateCurrent = catalogues.find(
+      (item) =>
+        item.code === CatalogueCredentialsStateEnum.current &&
+        item.type === CoreCatalogueTypeEnum.credentials_state,
+    );
+
+    const typeProcess = catalogues.find(
+      (item) =>
+        item.code === CatalogueProcessesTypeEnum.registration &&
+        item.type === CoreCatalogueTypeEnum.processes_type,
+    );
+
+    const stateProcess = catalogues.find(
+      (item) =>
+        item.code === CatalogueProcessesStateEnum.completed &&
+        item.type === CoreCatalogueTypeEnum.processes_state,
+    );
+
+    const stateCadastre = catalogues.find(
+      (item) =>
+        item.code === CatalogueCadastresStateEnum.ratified &&
+        item.type === CoreCatalogueTypeEnum.cadastre_states_state,
+    );
+
+    const geographicArea = catalogues.find((item) => item.code === 'continent');
+
+    const guide = activities.find(
+      (item) => item.code === CatalogueActivitiesCodeEnum.guide_continent,
+    );
+
+    // ============================================================
+    // VALIDACIONES
+    // ============================================================
+
+    if (!typeProcess || !stateProcess || !stateCadastre || !guide || !geographicArea) {
+      throw new NotFoundException(
+        'No hay estado del proceso o catastro, tipo de trámite, actividad guianza o área geográfica continente.',
+      );
+    }
+
+    if (!stateRuc || !stateEstablishment) {
+      throw new NotFoundException('No hay estado RUC activo o estado establecimiento abierto.');
+    }
+
+    if (!identificationType) {
+      throw new NotFoundException('No hay tipo identificación RUC.');
+    }
+
+    if (!dpaTypeProvince || !dpaTypeCanton || !dpaTypeParish) {
+      throw new NotFoundException('No hay tipo de DPA para provincia, cantón o parroquia.');
+    }
+
+    // ============================================================
+    // MAPAS DE CATÁLOGOS
+    // Evita hacer .find() constantemente durante 1500 registros
+    // ============================================================
+
+    const catalogueByTypeAndName = new Map<string, any>();
+
+    for (const catalogue of catalogues) {
+      if (!catalogue.name || !catalogue.type) {
+        continue;
+      }
+
+      const key = `${catalogue.type}|${this.normalizeText(catalogue.name)}`;
+
+      catalogueByTypeAndName.set(key, catalogue);
+    }
+
+    const classificationMap = new Map<string, any>();
+
+    for (const classification of classifications) {
+      if (classification.name) {
+        classificationMap.set(this.normalizeText(classification.name), classification);
+      }
+    }
+
+    const categoryMap = new Map<string, any>();
+
+    for (const category of categories) {
+      if (category.classificationId) {
+        categoryMap.set(category.classificationId, category);
+      }
+    }
+
+    // ============================================================
+    // VALIDAR DUPLICADOS DEL EXCEL
+    // ============================================================
+
+    const excelRucs = new Set<string>();
+    const duplicateRucs = new Set<string>();
+
+    for (const data of dataExcel) {
+      const ruc = String(data['ruc'] ?? '').trim();
+
+      if (!ruc) {
+        continue;
+      }
+
+      if (excelRucs.has(ruc)) {
+        duplicateRucs.add(ruc);
+      }
+
+      excelRucs.add(ruc);
+    }
+
+    if (duplicateRucs.size > 0) {
+      throw new NotFoundException({
+        error: 'RUC duplicados en el Excel',
+        rucs: Array.from(duplicateRucs),
       });
     }
-    return null;
+
+    // ============================================================
+    // RUC YA EXISTENTES EN BD
+    // ============================================================
+
+    const existingRucs = new Set(
+      users.filter((user) => user.ruc).map((user) => String(user.ruc).trim()),
+    );
+
+    // ============================================================
+    // RESULTADOS
+    // ============================================================
+
+    const resultados: any[] = [];
+    const errores: any[] = [];
+
+    // ============================================================
+    // CONSULTAR DINARDAP POR LOTES
+    //
+    // Máximo 5 llamadas simultáneas
+    // Timeout: 10 segundos
+    // Reintentos: 2
+    // ============================================================
+
+    const registrosConRC: any[] = [];
+
+    for (let inicio = 0; inicio < dataExcel.length; inicio += CONCURRENCY) {
+      const batch = dataExcel.slice(inicio, inicio + CONCURRENCY);
+
+      console.log(
+        `Consultando DINARDAP: registros ${inicio + 1} - ${Math.min(
+          inicio + CONCURRENCY,
+          dataExcel.length,
+        )} de ${dataExcel.length}`,
+      );
+
+      const batchResults = await Promise.all(
+        batch.map(async (data, index) => {
+          const fila = inicio + index + 2;
+
+          const ruc = String(data['ruc'] ?? '').trim();
+
+          try {
+            // --------------------------------------------
+            // Validar RUC
+            // --------------------------------------------
+
+            if (!ruc) {
+              throw new Error('El registro no contiene RUC.');
+            }
+
+            // --------------------------------------------
+            // Validar si ya existe
+            // --------------------------------------------
+
+            if (existingRucs.has(ruc)) {
+              throw new Error(`El usuario con RUC ${ruc} ya existe.`);
+            }
+
+            // --------------------------------------------
+            // Validar longitud
+            // --------------------------------------------
+
+            if (ruc.length < 10) {
+              throw new Error(`El RUC ${ruc} no tiene una longitud válida.`);
+            }
+
+            const cedula = ruc.substring(0, 10);
+
+            const url =
+              `${this.configService.externalApis.urlDinardap}` + `/registro-civil/${cedula}`;
+
+            console.log(`Fila ${fila}: consultando DINARDAP ${cedula}`);
+
+            // --------------------------------------------
+            // LLAMADA DINARDAP
+            // --------------------------------------------
+
+            const response = await firstValueFrom(
+              this.httpService.get(url).pipe(
+                timeout(DINARDAP_TIMEOUT),
+                retry({
+                  count: DINARDAP_RETRIES,
+                  delay: (_error, retryCount) => timer(retryCount * 1000),
+                }),
+              ),
+            );
+
+            const rc = response?.data?.data;
+
+            if (!rc) {
+              throw new Error('DINARDAP no retornó información para la identificación.');
+            }
+
+            if (!rc.fechaNacimiento) {
+              throw new Error('DINARDAP no retornó fecha de nacimiento.');
+            }
+
+            return {
+              fila,
+              data,
+              rc,
+            };
+          } catch (error) {
+            console.error(`Error DINARDAP - fila ${fila} - RUC ${ruc}`, error);
+
+            errores.push({
+              fila,
+              ruc,
+              etapa: 'DINARDAP',
+              error: error?.message || 'Error consultando DINARDAP',
+            });
+
+            return null;
+          }
+        }),
+      );
+
+      registrosConRC.push(...batchResults.filter((item) => item !== null));
+    }
+
+    console.log(
+      `Consultas DINARDAP finalizadas. ` +
+        `Correctas: ${registrosConRC.length}. ` +
+        `Errores: ${errores.length}.`,
+    );
+
+    // ============================================================
+    // PROCESAR BASE DE DATOS
+    //
+    // Una transacción independiente por registro
+    // ============================================================
+
+    for (const registro of registrosConRC) {
+      const { fila, data, rc } = registro;
+
+      const ruc = String(data['ruc'] ?? '').trim();
+
+      try {
+        console.log(`Procesando BD fila ${fila}/${dataExcel.length} - RUC ${ruc}`);
+
+        await this.dataSourceV3.transaction(async (manager) => {
+          // ==================================================
+          // REPOSITORIES
+          // ==================================================
+
+          const userRepository = manager.getRepository(UserEntity);
+
+          const rucRepository = manager.getRepository(RucEntity);
+
+          const establishmentRepository = manager.getRepository(EstablishmentEntity);
+
+          const processRepository = manager.getRepository(ProcessEntity);
+
+          const languageRepository = manager.getRepository(LanguageEntity);
+
+          const adventureModalityRepository = manager.getRepository(AdventureModalityEntity);
+
+          const protectedAreaRepository = manager.getRepository(ProtectedAreaEntity);
+
+          const credentialRepository = manager.getRepository(CredentialEntity);
+
+          const cadastreRepository = manager.getRepository(CadastreEntity);
+
+          const cadastreStateRepository = manager.getRepository(CadastreStateEntity);
+
+          // ==================================================
+          // VALIDAR NUEVAMENTE QUE NO EXISTA
+          //
+          // Importante porque otro proceso podría haber
+          // insertado el RUC después de la consulta inicial.
+          // ==================================================
+
+          const userExists = await userRepository.findOne({
+            where: { identification: ruc },
+          });
+
+          if (userExists) {
+            throw new Error(`El usuario con RUC ${ruc} ya existe.`);
+          }
+
+          // ==================================================
+          // CREAR USER
+          // ==================================================
+
+          const newUser = userRepository.create();
+
+          const nationality = catalogueByTypeAndName.get(
+            `users_nationality|${this.normalizeText(rc.nacionalidad)}`,
+          );
+
+          if (nationality?.id) {
+            newUser.nationality = nationality;
+          }
+
+          const sex = catalogueByTypeAndName.get(`users_sex|${this.normalizeText(rc.sexo)}`);
+
+          if (sex?.id) {
+            newUser.sex = sex;
+          }
+
+          const [day, month, year] = String(rc.fechaNacimiento).split('/').map(Number);
+
+          if (!day || !month || !year) {
+            throw new Error(`Fecha de nacimiento inválida: ${rc.fechaNacimiento}`);
+          }
+
+          newUser.birthdate = new Date(year, month - 1, day);
+
+          newUser.identificationTypeId = identificationType.id;
+
+          newUser.email = data['email'];
+
+          newUser.emailVerifiedAt = new Date();
+
+          newUser.identification = ruc;
+
+          newUser.name = data['razon_social'];
+
+          newUser.password = ruc;
+
+          newUser.passwordChanged = false;
+
+          newUser.username = data['email'];
+
+          if (
+            String(data['total_mujeres_discapacidad']) === '1' ||
+            String(data['total_hombres_discapacidad']) === '1'
+          ) {
+            newUser.hasDisability = true;
+          } else {
+            newUser.hasDisability = false;
+          }
+
+          const userSave = await userRepository.save(newUser);
+
+          // ==================================================
+          // CREAR RUC
+          // ==================================================
+
+          const newRuc = rucRepository.create();
+
+          newRuc.stateId = stateRuc.id;
+
+          newRuc.number = ruc;
+
+          newRuc.legalName = data['razon_social'];
+
+          const rucSave = await rucRepository.save(newRuc);
+
+          // ==================================================
+          // UBICACIÓN
+          // ==================================================
+
+          const province = dpa.find(
+            (x) => this.compareWords(x.name, data['provincia']) && x.typeId === dpaTypeProvince.id,
+          );
+
+          const canton = dpa.find(
+            (x) => this.compareWords(x.name, data['canton']) && x.typeId === dpaTypeCanton.id,
+          );
+
+          const parish = dpa.find(
+            (x) => this.compareWords(x.name, data['parroquia']) && x.typeId === dpaTypeParish.id,
+          );
+
+          if (!province || !canton || !parish) {
+            throw new Error(
+              `No se encontró la provincia, cantón o parroquia. ` +
+                `Provincia: ${data['provincia']}, ` +
+                `Cantón: ${data['canton']}, ` +
+                `Parroquia: ${data['parroquia']}`,
+            );
+          }
+
+          // ==================================================
+          // CREAR ESTABLECIMIENTO
+          // ==================================================
+
+          const newEstablishment = establishmentRepository.create();
+
+          newEstablishment.rucId = rucSave.id;
+
+          newEstablishment.stateId = stateEstablishment.id;
+
+          newEstablishment.provinceId = province.id;
+
+          newEstablishment.cantonId = canton.id;
+
+          newEstablishment.parishId = parish.id;
+
+          newEstablishment.number = data['numero_establecimiento'];
+
+          newEstablishment.mainStreet = data['calle_principal'];
+
+          newEstablishment.numberStreet = data['numero_casa'];
+
+          newEstablishment.secondaryStreet = data['calle_secundaria'];
+
+          newEstablishment.referenceStreet = data['referencia'];
+
+          newEstablishment.latitude = data['latitud'];
+
+          newEstablishment.longitude = data['longitud'];
+
+          newEstablishment.isCadastre = true;
+
+          const establishmentSave = await establishmentRepository.save(newEstablishment);
+
+          // ==================================================
+          // CREAR PROCESS
+          // ==================================================
+
+          const newProcess = processRepository.create();
+
+          newProcess.activityId = guide.id;
+
+          newProcess.establishmentId = establishmentSave.id;
+
+          newProcess.typeId = typeProcess.id;
+
+          newProcess.stateId = stateProcess.id;
+
+          newProcess.registeredAt = new Date();
+
+          newProcess.startedAt = new Date();
+
+          newProcess.endedAt = new Date();
+
+          if (userSave.sex?.code === CatalogueUsersSexEnum.female) {
+            newProcess.totalWomen = 1;
+
+            if (userSave.hasDisability) {
+              newProcess.totalWomenDisability = 1;
+            }
+          } else {
+            newProcess.totalMen = 1;
+
+            if (userSave.hasDisability) {
+              newProcess.totalMenDisability = 1;
+            }
+          }
+
+          const processSave = await processRepository.save(newProcess);
+
+          // ==================================================
+          // IDIOMAS
+          // ==================================================
+
+          const languajes = data['idiomas']
+            ? String(data['idiomas'])
+                .split(',')
+                .map((x) => x.trim())
+                .filter(Boolean)
+            : [];
+
+          for (const languaje of languajes) {
+            const result = catalogueByTypeAndName.get(
+              `guide_languages_name|${this.normalizeText(languaje)}`,
+            );
+
+            if (!result) {
+              continue;
+            }
+
+            const newLanguaje = languageRepository.create();
+
+            newLanguaje.establishmentId = establishmentSave.id;
+
+            newLanguaje.processId = processSave.id;
+
+            newLanguaje.languageCode = result.code;
+
+            newLanguaje.languageName = result.name;
+
+            await languageRepository.save(newLanguaje);
+          }
+
+          // ==================================================
+          // MODALIDADES
+          // ==================================================
+
+          const modalities = data['modalidades']
+            ? String(data['modalidades'])
+                .split(',')
+                .map((x) => x.trim())
+                .filter(Boolean)
+            : [];
+
+          for (const modality of modalities) {
+            const result = catalogueByTypeAndName.get(
+              `adventure_tourism_modalities_name|${this.normalizeText(modality)}`,
+            );
+
+            if (!result) {
+              continue;
+            }
+
+            const newModality = adventureModalityRepository.create();
+
+            newModality.establishmentId = establishmentSave.id;
+
+            newModality.processId = processSave.id;
+
+            newModality.modalityCode = result.code;
+
+            newModality.modalityName = result.name;
+
+            await adventureModalityRepository.save(newModality);
+          }
+
+          // ==================================================
+          // ÁREAS PROTEGIDAS
+          // ==================================================
+
+          const areas = data['areas_protegidas']
+            ? String(data['areas_protegidas'])
+                .split(',')
+                .map((x) => x.trim())
+                .filter(Boolean)
+            : [];
+
+          for (const area of areas) {
+            const result = catalogueByTypeAndName.get(
+              `protected_areas_name|${this.normalizeText(area)}`,
+            );
+
+            if (!result) {
+              continue;
+            }
+
+            const newProtectedArea = protectedAreaRepository.create();
+
+            newProtectedArea.establishmentId = establishmentSave.id;
+
+            newProtectedArea.processId = processSave.id;
+
+            newProtectedArea.areaCode = result.code;
+
+            newProtectedArea.areaName = result.name;
+
+            await protectedAreaRepository.save(newProtectedArea);
+          }
+
+          // ==================================================
+          // CREDENCIALES
+          // ==================================================
+
+          const clasificationList = String(data['clasificacion'] ?? '')
+            .split(',')
+            .map((x) => x.trim())
+            .filter(Boolean);
+
+          const initDates = String(data['fecha_inicio'] ?? '')
+            .split(',')
+            .map((x) => x.trim());
+
+          const endDates = String(data['fecha_fin'] ?? '')
+            .split(',')
+            .map((x) => x.trim());
+
+          if (
+            clasificationList.length !== initDates.length ||
+            clasificationList.length !== endDates.length
+          ) {
+            throw new Error(
+              'La cantidad de clasificaciones, fechas de inicio y fechas de fin debe coincidir.',
+            );
+          }
+
+          for (let i = 0; i < clasificationList.length; i++) {
+            const clasification = clasificationList[i];
+
+            const initDate = initDates[i];
+
+            const endDate = new Date(endDates[i]);
+
+            endDate.setHours(0, 0, 0, 0);
+
+            const today = new Date();
+
+            today.setHours(0, 0, 0, 0);
+
+            const classification = classificationMap.get(this.normalizeText(clasification));
+
+            if (!classification) {
+              continue;
+            }
+
+            const category = categoryMap.get(classification.id);
+
+            if (!category) {
+              throw new Error(`No existe la categoría para ${classification.name}`);
+            }
+
+            const newCredential = credentialRepository.create();
+
+            newCredential.establishmentId = establishmentSave.id;
+
+            newCredential.processId = processSave.id;
+
+            newCredential.classificationId = classification.id;
+
+            newCredential.categoryId = category.id;
+
+            newCredential.startedAt = new Date(initDate);
+
+            newCredential.endedAt = new Date(endDate);
+
+            newCredential.origin = data['origen'];
+
+            newCredential.geographicAreaId = geographicArea.id;
+
+            const state = endDate >= today ? stateCurrent : stateExpired;
+
+            if (state) {
+              newCredential.stateCode = state.code;
+
+              newCredential.stateName = state.name;
+            }
+
+            await credentialRepository.save(newCredential);
+          }
+
+          // ==================================================
+          // CREAR CATASTRO
+          // ==================================================
+
+          const newCadastre = cadastreRepository.create();
+
+          newCadastre.processId = processSave.id;
+
+          newCadastre.registerNumber = data['numero_registro'];
+
+          newCadastre.registeredAt = new Date(data['fecha_registro']);
+
+          newCadastre.systemOrigin = data['origen'];
+
+          newCadastre.stateId = stateCadastre.id;
+
+          const cadastreSave = await cadastreRepository.save(newCadastre);
+
+          // ==================================================
+          // ESTADO DEL CATASTRO
+          // ==================================================
+
+          const newCadastreState = cadastreStateRepository.create();
+
+          newCadastreState.cadastreId = cadastreSave.id;
+
+          newCadastreState.stateId = stateCadastre.id;
+
+          newCadastreState.isCurrent = true;
+
+          await cadastreStateRepository.save(newCadastreState);
+        });
+
+        resultados.push({
+          fila,
+          ruc,
+          estado: 'OK',
+        });
+
+        console.log(`✓ Fila ${fila} procesada correctamente - RUC ${ruc}`);
+      } catch (error) {
+        console.error(`✗ Error procesando BD - fila ${fila} - RUC ${ruc}`, error);
+
+        errores.push({
+          fila,
+          ruc,
+          etapa: 'BASE_DATOS',
+          error: error?.message || 'Error procesando registro en base de datos',
+        });
+      }
+    }
+
+    // ============================================================
+    // RESUMEN
+    // ============================================================
+
+    console.log('================================================');
+
+    console.log(`Migración finalizada.`);
+
+    console.log(`Total registros: ${dataExcel.length}`);
+
+    console.log(`Procesados correctamente: ${resultados.length}`);
+
+    console.log(`Errores: ${errores.length}`);
+
+    console.log('================================================');
+
+    return {
+      total: dataExcel.length,
+      procesados: resultados.length,
+      errores: errores.length,
+      detalleErrores: errores,
+    };
   }
 }
