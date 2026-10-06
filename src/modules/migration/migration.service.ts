@@ -394,6 +394,7 @@ export class MigrationService {
       });
 
       if (!entity) {
+        console.log(item.identification);
         entity = this.userRepository.create();
         entity.createdAt = item.created_at || new Date();
         entity.updatedAt = item.updated_at || new Date();
@@ -799,16 +800,16 @@ export class MigrationService {
         entity.hasDebt = item.tiene_deuda;
         entity.registeredAt = item.updated_at || null;
 
-        let ruc = rucs.find((x) => x.number == item.ruc);
-
-        if (!ruc) {
-          ruc = this.rucRepository.create();
-          ruc.idTemp = item.id;
-          ruc.number = item.ruc;
-          ruc = await this.rucRepository.save(ruc);
-        }
-
-        entity.rucId = ruc.id;
+        // let ruc = rucs.find((x) => x.number == item.ruc);
+        //
+        // if (!ruc) {
+        //   ruc = this.rucRepository.create();
+        //   ruc.idTemp = item.id;
+        //   ruc.number = item.ruc;
+        //   ruc = await this.rucRepository.save(ruc);
+        // }
+        //
+        // entity.rucId = ruc.id;
 
         await this.paymentRepository.save(entity);
       }
@@ -902,7 +903,7 @@ export class MigrationService {
         entity.totalWomenDisability = item.total_mujeres_discapacidad || 0;
         entity.hasLandUse = item.uso_suelos || false;
         entity.attendedAt = item.fecha_atendido;
-        entity.isProtectedArea = item.es_area_protegida;
+        entity.isProtectedArea = item.es_area_protegida ?? false;
         entity.hasProtectedAreaContract = item.contrato_area_protegida;
         entity.inspectionExpirationAt = item.fecha_limite_inspeccion;
 
@@ -1577,10 +1578,11 @@ export class MigrationService {
     const data = await this.getData('siturin.modalidad_turismo_aventuras');
 
     const table = await this.adventureTourismModalityRepository.find();
-    const processes = await this.processRepository.find();
+    const processes = await this.processRepository.find({ withDeleted: true });
     const catalogues = await this.catalogueRepository.find();
 
     for (const item of data) {
+      console.log(item.id);
       const exists = table.find((register) => register.idTemp == item.id);
 
       if (!exists) {
@@ -1592,6 +1594,9 @@ export class MigrationService {
         entity.idTemp = item.id;
 
         const process = processes.find((x) => x.idTemp == item.tramite_id);
+        console.log('item.tramite_id', processes.length);
+        console.log('item.tramite_id', item.tramite_id);
+        console.log('process', process);
         const type = catalogues.find((x) => x.idTemp == item.tipo_id);
 
         if (process) entity.processId = process.id;
@@ -2927,8 +2932,10 @@ export class MigrationService {
             // Validar longitud
             // --------------------------------------------
 
-            if (ruc.length < 10) {
-              throw new Error(`El RUC ${ruc} no tiene una longitud válida.`);
+            if (!/^\d{13}$/.test(ruc)) {
+              throw new Error(
+                `El RUC ${ruc} no tiene una longitud o formato válido. Debe contener exactamente 13 dígitos.`,
+              );
             }
 
             const cedula = ruc.substring(0, 10);

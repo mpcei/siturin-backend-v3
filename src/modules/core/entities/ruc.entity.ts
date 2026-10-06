@@ -53,8 +53,8 @@ export class RucEntity {
   enabled: boolean;
 
   /** Inverse Relationship **/
-  @OneToOne(() => PaymentEntity, (entity) => entity.ruc)
-  payment: PaymentEntity;
+  // @OneToOne(() => PaymentEntity, (entity) => entity.ruc)
+  // payment: PaymentEntity;
 
   @OneToMany(() => EstablishmentEntity, (entity) => entity.ruc)
   establishments: EstablishmentEntity[];
