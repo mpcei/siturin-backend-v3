@@ -51,7 +51,7 @@ export class PaymentEntity {
   /** Inverse Relationship **/
 
   /** Foreign Keys **/
-  @ManyToOne(() => UserEntity, { nullable: true })
+  /*@ManyToOne(() => UserEntity, { nullable: true })
   @JoinColumn({ name: 'user_id' })
   user: UserEntity;
   @Column({
@@ -71,7 +71,7 @@ export class PaymentEntity {
     nullable: true,
     comment: '',
   })
-  rucId: string;
+  rucId: string;*/
 
   /** Columns **/
   @Column({

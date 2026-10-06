@@ -614,6 +614,25 @@ export class MigrationController {
       storage: memoryStorage(),
     }),
   )
+  @Post('excel-new-parish')
+  async migrateExcelParish(
+    @UploadedFile() file: Express.Multer.File,
+  ): Promise<ResponseHttpInterface> {
+    const responseService = await this.migrationService.migrateExcelParish(file);
+
+    return {
+      data: responseService,
+      message: 'excel-new-parish',
+      title: 'created',
+    };
+  }
+
+  @PublicRoute()
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: memoryStorage(),
+    }),
+  )
   @Post('excel-gobec-migrations')
   async migrateGuideGobEc(
     @UploadedFile() file: Express.Multer.File,
