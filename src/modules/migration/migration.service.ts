@@ -930,6 +930,10 @@ export class MigrationService {
       const establishment = establishments.find((x) => x.idTemp == item.establecimiento_id);
       const process = processes.find((x) => x.idTemp == item.id);
 
+      if(!establishment){
+        throw new Error('Establishment not found');
+      }
+
       entity.createdAt = item.created_at || new Date();
       entity.updatedAt = item.updated_at || new Date();
 
@@ -943,25 +947,42 @@ export class MigrationService {
       entity.cantonId = canton?.id!;
       entity.parishId = parish?.id!;
 
+      establishment.provinceId = province?.id!;
+      establishment.cantonId = canton?.id!;
+      establishment.parishId = parish?.id!;
+
       if (item.ubicacion) {
         if (item.ubicacion.callePrincipal) {
           entity.mainStreet = item.ubicacion.callePrincipal;
           entity.secondaryStreet = item.ubicacion.calleInterseccion;
           entity.numberStreet = item.ubicacion.calleNumeracion;
+
+          establishment.mainStreet = item.ubicacion.callePrincipal;
+          establishment.secondaryStreet = item.ubicacion.calleInterseccion;
+          establishment.numberStreet = item.ubicacion.calleNumeracion;
         } else {
           entity.mainStreet = item.ubicacion.direccion;
+          establishment.mainStreet = item.ubicacion.direccion;
         }
 
         entity.referenceStreet = item.ubicacion.calleReferencia;
+        establishment.referenceStreet = item.ubicacion.calleReferencia;
 
         const isNumeric = (value: unknown): boolean => {
           return /^-?\d+(\.\d+)?$/.test(String(value ?? '').trim());
         };
 
         entity.latitude = isNumeric(item.ubicacion.latitud) ? Number(item.ubicacion.latitud) : 0;
+        establishment.latitude = isNumeric(item.ubicacion.latitud)
+          ? Number(item.ubicacion.latitud)
+          : 0;
 
         entity.longitude = isNumeric(item.ubicacion.longitud) ? Number(item.ubicacion.longitud) : 0;
+        establishment.longitude = isNumeric(item.ubicacion.longitud)
+          ? Number(item.ubicacion.longitud)
+          : 0;
 
+        await this.establishmentRepository.save(establishment);
         await this.establishmentAddressRepository.save(entity);
       }
     }
