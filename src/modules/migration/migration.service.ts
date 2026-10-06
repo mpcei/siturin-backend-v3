@@ -953,8 +953,14 @@ export class MigrationService {
         }
 
         entity.referenceStreet = item.ubicacion.calleReferencia;
-        entity.latitude = isNaN(item.ubicacion.latitud) ? item.ubicacion.latitud : 0;
-        entity.longitude = isNaN(item.ubicacion.longitud) ? item.ubicacion.longitud : 0;
+
+        const isNumeric = (value: unknown): boolean => {
+          return /^-?\d+(\.\d+)?$/.test(String(value ?? '').trim());
+        };
+
+        entity.latitude = isNumeric(item.ubicacion.latitud) ? Number(item.ubicacion.latitud) : 0;
+
+        entity.longitude = isNumeric(item.ubicacion.longitud) ? Number(item.ubicacion.longitud) : 0;
 
         await this.establishmentAddressRepository.save(entity);
       }
