@@ -930,7 +930,7 @@ export class MigrationService {
       const establishment = establishments.find((x) => x.idTemp == item.establecimiento_id);
       const process = processes.find((x) => x.idTemp == item.id);
 
-      if(!establishment){
+      if (!establishment) {
         throw new Error('Establishment not found');
       }
 
@@ -2821,11 +2821,11 @@ export class MigrationService {
     if (!typeProcess || !stateProcess || !stateCadastre || !guide || !geographicArea) {
       throw new Error(
         `No se encontró los siguiente ` +
-        `Tipo Proceso: ${typeProcess}, ` +
-        `Estado proceso: ${stateProcess}, ` +
-        `Estado catastro: ${stateCadastre}, ` +
-        `Guide: ${guide}, ` +
-        `geographicArea: ${geographicArea}`,
+          `Tipo Proceso: ${typeProcess}, ` +
+          `Estado proceso: ${stateProcess}, ` +
+          `Estado catastro: ${stateCadastre}, ` +
+          `Guide: ${guide}, ` +
+          `geographicArea: ${geographicArea}`,
       );
     }
 
@@ -3026,8 +3026,8 @@ export class MigrationService {
 
     console.log(
       `Consultas DINARDAP finalizadas. ` +
-      `Correctas: ${registrosConRC.length}. ` +
-      `Errores: ${errores.length}.`,
+        `Correctas: ${registrosConRC.length}. ` +
+        `Errores: ${errores.length}.`,
     );
 
     // ============================================================
@@ -3070,89 +3070,134 @@ export class MigrationService {
           const cadastreStateRepository = manager.getRepository(CadastreStateEntity);
 
           // ==================================================
-          // VALIDAR NUEVAMENTE QUE NO EXISTA
-          //
-          // Importante porque otro proceso podría haber
-          // insertado el RUC después de la consulta inicial.
+          // VALIDAR USUARIO / RUC / ESTABLECIMIENTO
           // ==================================================
 
+          let userSave: UserEntity;
+          let rucSave: RucEntity;
+
           const userExists = await userRepository.findOne({
-            where: { identification: ruc },
+            where: {
+              identification: ruc,
+            },
           });
 
           if (userExists) {
-            throw new Error(`El usuario con RUC ${ruc} ya existe.`);
-          }
+            userSave = userExists;
 
-          // ==================================================
-          // CREAR USER
-          // ==================================================
+            // --------------------------------------------
+            // BUSCAR RUC
+            // --------------------------------------------
 
-          const newUser = userRepository.create();
+            const rucExists = await rucRepository.findOne({
+              where: {
+                number: ruc,
+              },
+            });
 
-          const nationality = catalogueByTypeAndName.get(
-            `users_nationality|${this.normalizeText(rc.nacionalidad)}`,
-          );
+            if (rucExists) {
+              rucSave = rucExists;
 
-          if (nationality?.id) {
-            newUser.nationality = nationality;
-          }
+              // --------------------------------------------
+              // BUSCAR ESTABLECIMIENTO
+              // --------------------------------------------
 
-          const sex = catalogueByTypeAndName.get(`users_sex|${this.normalizeText(rc.sexo)}`);
+              const numeroEstablecimientoExcel = String(
+                data['numero_establecimiento'] ?? '',
+              ).trim();
 
-          if (sex?.id) {
-            newUser.sex = sex;
-          }
+              const establishmentExists = await establishmentRepository.findOne({
+                where: {
+                  rucId: rucExists.id,
+                  number: numeroEstablecimientoExcel,
+                },
+              });
 
-          const [day, month, year] = String(rc.fechaNacimiento).split('/').map(Number);
+              // --------------------------------------------
+              // SOLO AQUÍ ES DUPLICADO
+              // --------------------------------------------
 
-          if (!day || !month || !year) {
-            throw new Error(`Fecha de nacimiento inválida: ${rc.fechaNacimiento}`);
-          }
+              if (establishmentExists) {
+                throw new Error(
+                  `El usuario con RUC ${ruc} ya existe y ` +
+                    `el establecimiento ${numeroEstablecimientoExcel} ` +
+                    `ya está registrado.`,
+                );
+              }
+            } else {
+              // --------------------------------------------
+              // EL USUARIO EXISTE PERO EL RUC NO
+              // --------------------------------------------
 
-          newUser.birthdate = new Date(year, month - 1, day);
+              const newRuc = rucRepository.create();
 
-          newUser.identificationTypeId = identificationType.id;
+              newRuc.stateId = stateRuc.id;
+              newRuc.number = ruc;
+              newRuc.legalName = data['razon_social'];
 
-          newUser.email = data['email'];
-
-          newUser.emailVerifiedAt = new Date();
-
-          newUser.identification = ruc;
-
-          newUser.name = data['razon_social'];
-
-          newUser.password = ruc;
-
-          newUser.passwordChanged = false;
-
-          newUser.username = data['email'];
-
-          if (
-            String(data['total_mujeres_discapacidad']) === '1' ||
-            String(data['total_hombres_discapacidad']) === '1'
-          ) {
-            newUser.hasDisability = true;
+              rucSave = await rucRepository.save(newRuc);
+            }
           } else {
-            newUser.hasDisability = false;
+            // ==================================================
+            // USUARIO NO EXISTE
+            // CREAR USER
+            // ==================================================
+
+            const newUser = userRepository.create();
+
+            const nationality = catalogueByTypeAndName.get(
+              `users_nationality|${this.normalizeText(rc.nacionalidad)}`,
+            );
+
+            if (nationality?.id) {
+              newUser.nationality = nationality;
+            }
+
+            const sex = catalogueByTypeAndName.get(`users_sex|${this.normalizeText(rc.sexo)}`);
+
+            if (sex?.id) {
+              newUser.sex = sex;
+            }
+
+            const [day, month, year] = String(rc.fechaNacimiento).split('/').map(Number);
+
+            if (!day || !month || !year) {
+              throw new Error(`Fecha de nacimiento inválida: ${rc.fechaNacimiento}`);
+            }
+
+            newUser.birthdate = new Date(year, month - 1, day);
+            newUser.identificationTypeId = identificationType.id;
+            newUser.email = data['email'];
+            newUser.emailVerifiedAt = new Date();
+            newUser.identification = ruc;
+            newUser.name = data['razon_social'];
+            newUser.password = ruc;
+            newUser.passwordChanged = false;
+            newUser.username = data['email'];
+
+            if (
+              String(data['total_mujeres_discapacidad']) === '1' ||
+              String(data['total_hombres_discapacidad']) === '1'
+            ) {
+              newUser.hasDisability = true;
+            } else {
+              newUser.hasDisability = false;
+            }
+
+            userSave = await userRepository.save(newUser);
+
+            // ==================================================
+            // CREAR RUC
+            // ==================================================
+
+            const newRuc = rucRepository.create();
+
+            newRuc.stateId = stateRuc.id;
+            newRuc.number = ruc;
+            newRuc.legalName = data['razon_social'];
+
+            rucSave = await rucRepository.save(newRuc);
           }
-
-          const userSave = await userRepository.save(newUser);
-
-          // ==================================================
-          // CREAR RUC
-          // ==================================================
-
-          const newRuc = rucRepository.create();
-
-          newRuc.stateId = stateRuc.id;
-
-          newRuc.number = ruc;
-
-          newRuc.legalName = data['razon_social'];
-
-          const rucSave = await rucRepository.save(newRuc);
-
           // ==================================================
           // UBICACIÓN
           // ==================================================
@@ -3172,9 +3217,9 @@ export class MigrationService {
           if (!province || !canton || !parish) {
             throw new Error(
               `No se encontró la provincia, cantón o parroquia. ` +
-              `Provincia: ${data['provincia']}, ` +
-              `Cantón: ${data['canton']}, ` +
-              `Parroquia: ${data['parroquia']}`,
+                `Provincia: ${data['provincia']}, ` +
+                `Cantón: ${data['canton']}, ` +
+                `Parroquia: ${data['parroquia']}`,
             );
           }
 
@@ -3254,9 +3299,9 @@ export class MigrationService {
 
           const languajes = data['idiomas']
             ? String(data['idiomas'])
-              .split(',')
-              .map((x) => x.trim())
-              .filter(Boolean)
+                .split(',')
+                .map((x) => x.trim())
+                .filter(Boolean)
             : [];
 
           for (const languaje of languajes) {
@@ -3287,9 +3332,9 @@ export class MigrationService {
 
           const modalities = data['modalidades']
             ? String(data['modalidades'])
-              .split(',')
-              .map((x) => x.trim())
-              .filter(Boolean)
+                .split(',')
+                .map((x) => x.trim())
+                .filter(Boolean)
             : [];
 
           for (const modality of modalities) {
@@ -3320,9 +3365,9 @@ export class MigrationService {
 
           const areas = data['areas_protegidas']
             ? String(data['areas_protegidas'])
-              .split(',')
-              .map((x) => x.trim())
-              .filter(Boolean)
+                .split(',')
+                .map((x) => x.trim())
+                .filter(Boolean)
             : [];
 
           for (const area of areas) {
