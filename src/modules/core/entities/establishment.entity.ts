@@ -214,6 +214,22 @@ export class EstablishmentEntity {
   longitude: number;
 
   @Column({
+    name: 'email',
+    type: 'varchar',
+    nullable: true,
+    comment: '',
+  })
+  email: string;
+
+  @Column({
+    name: 'phone',
+    type: 'varchar',
+    nullable: true,
+    comment: '',
+  })
+  phone: string;
+
+  @Column({
     name: 'is_cadastre',
     type: 'boolean',
     default: false,

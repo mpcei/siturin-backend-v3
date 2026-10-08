@@ -36,6 +36,7 @@ export enum CoreCatalogueTypeEnum {
   credentials_state = 'credentials_state',
   processes_type = 'processes_type',
   guide_automatic_inactivation_cause = 'guide_automatic_inactivation_cause',
+  rucs_types = 'rucs_types',
 }
 
 export enum CatalogueInspectionsStateEnum {
@@ -120,6 +121,11 @@ export enum CatalogueCredentialsStateEnum {
   in_progress = 'in_progress',
   rejected = 'rejected',
 }
+
+export enum CatalogueRucTypeEnum {
+  natural = 'natural',
+}
+
 export enum CatalogueSchoolPeriodStateEnum {
   OPEN = 'open',
   CLOSE = 'close',
