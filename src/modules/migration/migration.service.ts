@@ -800,6 +800,8 @@ export class MigrationService {
         entity.hasDebt = item.tiene_deuda;
         entity.registeredAt = item.updated_at || null;
 
+        entity.ruc = item.ruc;
+
         // let ruc = rucs.find((x) => x.number == item.ruc);
         //
         // if (!ruc) {
@@ -3103,8 +3105,8 @@ export class MigrationService {
               // --------------------------------------------
 
               const numeroEstablecimientoExcel = String(
-                data['numero_establecimiento'] ?? '',
-              ).trim();
+                Number(data['numero_establecimiento'] ?? 0),
+              );
 
               const establishmentExists = await establishmentRepository.findOne({
                 where: {
@@ -3239,7 +3241,7 @@ export class MigrationService {
 
           newEstablishment.parishId = parish.id;
 
-          newEstablishment.number = data['numero_establecimiento'];
+          newEstablishment.number = String(Number(data['numero_establecimiento']));
 
           newEstablishment.mainStreet = data['calle_principal'];
 

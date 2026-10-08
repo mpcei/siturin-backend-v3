@@ -90,6 +90,14 @@ export class PaymentEntity {
   hasDebt: boolean;
 
   @Column({
+    name: 'number',
+    type: 'varchar',
+    nullable: true,
+    comment: '',
+  })
+  ruc: string;
+
+  @Column({
     name: 'id_temp',
     type: 'bigint',
     comment: 'Codigo de la tabla migrada',
