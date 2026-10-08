@@ -2036,8 +2036,8 @@ export class MigrationService {
     const catalogues = await this.catalogueRepository.find({withDeleted:true});
 
     const workbook = XLSX.read(file.buffer, { type: 'buffer' });
-    const sheetName = workbook.SheetNames[1];
-    const dataExcel: any[] = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
+    //const sheetName = workbook.SheetNames[1];
+    const dataExcel: any[] = XLSX.utils.sheet_to_json(workbook.Sheets['act_cla_cat']);
 
     for (const data of dataExcel) {
       if (data['type'] == 'activity') {
@@ -2091,8 +2091,8 @@ export class MigrationService {
     const classifications = await this.classificationRepository.find({ withDeleted: true });
 
     const workbook = XLSX.read(file.buffer, { type: 'buffer' });
-    const sheetName = workbook.SheetNames[2];
-    const dataExcel: any[] = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
+    //const sheetName = workbook.SheetNames[2];
+    const dataExcel: any[] = XLSX.utils.sheet_to_json(workbook.Sheets['model_catalogues']);
 
     for (const data of dataExcel) {
       if (data['type'] == 'protected_areas_name') {
@@ -2142,8 +2142,8 @@ export class MigrationService {
     const classifications = await this.classificationRepository.find({ withDeleted: true });
 
     const workbook = XLSX.read(file.buffer, { type: 'buffer' });
-    const sheetName = workbook.SheetNames[3];
-    const dataExcel: any[] = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
+    //const sheetName = workbook.SheetNames[3];
+    const dataExcel: any[] = XLSX.utils.sheet_to_json(workbook.Sheets['requirement']);
 
     for (const data of dataExcel) {
       const requirement = requirements.find(
@@ -2342,8 +2342,8 @@ export class MigrationService {
     const allDpa = await this.dpaRepository.find();
 
     const workbook = XLSX.read(file.buffer, { type: 'buffer' });
-    const sheetName = workbook.SheetNames[0];
-    const dataExcel: any[] = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
+    //const sheetName = workbook.SheetNames[0];
+    const dataExcel: any[] = XLSX.utils.sheet_to_json(workbook.Sheets['parish']);
 
     const dpaTypeParish = catalogues.find((x) => x.type === 'dpa_types' && x.code === 'parish');
     if (!dpaTypeParish) {
