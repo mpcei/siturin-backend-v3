@@ -1623,13 +1623,21 @@ export class MigrationService {
         entity.idTemp = item.id;
 
         const process = processes.find((x) => x.idTemp == item.tramite_id);
-        console.log('item.tramite_id', processes.length);
-        console.log('item.tramite_id', item.tramite_id);
-        console.log('process', process);
+
         const type = catalogues.find((x) => x.idTemp == item.tipo_id);
 
+        const parent = catalogues.find((x) => x.idTemp == item.padre_id);
+
         if (process) entity.processId = process.id;
-        // if (type) entity.typeId = type.id;
+
+        if (parent) {
+          entity.className = parent.name;
+        }
+
+        if (type) {
+          entity.code = type.code;
+          entity.name = type.name;
+        }
 
         await this.adventureTourismModalityRepository.save(entity);
       }
