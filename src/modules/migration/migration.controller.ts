@@ -84,6 +84,19 @@ export class MigrationController {
   }
 
   @PublicRoute()
+  @Post('roles')
+  @HttpCode(HttpStatus.CREATED)
+  async migrateRoles(): Promise<ResponseHttpInterface> {
+    const responseService = await this.migrationService.migrateRoles();
+
+    return {
+      data: responseService.data,
+      message: 'Roles',
+      title: 'created',
+    };
+  }
+
+  @PublicRoute()
   @Post('external-users')
   @HttpCode(HttpStatus.CREATED)
   async migrateExternalUsers(): Promise<ResponseHttpInterface> {

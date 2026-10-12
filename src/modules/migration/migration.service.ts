@@ -68,7 +68,7 @@ import {
 } from '@modules/core/entities';
 import { CatalogueEntity } from '@modules/common/catalogue/catalogue.entity';
 import { DpaEntity } from '@modules/common/dpa/dpa.entity';
-import { UserEntity } from '@auth/entities';
+import { RoleEntity, UserEntity } from '@auth/entities';
 import { ObservationEntity } from '@modules/core/entities/observation.entity';
 import { KitchenTypeEntity } from '@modules/core/entities/kitchen-type.entity';
 import { ServiceTypeEntity } from '@modules/core/entities/service-type.entity';
@@ -109,6 +109,8 @@ export class MigrationService {
     private readonly dpaRepository: Repository<DpaEntity>,
     @Inject(AuthRepositoryEnum.USER_REPOSITORY)
     private readonly userRepository: Repository<UserEntity>,
+    @Inject(AuthRepositoryEnum.ROLE_REPOSITORY)
+    private readonly roleRepository: Repository<RoleEntity>,
     @Inject(CoreRepositoryEnum.EXTERNAL_USER_REPOSITORY)
     private readonly externalUserRepository: Repository<ExternalUserEntity>,
     @Inject(CoreRepositoryEnum.INTERNAL_USER_REPOSITORY)
@@ -417,8 +419,8 @@ export class MigrationService {
 
   async migrateExternalUsers() {
     const data = await this.getData('siturin.usuario_externos');
-    const externalUsers = await this.externalUserRepository.find({withDeleted:true});
-    const users = await this.userRepository.find({withDeleted:true});
+    const externalUsers = await this.externalUserRepository.find({ withDeleted: true });
+    const users = await this.userRepository.find({ withDeleted: true });
 
     for (const item of data) {
       console.log(item.id);
@@ -445,8 +447,8 @@ export class MigrationService {
 
   async migrateInternalUsers() {
     const data = await this.getData('siturin.usuario_internos');
-    const internalUsers = await this.internalUserRepository.find({withDeleted:true});
-    const users = await this.userRepository.find({withDeleted:true});
+    const internalUsers = await this.internalUserRepository.find({ withDeleted: true });
+    const users = await this.userRepository.find({ withDeleted: true });
 
     for (const item of data) {
       const exists = internalUsers.find((register) => register.idTemp == item.id);
@@ -472,11 +474,55 @@ export class MigrationService {
     return { data: null };
   }
 
+  async migrateRoles() {
+    const data = await this.getData('authentication.roles');
+    const roles = await this.roleRepository.find();
+
+    const users = await this.userRepository.find({ withDeleted: true });
+
+    for (const item of data) {
+      const user = await this.userRepository.findOne({ where: { idTemp: item.model_id } });
+
+      if (user) {
+        let code = '';
+        switch (item.role_id) {
+          case 1: {
+            code = 'external';
+            break;
+          }
+          case 2: {
+            code = 'gad';
+            break;
+          }
+          case 3: {
+            code = 'specialist';
+            break;
+          }
+          case 4: {
+            code = 'technician';
+            break;
+          }
+          case 5: {
+            code = 'dac';
+            break;
+          }
+        }
+        const role = roles.find((register) => register.code == code);
+        if (role) {
+          user.roles = [role];
+          await this.userRepository.save(user);
+        }
+      }
+    }
+
+    return { data: null };
+  }
+
   async migrateInternalDPAUsers() {
     const data = await this.getData('siturin.usuario_interno_dpa');
-    const internalDPAUsers = await this.internalDpaUserRepository.find({withDeleted:true});
-    const internalUsers = await this.internalUserRepository.find({withDeleted:true});
-    const dpas = await this.dpaRepository.find({withDeleted:true});
+    const internalDPAUsers = await this.internalDpaUserRepository.find({ withDeleted: true });
+    const internalUsers = await this.internalUserRepository.find({ withDeleted: true });
+    const dpas = await this.dpaRepository.find({ withDeleted: true });
 
     for (const item of data) {
       const exists = internalDPAUsers.find((register) => register.idTemp == item.id);
@@ -508,9 +554,9 @@ export class MigrationService {
 
   async migrateInternalZonalUsers() {
     const data = await this.getData('siturin.usuario_interno_zonal');
-    const internalZonalUsers = await this.internalZonalUserRepository.find({withDeleted:true});
-    const internalUsers = await this.internalUserRepository.find({withDeleted:true});
-    const zones = await this.zoneRepository.find({withDeleted:true});
+    const internalZonalUsers = await this.internalZonalUserRepository.find({ withDeleted: true });
+    const internalUsers = await this.internalUserRepository.find({ withDeleted: true });
+    const zones = await this.zoneRepository.find({ withDeleted: true });
 
     for (const item of data) {
       const exists = internalZonalUsers.find((register) => register.idTemp == item.id);
@@ -542,8 +588,8 @@ export class MigrationService {
   async migrateActivities() {
     const data = await this.getData('siturin.actividades');
 
-    const activities = await this.activityRepository.find({withDeleted:true});
-    const catalogues = await this.catalogueRepository.find({withDeleted:true});
+    const activities = await this.activityRepository.find({ withDeleted: true });
+    const catalogues = await this.catalogueRepository.find({ withDeleted: true });
 
     for (const item of data) {
       const exists = activities.find((register) => register.idTemp == item.id);
@@ -574,8 +620,8 @@ export class MigrationService {
   async migrateClassifications() {
     const data = await this.getData('siturin.clasificaciones');
 
-    const classifications = await this.classificationRepository.find({withDeleted:true});
-    const activities = await this.activityRepository.find({withDeleted:true});
+    const classifications = await this.classificationRepository.find({ withDeleted: true });
+    const activities = await this.activityRepository.find({ withDeleted: true });
 
     for (const item of data) {
       const exists = classifications.find((register) => register.idTemp == item.id);
@@ -624,8 +670,8 @@ export class MigrationService {
   async migrateCategories() {
     const data = await this.getData('siturin.categorias');
 
-    const categories = await this.categoryRepository.find({withDeleted:true});
-    const classifications = await this.classificationRepository.find({withDeleted:true});
+    const categories = await this.categoryRepository.find({ withDeleted: true });
+    const classifications = await this.classificationRepository.find({ withDeleted: true });
 
     for (const item of data) {
       const exists = categories.find((register) => register.idTemp == item.id);
@@ -655,8 +701,8 @@ export class MigrationService {
 
   async migrateRucs() {
     const data = await this.getData('siturin.rucs');
-    const table = await this.rucRepository.find({withDeleted:true});
-    const catalogues = await this.catalogueRepository.find({withDeleted:true});
+    const table = await this.rucRepository.find({ withDeleted: true });
+    const catalogues = await this.catalogueRepository.find({ withDeleted: true });
 
     for (const item of data) {
       //ruc sin user
@@ -718,9 +764,9 @@ export class MigrationService {
   async migrateEstablishments() {
     const data = await this.getData('siturin.establecimientos');
 
-    const establishments = await this.establishmentRepository.find({withDeleted:true});
-    const rucs = await this.rucRepository.find({withDeleted:true});
-    const catalogues = await this.catalogueRepository.find({withDeleted:true});
+    const establishments = await this.establishmentRepository.find({ withDeleted: true });
+    const rucs = await this.rucRepository.find({ withDeleted: true });
+    const catalogues = await this.catalogueRepository.find({ withDeleted: true });
 
     for (const item of data) {
       const exists = establishments.find((register) => register.idTemp == item.id);
@@ -753,9 +799,11 @@ export class MigrationService {
 
   async migrateCategoryConfigurations() {
     const data = await this.getData('siturin.configuracion_categorias');
-    const categoryConfigurations = await this.categoryConfigurationRepository.find({withDeleted:true});
-    const classifications = await this.classificationRepository.find({withDeleted:true});
-    const categories = await this.categoryRepository.find({withDeleted:true});
+    const categoryConfigurations = await this.categoryConfigurationRepository.find({
+      withDeleted: true,
+    });
+    const classifications = await this.classificationRepository.find({ withDeleted: true });
+    const categories = await this.categoryRepository.find({ withDeleted: true });
 
     for (const item of data) {
       const exists = categoryConfigurations.find((register) => register.idTemp == item.id);
@@ -786,8 +834,8 @@ export class MigrationService {
 
   async migratePayments() {
     const data = await this.getData('siturin.pagos');
-    const table = await this.paymentRepository.find({withDeleted:true});
-    const rucs = await this.rucRepository.find({withDeleted:true});
+    const table = await this.paymentRepository.find({ withDeleted: true });
+    const rucs = await this.rucRepository.find({ withDeleted: true });
 
     for (const item of data) {
       const exists = table.find((register) => register.idTemp == item.id);
@@ -824,8 +872,8 @@ export class MigrationService {
 
   async migrateRoomTypes() {
     const data = await this.getData('siturin.tipo_habitaciones');
-    const table = await this.roomTypeRepository.find({withDeleted:true});
-    const catalogues = await this.catalogueRepository.find({withDeleted:true});
+    const table = await this.roomTypeRepository.find({ withDeleted: true });
+    const catalogues = await this.catalogueRepository.find({ withDeleted: true });
 
     for (const item of data) {
       const exists = table.find((register) => register.idTemp == item.id);
@@ -859,12 +907,12 @@ export class MigrationService {
   async migrateProcesses() {
     const data = await this.getProcesses();
 
-    const table = await this.processRepository.find({withDeleted:true});
-    const catalogues = await this.catalogueRepository.find({withDeleted:true});
-    const activities = await this.activityRepository.find({withDeleted:true});
-    const classifications = await this.classificationRepository.find({withDeleted:true});
-    const categories = await this.categoryRepository.find({withDeleted:true});
-    const establishments = await this.establishmentRepository.find({withDeleted:true});
+    const table = await this.processRepository.find({ withDeleted: true });
+    const catalogues = await this.catalogueRepository.find({ withDeleted: true });
+    const activities = await this.activityRepository.find({ withDeleted: true });
+    const classifications = await this.classificationRepository.find({ withDeleted: true });
+    const categories = await this.categoryRepository.find({ withDeleted: true });
+    const establishments = await this.establishmentRepository.find({ withDeleted: true });
 
     for (const item of data) {
       const exists = table.find((register) => register.idTemp == item.id);
@@ -921,9 +969,9 @@ export class MigrationService {
   async migrateProcessAddresses() {
     const data = await this.getProcessAddresses();
 
-    const dpa = await this.dpaRepository.find({withDeleted:true});
-    const establishments = await this.establishmentRepository.find({withDeleted:true});
-    const processes = await this.processRepository.find({withDeleted:true});
+    const dpa = await this.dpaRepository.find({ withDeleted: true });
+    const establishments = await this.establishmentRepository.find({ withDeleted: true });
+    const processes = await this.processRepository.find({ withDeleted: true });
 
     for (const item of data) {
       const entity = this.establishmentAddressRepository.create();
@@ -997,8 +1045,8 @@ export class MigrationService {
   async migrateProcessContactPersons() {
     const data = await this.getProcessContactPerson();
 
-    const establishments = await this.establishmentRepository.find({withDeleted:true});
-    const processes = await this.processRepository.find({withDeleted:true});
+    const establishments = await this.establishmentRepository.find({ withDeleted: true });
+    const processes = await this.processRepository.find({ withDeleted: true });
 
     for (const item of data) {
       const entity = this.establishmentContactPersonRepository.create();
@@ -1047,9 +1095,9 @@ export class MigrationService {
   async migrateProcessFoodDrinks() {
     const data = await this.getData('siturin.tramite_alimentos_bebidas');
 
-    const table = await this.processFoodDrinkRepository.find({withDeleted:true});
-    const processes = await this.processRepository.find({withDeleted:true});
-    const catalogues = await this.catalogueRepository.find({withDeleted:true});
+    const table = await this.processFoodDrinkRepository.find({ withDeleted: true });
+    const processes = await this.processRepository.find({ withDeleted: true });
+    const catalogues = await this.catalogueRepository.find({ withDeleted: true });
 
     for (const item of data) {
       const exists = table.find((register) => register.idTemp == item.id);
@@ -1115,8 +1163,8 @@ export class MigrationService {
   async migrateProcessAccommodation() {
     const data = await this.getData('siturin.tramite_alojamientos');
 
-    const table = await this.processAccommodationRepository.find({withDeleted:true});
-    const processes = await this.processRepository.find({withDeleted:true});
+    const table = await this.processAccommodationRepository.find({ withDeleted: true });
+    const processes = await this.processRepository.find({ withDeleted: true });
 
     for (const item of data) {
       const exists = table.find((register) => register.idTemp == item.id);
@@ -1148,8 +1196,8 @@ export class MigrationService {
   async migrateProcessEvents() {
     const data = await this.getData('siturin.tramite_eventos');
 
-    const table = await this.processEventRepository.find({withDeleted:true});
-    const processes = await this.processRepository.find({withDeleted:true});
+    const table = await this.processEventRepository.find({ withDeleted: true });
+    const processes = await this.processRepository.find({ withDeleted: true });
 
     for (const item of data) {
       const exists = table.find((register) => register.idTemp == item.id);
@@ -1178,8 +1226,8 @@ export class MigrationService {
   async migrateProcessCtc() {
     const data = await this.getData('siturin.tramite_ctc');
 
-    const table = await this.processCtcRepository.find({withDeleted:true});
-    const processes = await this.processRepository.find({withDeleted:true});
+    const table = await this.processCtcRepository.find({ withDeleted: true });
+    const processes = await this.processRepository.find({ withDeleted: true });
 
     for (const item of data) {
       const exists = table.find((register) => register.idTemp == item.id);
@@ -1215,9 +1263,9 @@ export class MigrationService {
   async migrateProcessAgencies() {
     const data = await this.getData('siturin.tramite_operaciones_intermediaciones');
 
-    const table = await this.processAgencyRepository.find({withDeleted:true});
-    const processes = await this.processRepository.find({withDeleted:true});
-    const catalogues = await this.catalogueRepository.find({withDeleted:true});
+    const table = await this.processAgencyRepository.find({ withDeleted: true });
+    const processes = await this.processRepository.find({ withDeleted: true });
+    const catalogues = await this.catalogueRepository.find({ withDeleted: true });
 
     for (const item of data) {
       const exists = table.find((register) => register.idTemp == item.id);
@@ -1250,8 +1298,8 @@ export class MigrationService {
   async migrateProcessParks() {
     const data = await this.getData('siturin.tramite_parques');
 
-    const table = await this.processParkRepository.find({withDeleted:true});
-    const processes = await this.processRepository.find({withDeleted:true});
+    const table = await this.processParkRepository.find({ withDeleted: true });
+    const processes = await this.processRepository.find({ withDeleted: true });
 
     for (const item of data) {
       const exists = table.find((register) => register.idTemp == item.id);
@@ -1280,9 +1328,9 @@ export class MigrationService {
   async migrateProcessTransports() {
     const data = await this.getData('siturin.tramite_transportes');
 
-    const table = await this.processTransportRepository.find({withDeleted:true});
-    const processes = await this.processRepository.find({withDeleted:true});
-    const catalogues = await this.catalogueRepository.find({withDeleted:true});
+    const table = await this.processTransportRepository.find({ withDeleted: true });
+    const processes = await this.processRepository.find({ withDeleted: true });
+    const catalogues = await this.catalogueRepository.find({ withDeleted: true });
 
     for (const item of data) {
       const exists = table.find((register) => register.idTemp == item.id);
@@ -1318,11 +1366,11 @@ export class MigrationService {
   async migrateAssignments() {
     const data = await this.getData('siturin.asignaciones');
 
-    const table = await this.assignmentRepository.find({withDeleted:true});
-    const processes = await this.processRepository.find({withDeleted:true});
-    const dpas = await this.dpaRepository.find({withDeleted:true});
-    const internalUsers = await this.internalUserRepository.find({withDeleted:true});
-    const zones = await this.zoneRepository.find({withDeleted:true});
+    const table = await this.assignmentRepository.find({ withDeleted: true });
+    const processes = await this.processRepository.find({ withDeleted: true });
+    const dpas = await this.dpaRepository.find({ withDeleted: true });
+    const internalUsers = await this.internalUserRepository.find({ withDeleted: true });
+    const zones = await this.zoneRepository.find({ withDeleted: true });
 
     for (const item of data) {
       const exists = table.find((register) => register.idTemp == item.id);
@@ -1367,9 +1415,9 @@ export class MigrationService {
   async migrateCtcActivities() {
     const data = await this.getData('siturin.ctc_actividades');
 
-    const table = await this.ctcActivityRepository.find({withDeleted:true});
-    const processes = await this.processRepository.find({withDeleted:true});
-    const catalogues = await this.catalogueRepository.find({withDeleted:true});
+    const table = await this.ctcActivityRepository.find({ withDeleted: true });
+    const processes = await this.processRepository.find({ withDeleted: true });
+    const catalogues = await this.catalogueRepository.find({ withDeleted: true });
 
     for (const item of data) {
       const exists = table.find((register) => register.idTemp == item.id);
@@ -1400,8 +1448,8 @@ export class MigrationService {
   async migrateTouristGuides() {
     const data = await this.getData('siturin.guia_turismos');
 
-    const table = await this.touristGuideRepository.find({withDeleted:true});
-    const processes = await this.processRepository.find({withDeleted:true});
+    const table = await this.touristGuideRepository.find({ withDeleted: true });
+    const processes = await this.processRepository.find({ withDeleted: true });
 
     for (const item of data) {
       const exists = table.find((register) => register.idTemp == item.id);
@@ -1432,8 +1480,8 @@ export class MigrationService {
   async migrateRooms() {
     const data = await this.getData('siturin.habitaciones');
 
-    const table = await this.roomRepository.find({withDeleted:true});
-    const processes = await this.processRepository.find({withDeleted:true});
+    const table = await this.roomRepository.find({ withDeleted: true });
+    const processes = await this.processRepository.find({ withDeleted: true });
 
     for (const item of data) {
       const exists = table.find((register) => register.idTemp == item.id);
@@ -1464,8 +1512,8 @@ export class MigrationService {
   async migrateRoomRates() {
     const data = await this.getData('siturin.habitacion_tarifas');
 
-    const table = await this.roomRateRepository.find({withDeleted:true});
-    const rooms = await this.roomRepository.find({withDeleted:true});
+    const table = await this.roomRateRepository.find({ withDeleted: true });
+    const rooms = await this.roomRepository.find({ withDeleted: true });
 
     for (const item of data) {
       const exists = table.find((register) => register.idTemp == item.id);
@@ -1499,9 +1547,9 @@ export class MigrationService {
   async migrateRoomCapacities() {
     const data = await this.getData('siturin.capacidad_habitaciones');
 
-    const table = await this.roomCapacityRepository.find({withDeleted:true});
-    const categories = await this.categoryRepository.find({withDeleted:true});
-    const roomTypes = await this.roomTypeRepository.find({withDeleted:true});
+    const table = await this.roomCapacityRepository.find({ withDeleted: true });
+    const categories = await this.categoryRepository.find({ withDeleted: true });
+    const roomTypes = await this.roomTypeRepository.find({ withDeleted: true });
 
     for (const item of data) {
       const exists = table.find((register) => register.idTemp == item.id);
@@ -1530,10 +1578,10 @@ export class MigrationService {
   async migrateInspections() {
     const data = await this.getData('siturin.inspecciones');
 
-    const table = await this.inspectionRepository.find({withDeleted:true});
-    const processes = await this.processRepository.find({withDeleted:true});
-    const internalUsers = await this.internalUserRepository.find({withDeleted:true});
-    const catalogues = await this.catalogueRepository.find({withDeleted:true});
+    const table = await this.inspectionRepository.find({ withDeleted: true });
+    const processes = await this.processRepository.find({ withDeleted: true });
+    const internalUsers = await this.internalUserRepository.find({ withDeleted: true });
+    const catalogues = await this.catalogueRepository.find({ withDeleted: true });
 
     for (const item of data) {
       const exists = table.find((register) => register.idTemp == item.id);
@@ -1575,8 +1623,8 @@ export class MigrationService {
   async migrateTouristLicenses() {
     const data = await this.getData('siturin.licencias');
 
-    const table = await this.touristLicenseRepository.find({withDeleted:true});
-    const touristGuides = await this.touristGuideRepository.find({withDeleted:true});
+    const table = await this.touristLicenseRepository.find({ withDeleted: true });
+    const touristGuides = await this.touristGuideRepository.find({ withDeleted: true });
 
     for (const item of data) {
       const exists = table.find((register) => register.idTemp == item.id);
@@ -1653,8 +1701,8 @@ export class MigrationService {
   async migrateSalesRepresentatives() {
     const data = await this.getData('siturin.representante_ventas');
 
-    const table = await this.salesRepresentativeRepository.find({withDeleted:true});
-    const processes = await this.processRepository.find({withDeleted:true});
+    const table = await this.salesRepresentativeRepository.find({ withDeleted: true });
+    const processes = await this.processRepository.find({ withDeleted: true });
 
     for (const item of data) {
       const exists = table.find((register) => register.idTemp == item.id);
@@ -1687,9 +1735,9 @@ export class MigrationService {
   async migrateLandTransports() {
     const data = await this.getData('siturin.transporte_terrestres');
 
-    const table = await this.landTransportRepository.find({withDeleted:true});
-    const processes = await this.processRepository.find({withDeleted:true});
-    const catalogues = await this.catalogueRepository.find({withDeleted:true});
+    const table = await this.landTransportRepository.find({ withDeleted: true });
+    const processes = await this.processRepository.find({ withDeleted: true });
+    const catalogues = await this.catalogueRepository.find({ withDeleted: true });
 
     for (const item of data) {
       const exists = table.find((register) => register.idTemp == item.id);
@@ -1724,9 +1772,9 @@ export class MigrationService {
   async migrateModelCatalogues() {
     const data = await this.getData('siturin.catalogo_modelo');
 
-    const table = await this.modelCatalogueRepository.find({withDeleted:true});
-    const classifications = await this.classificationRepository.find({withDeleted:true});
-    const catalogues = await this.catalogueRepository.find({withDeleted:true});
+    const table = await this.modelCatalogueRepository.find({ withDeleted: true });
+    const classifications = await this.classificationRepository.find({ withDeleted: true });
+    const catalogues = await this.catalogueRepository.find({ withDeleted: true });
 
     for (const item of data) {
       const exists = table.find((register) => register.idTemp == item.id);
@@ -1760,11 +1808,13 @@ export class MigrationService {
       ORDER BY modelo_type,modelo_id ,orden
     `);
 
-    const regulationSectionTable = await this.regulationSectionRepository.find({withDeleted:true});
-    const regulationItemTable = await this.regulationItemRepository.find({withDeleted:true});
-    const classifications = await this.classificationRepository.find({withDeleted:true});
-    const categories = await this.categoryRepository.find({withDeleted:true});
-    const catalogues = await this.catalogueRepository.find({withDeleted:true});
+    const regulationSectionTable = await this.regulationSectionRepository.find({
+      withDeleted: true,
+    });
+    const regulationItemTable = await this.regulationItemRepository.find({ withDeleted: true });
+    const classifications = await this.classificationRepository.find({ withDeleted: true });
+    const categories = await this.categoryRepository.find({ withDeleted: true });
+    const catalogues = await this.catalogueRepository.find({ withDeleted: true });
 
     let currentSection: RegulationSectionEntity;
 
@@ -1927,9 +1977,9 @@ export class MigrationService {
       FROM core.files
     `);
 
-    const table = await this.fileRepository.find({withDeleted:true});
-    const processes = await this.processRepository.find({withDeleted:true});
-    const cadastres = await this.cadastreRepository.find({withDeleted:true});
+    const table = await this.fileRepository.find({ withDeleted: true });
+    const processes = await this.processRepository.find({ withDeleted: true });
+    const cadastres = await this.cadastreRepository.find({ withDeleted: true });
 
     const csvLogPath = join(process.cwd(), 'storage/migration', 'errores_migracion.csv');
 
@@ -2033,7 +2083,7 @@ export class MigrationService {
   }
 
   async migrateGuideActivity(file: Express.Multer.File) {
-    const catalogues = await this.catalogueRepository.find({withDeleted:true});
+    const catalogues = await this.catalogueRepository.find({ withDeleted: true });
 
     const workbook = XLSX.read(file.buffer, { type: 'buffer' });
     //const sheetName = workbook.SheetNames[1];
@@ -2844,12 +2894,12 @@ export class MigrationService {
     if (!typeProcess || !stateProcess || !stateCadastre || !guide || !geographicArea || !typeRuc) {
       throw new Error(
         `No se encontró los siguiente ` +
-        `Tipo Proceso: ${typeProcess}, ` +
-        `Estado proceso: ${stateProcess}, ` +
-        `Estado catastro: ${stateCadastre}, ` +
-        `Guide: ${guide}, ` +
-        `typeRuc: ${typeRuc}, ` +
-        `geographicArea: ${geographicArea}`,
+          `Tipo Proceso: ${typeProcess}, ` +
+          `Estado proceso: ${stateProcess}, ` +
+          `Estado catastro: ${stateCadastre}, ` +
+          `Guide: ${guide}, ` +
+          `typeRuc: ${typeRuc}, ` +
+          `geographicArea: ${geographicArea}`,
       );
     }
 
@@ -3050,8 +3100,8 @@ export class MigrationService {
 
     console.log(
       `Consultas DINARDAP finalizadas. ` +
-      `Correctas: ${registrosConRC.length}. ` +
-      `Errores: ${errores.length}.`,
+        `Correctas: ${registrosConRC.length}. ` +
+        `Errores: ${errores.length}.`,
     );
 
     // ============================================================
@@ -3182,8 +3232,8 @@ export class MigrationService {
               if (establishmentExists) {
                 throw new Error(
                   `El usuario con RUC ${ruc} ya existe y ` +
-                  `el establecimiento ${numeroEstablecimientoExcel} ` +
-                  `ya está registrado.`,
+                    `el establecimiento ${numeroEstablecimientoExcel} ` +
+                    `ya está registrado.`,
                 );
               }
             } else {
@@ -3281,9 +3331,9 @@ export class MigrationService {
           if (!province || !canton || !parish) {
             throw new Error(
               `No se encontró la provincia, cantón o parroquia. ` +
-              `Provincia: ${data['provincia']}, ` +
-              `Cantón: ${data['canton']}, ` +
-              `Parroquia: ${data['parroquia']}`,
+                `Provincia: ${data['provincia']}, ` +
+                `Cantón: ${data['canton']}, ` +
+                `Parroquia: ${data['parroquia']}`,
             );
           }
 
@@ -3353,16 +3403,16 @@ export class MigrationService {
 
           const languajes = data['idiomas']
             ? String(data['idiomas'])
-              .split(',')
-              .map((x) => x.trim())
-              .filter(Boolean)
+                .split(',')
+                .map((x) => x.trim())
+                .filter(Boolean)
             : [];
 
           const levels = data['nivel_idioma']
             ? String(data['nivel_idioma'])
-              .split(',')
-              .map((x) => x.trim())
-              .filter(Boolean)
+                .split(',')
+                .map((x) => x.trim())
+                .filter(Boolean)
             : [];
 
           if (languajes.length !== levels.length) {
@@ -3407,9 +3457,9 @@ export class MigrationService {
 
           const modalities = data['modalidades']
             ? String(data['modalidades'])
-              .split(',')
-              .map((x) => x.trim())
-              .filter(Boolean)
+                .split(',')
+                .map((x) => x.trim())
+                .filter(Boolean)
             : [];
 
           const cert = catalogueByTypeAndName.get(
@@ -3443,9 +3493,9 @@ export class MigrationService {
 
           const areas = data['areas_protegidas']
             ? String(data['areas_protegidas'])
-              .split(',')
-              .map((x) => x.trim())
-              .filter(Boolean)
+                .split(',')
+                .map((x) => x.trim())
+                .filter(Boolean)
             : [];
 
           for (const area of areas) {
@@ -3453,9 +3503,10 @@ export class MigrationService {
               `protected_areas_name|${this.normalizeText(area)}`,
             );
             const province = dpa.find(
-              (x) => this.compareWords(x.name, data['provincia_areas_protegidas']) && x.typeId === dpaTypeProvince.id,
+              (x) =>
+                this.compareWords(x.name, data['provincia_areas_protegidas']) &&
+                x.typeId === dpaTypeProvince.id,
             );
-
 
             if (!result) {
               continue;
