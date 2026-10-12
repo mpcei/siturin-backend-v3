@@ -208,10 +208,12 @@ export class AuthService {
   async findUserLegacy(payload: SignInDto) {
     const url = `${this.configService.externalApis.urlLegacy}/public/api/v1/public/auth/login`;
     console.log('payload', url);
+    console.log('payload', payload);
     try {
       const response = await lastValueFrom(this.httpService.post(url, payload));
       return response.data;
     } catch (error) {
+      console.error('Error finding user legacy:', error);
       return null;
     }
 
