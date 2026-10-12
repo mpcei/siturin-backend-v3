@@ -207,6 +207,7 @@ export class AuthService {
 
   async findUserLegacy(payload: SignInDto) {
     const url = `${this.configService.externalApis.urlLegacy}/public/auth/login`;
+    console.log('payload', url);
     try {
       const response = await lastValueFrom(this.httpService.post(url, payload));
       return response.data;
