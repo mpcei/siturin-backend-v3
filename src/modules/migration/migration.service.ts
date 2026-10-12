@@ -481,8 +481,8 @@ export class MigrationService {
     const users = await this.userRepository.find({ withDeleted: true });
 
     for (const item of data) {
-      // const user = await this.userRepository.findOne({ where: { idTemp: item.model_id } });
-      const user = await users.find((register) => register.idTemp == item.model_id);
+      const user = await this.userRepository.findOne({ where: { idTemp: item.model_id } });
+      // const user = await users.find((register) => register.idTemp == item.model_id);
 
       if (user) {
         let code = '';
@@ -508,8 +508,10 @@ export class MigrationService {
             break;
           }
         }
+        console.log(code);
         const role = roles.find((register) => register.code == code);
         if (role) {
+          console.log(user.identification);
           user.roles = [role];
           await this.userRepository.save(user);
         }
