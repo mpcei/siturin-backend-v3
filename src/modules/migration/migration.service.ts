@@ -486,24 +486,26 @@ export class MigrationService {
 
       if (user) {
         let code = '';
+        console.log(item.role_id);
         switch (item.role_id) {
-          case 1: {
+          case '1': {
+            console.log('entro 1');
             code = 'external';
             break;
           }
-          case 2: {
+          case '2': {
             code = 'gad';
             break;
           }
-          case 3: {
+          case '3': {
             code = 'specialist';
             break;
           }
-          case 4: {
+          case '4': {
             code = 'technician';
             break;
           }
-          case 5: {
+          case '5': {
             code = 'dac';
             break;
           }
