@@ -486,7 +486,7 @@ export class MigrationService {
 
       if (user) {
         let code = '';
-        console.log(item.role_id);
+
         switch (item.role_id) {
           case '1': {
             console.log('entro 1');
@@ -510,10 +510,9 @@ export class MigrationService {
             break;
           }
         }
-        console.log(code);
+
         const role = roles.find((register) => register.code == code);
         if (role) {
-          console.log(user.identification);
           user.roles = [role];
           await this.userRepository.save(user);
         }
