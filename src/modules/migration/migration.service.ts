@@ -475,7 +475,7 @@ export class MigrationService {
   }
 
   async migrateRoles() {
-    const data = await this.getData('authentication.roles');
+    const data = await this.getData('authentication.model_has_roles');
     const roles = await this.roleRepository.find();
 
     const users = await this.userRepository.find({ withDeleted: true });
