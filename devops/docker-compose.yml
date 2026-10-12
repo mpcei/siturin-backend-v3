@@ -1,10 +1,10 @@
 services:
-  backend-qa:
+  siturin-backend:
     build:
       context: ..
       dockerfile: devops/Dockerfile
 
-    container_name: backend-qa
+    container_name: siturin-backend
 
     restart: unless-stopped
 
@@ -12,8 +12,8 @@ services:
       - ../.env
 
     networks:
-      - qa_network
+      - npm_network
 
 networks:
-  qa_network:
+  npm_network:
     external: true

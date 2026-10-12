@@ -51,4 +51,5 @@ export const JoiValidationSchema = Joi.object({
   URL_INTERNO: Joi.string().required(),
 
   URL_DOCUMENT_VALIDATOR: Joi.string().required(),
+  URL_LEGACY: Joi.string().required(),
 });

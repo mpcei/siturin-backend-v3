@@ -5,6 +5,7 @@ export interface SignInInterface {
   refreshToken: string;
   auth: AuthInterface;
   roles: RoleEntity[];
+  userLegacy: any;
 }
 
 export interface AuthInterface {
