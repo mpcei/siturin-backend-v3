@@ -135,9 +135,16 @@ export class AuthService {
         ruc: { type: true },
       },
     });
-    const userLegacy = await this.findUserLegacy(payload);
 
-    if (!user && !userLegacy) {
+    const userLegacy = await this.findUserLegacy(payload);
+    if (userLegacy && user && !user.passwordChanged) {
+      const passwordHash = Bcrypt.hashSync(payload.password, 10);
+      await this.repository.update(user.id, { password: passwordHash, passwordChanged: true });
+      user.password = passwordHash;
+      user.passwordChanged = true;
+    }
+    console.log(userLegacy);
+    if ((!user && !userLegacy) || !userLegacy) {
       throw new UnauthorizedException({
         error: ErrorCodeEnum.INVALID_USER,
         message: 'Usuario y/o contraseña no válidos',
@@ -200,10 +207,14 @@ export class AuthService {
 
   async findUserLegacy(payload: SignInDto) {
     const url = `${this.configService.externalApis.urlLegacy}/public/auth/login`;
+    try {
+      const response = await lastValueFrom(this.httpService.post(url, payload));
+      return response.data;
+    } catch (error) {
+      return null;
+    }
 
-    const response = await lastValueFrom(this.httpService.post(url, payload));
-
-    return response.data.data;
+    // return response.data;
   }
 
   async createUserLegacy(payload: SignUpExternalDto) {
