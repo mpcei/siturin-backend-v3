@@ -206,7 +206,7 @@ export class AuthService {
   }
 
   async findUserLegacy(payload: SignInDto) {
-    const url = `${this.configService.externalApis.urlLegacy}/public/auth/login`;
+    const url = `${this.configService.externalApis.urlLegacy}/public/api/v1/public/auth/login`;
     console.log('payload', url);
     try {
       const response = await lastValueFrom(this.httpService.post(url, payload));
@@ -219,7 +219,7 @@ export class AuthService {
   }
 
   async createUserLegacy(payload: SignUpExternalDto) {
-    const url = `${this.configService.externalApis.urlLegacy}/public/auth/register-external-user`;
+    const url = `${this.configService.externalApis.urlLegacy}/public/api/v1/public/auth/register-external-user`;
 
     const payloadLegacy = {
       username: payload.email,
