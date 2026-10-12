@@ -135,8 +135,9 @@ export class AuthService {
         ruc: { type: true },
       },
     });
+    const userLegacy = await this.findUserLegacy(payload);
 
-    if (!user) {
+    if (!user && !userLegacy) {
       throw new UnauthorizedException({
         error: ErrorCodeEnum.INVALID_USER,
         message: 'Usuario y/o contraseña no válidos',
@@ -193,7 +194,30 @@ export class AuthService {
       refreshToken: tokens.refreshToken,
       auth: userRest,
       roles: userRest.roles,
+      userLegacy,
     };
+  }
+
+  async findUserLegacy(payload: SignInDto) {
+    const url = `${this.configService.externalApis.urlLegacy}/public/auth/login`;
+
+    const response = await lastValueFrom(this.httpService.post(url, payload));
+
+    return response.data.data;
+  }
+
+  async createUserLegacy(payload: SignUpExternalDto) {
+    const url = `${this.configService.externalApis.urlLegacy}/public/auth/register-external-user`;
+
+    const payloadLegacy = {
+      username: payload.email,
+      ruc: payload.ruc,
+      confirmationPassword: payload.passwordConfirm,
+      newPassword: payload.password,
+    };
+    const response = await lastValueFrom(this.httpService.post(url, payloadLegacy));
+
+    return response.data.data;
   }
 
   async signInLDAP(payload: SignInDto): Promise<boolean> {

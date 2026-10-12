@@ -70,6 +70,7 @@ export const envConfig = registerAs('envConfig', () => {
       urlLDAP: process.env.URL_LDAP,
       urlDinardap: process.env.URL_DINARDAP,
       urlInterno: process.env.URL_INTERNO,
+      urlLegacy: process.env.URL_LEGACY,
     },
 
     ministerio: {
