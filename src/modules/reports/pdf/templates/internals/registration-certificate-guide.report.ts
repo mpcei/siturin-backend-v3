@@ -290,7 +290,7 @@ const buildImportant = (): Content => ({
 const buildSignature = (data: any): Content => ({
   stack: [
     {
-      image: `./storage/resources/reports/signatures/dz6.png`,
+      image: `./storage/resources/reports/signatures/DZI.png`,
       fit: [45, 25], // Firma reducida
       style: 'signature',
       margin: [0, 15, 0, 2],

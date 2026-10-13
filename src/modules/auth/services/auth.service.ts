@@ -143,7 +143,7 @@ export class AuthService {
       user.password = passwordHash;
       user.passwordChanged = true;
     }
-    console.log(userLegacy);
+
     if ((!user && !userLegacy) || !userLegacy) {
       throw new UnauthorizedException({
         error: ErrorCodeEnum.INVALID_USER,
@@ -164,7 +164,6 @@ export class AuthService {
       });
     }
 
-    console.log(user);
     if (!user?.emailVerifiedAt)
       throw new ForbiddenException({
         error: ErrorCodeEnum.ACCOUNT_UNVERIFIED_EMAIL,
@@ -208,8 +207,7 @@ export class AuthService {
 
   async findUserLegacy(payload: SignInDto) {
     const url = `${this.configService.externalApis.urlLegacy}/public/api/v1/public/auth/login`;
-    console.log('payload', url);
-    console.log('payload', payload);
+
     try {
       const response = await lastValueFrom(this.httpService.post(url, payload));
       return response.data;
@@ -330,7 +328,7 @@ export class AuthService {
     rucEntity.legalRepresentativeNames = ruc.nombreRepresentanteLegal;
     rucEntity.legalName = ruc.razonSocial;
     rucEntity.number = user.identification;
-    console.log(user.identification);
+
     if (state) rucEntity.state = state;
     if (type) rucEntity.type = type;
 
@@ -419,14 +417,12 @@ export class AuthService {
       order: { createdAt: 'DESC' },
     });
 
-    console.log(transactionalCode);
     if (transactionalCode) {
       const cooldownTime = addMinutes(transactionalCode.createdAt, 1);
-      console.log('cooldownTime password reset', cooldownTime);
+
       if (isBefore(new Date(), cooldownTime)) {
         const remainingSeconds = differenceInSeconds(cooldownTime, new Date());
 
-        console.log(remainingSeconds);
         throw new BadRequestException({
           data: { remainingSeconds },
           error: ErrorCodeEnum.REMAINING_TOKEN,
@@ -465,7 +461,7 @@ export class AuthService {
 
     if (transactionalCode) {
       const cooldownTime = addMinutes(transactionalCode.createdAt, 1);
-      console.log('cooldownTime signup', cooldownTime);
+
       if (isBefore(new Date(), cooldownTime)) {
         const remainingSeconds = differenceInSeconds(cooldownTime, new Date());
 
