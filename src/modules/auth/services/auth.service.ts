@@ -164,10 +164,11 @@ export class AuthService {
       });
     }
 
+    console.log(user);
     if (!user?.emailVerifiedAt)
       throw new ForbiddenException({
         error: ErrorCodeEnum.ACCOUNT_UNVERIFIED_EMAIL,
-        message: 'Aún no has verificado tu correo electrónico',
+        message: 'Aún no has verificado tu correo electrónico.',
       });
 
     if (payload.username.includes('@produccion.gob.ec')) {
