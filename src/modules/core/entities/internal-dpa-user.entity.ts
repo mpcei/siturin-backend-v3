@@ -86,6 +86,7 @@ export class InternalDpaUserEntity {
   @Column({
     name: 'id_temp',
     type: 'bigint',
+    nullable: true,
     comment: 'Codigo de la tabla migrada',
   })
   idTemp: number;
