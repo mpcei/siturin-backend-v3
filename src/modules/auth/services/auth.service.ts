@@ -147,16 +147,16 @@ export class AuthService {
       user.passwordChanged = true;
     }
 
+    if (user?.passwordChanged) {
+      console.log('password changed');
+      userLegacy = await this.findUserLegacyWithoutPassword(payload);
+    }
+
     if ((!user && !userLegacy) || !userLegacy) {
       throw new UnauthorizedException({
         error: ErrorCodeEnum.INVALID_USER,
         message: 'Usuario y/o contraseña no válidos',
       });
-    }
-
-    if (user?.passwordChanged) {
-      console.log('password changed');
-      userLegacy = await this.findUserLegacyWithoutPassword(payload);
     }
 
     console.log('userLegacyPass', userLegacy);
