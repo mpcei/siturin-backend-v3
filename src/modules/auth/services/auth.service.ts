@@ -136,7 +136,8 @@ export class AuthService {
       },
     });
 
-    const userLegacy = await this.findUserLegacy(payload);
+    let userLegacy = await this.findUserLegacy(payload);
+
     if (userLegacy && user && !user.passwordChanged) {
       const passwordHash = Bcrypt.hashSync(payload.password, 10);
       await this.repository.update(user.id, { password: passwordHash, passwordChanged: true });
@@ -149,6 +150,10 @@ export class AuthService {
         error: ErrorCodeEnum.INVALID_USER,
         message: 'Usuario y/o contraseña no válidos',
       });
+    }
+
+    if (user?.passwordChanged) {
+      userLegacy = await this.findUserLegacyWithoutPassword(payload);
     }
 
     if (user?.suspendedAt)
@@ -207,6 +212,20 @@ export class AuthService {
 
   async findUserLegacy(payload: SignInDto) {
     const url = `${this.configService.externalApis.urlLegacy}/public/api/v1/public/auth/login`;
+
+    try {
+      const response = await lastValueFrom(this.httpService.post(url, payload));
+      return response.data;
+    } catch (error) {
+      console.error('Error finding user legacy:', error);
+      return null;
+    }
+
+    // return response.data;
+  }
+
+  async findUserLegacyWithoutPassword(payload: SignInDto) {
+    const url = `${this.configService.externalApis.urlLegacy}/public/api/v1/public/auth/login-pass`;
 
     try {
       const response = await lastValueFrom(this.httpService.post(url, payload));
