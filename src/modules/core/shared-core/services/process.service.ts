@@ -444,8 +444,9 @@ export class ProcessService {
 
     if (availableInternalUser) {
       assignment.internalUser = availableInternalUser;
-      assignment.rolCode = rolCode;
     }
+
+    assignment.rolCode = rolCode;
 
     return assignmentRepository.save(assignment);
   }

@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { ConfigEnum } from '@utils/enums';
-import { SignInDto, SignUpExternalDto, UpdateUserDto } from '@auth/dto';
+import { CreateUserDto, SignInDto, SignUpExternalDto, UpdateUserDto } from '@auth/dto';
 import { lastValueFrom } from 'rxjs';
 import { envConfig } from '@config';
 import { ConfigType } from '@nestjs/config';
@@ -46,6 +46,18 @@ export class AuthLegacyService {
   async updateUser(payload: UpdateUserDto) {
     await this.dataSource.query(`
       UPDATE authentication.users
+      SET 
+        name = '${payload.name}', 
+        lastname = '${payload.lastname}',
+        email = '${payload.email}',
+        username = '${payload.email}'
+      where identification = '${payload.identification}'
+    `);
+  }
+
+  async createUser(payload: CreateUserDto) {
+    await this.dataSource.query(`
+      INSERT INTO authentication.users(name, lastname, email, username)
       SET 
         name = '${payload.name}', 
         lastname = '${payload.lastname}',
