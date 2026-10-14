@@ -20,6 +20,7 @@ import { HttpModule } from '@nestjs/axios';
 import { RefreshJwtStrategy } from '@auth/strategies/refresh-jwt.strategy';
 import { CataloguesService } from '@modules/common/catalogue/catalogue.service';
 import { CacheModule } from '@nestjs/cache-manager';
+import { AuthLegacyService } from '@auth/services/auth-legacy.service';
 
 @Global()
 @Module({
@@ -56,6 +57,7 @@ import { CacheModule } from '@nestjs/cache-manager';
     ...authProviders,
     ...coreProviders,
     AuthService,
+    AuthLegacyService,
     RolesService,
     UsersService,
     MenusService,

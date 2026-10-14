@@ -42,14 +42,14 @@ export const databaseProviders = [
     provide: ConfigEnum.PG_DATA_SOURCE_SITURIN_OLD,
     inject: [envConfig.KEY],
     useFactory: async (configService: ConfigType<typeof envConfig>) => {
-      const { username, host, password, port } = configService.database;
+      const { username, host, password, port, database } = configService.databaseLegacy;
       const dataSource = new DataSource({
         type: 'postgres',
         host,
         port,
         username,
         password,
-        database: 'siturin_old_1',
+        database,
         // dropSchema: true,
       });
 

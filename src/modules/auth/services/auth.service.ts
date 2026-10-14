@@ -46,6 +46,7 @@ import { CoreRepositoryEnum } from '@modules/core/utils/enums';
 import { RucEntity } from '@modules/core/entities';
 import { CreateRucDto } from '@auth/dto/auth/create-ruc.dto';
 import { CataloguesService } from '@modules/common/catalogue/catalogue.service';
+import { AuthLegacyService } from '@auth/services/auth-legacy.service';
 
 @Injectable()
 export class AuthService {
@@ -69,6 +70,7 @@ export class AuthService {
     private jwtService: JwtService,
     private readonly mailService: MailService,
     private readonly httpService: HttpService,
+    private readonly authLegacyService: AuthLegacyService,
   ) {}
 
   async changePassword(id: string, payload: PasswordChangedDto): Promise<boolean> {
@@ -136,7 +138,7 @@ export class AuthService {
       },
     });
 
-    let userLegacy = await this.findUserLegacy(payload);
+    let userLegacy = await this.authLegacyService.findUserLegacy(payload);
 
     console.log('userLegacy', userLegacy);
 
@@ -149,7 +151,7 @@ export class AuthService {
 
     if (user?.passwordChanged) {
       console.log('password changed');
-      userLegacy = await this.findUserLegacyWithoutPassword(payload);
+      userLegacy = await this.authLegacyService.findUserLegacyWithoutPassword(payload);
     }
 
     if ((!user && !userLegacy) || !userLegacy) {
@@ -213,34 +215,6 @@ export class AuthService {
       roles: userRest.roles,
       userLegacy,
     };
-  }
-
-  async findUserLegacy(payload: SignInDto) {
-    const url = `${this.configService.externalApis.urlLegacy}/public/api/v1/public/auth/login`;
-
-    try {
-      const response = await lastValueFrom(this.httpService.post(url, payload));
-      return response.data;
-    } catch (error) {
-      console.error('Error finding user legacy:', error);
-      return null;
-    }
-
-    // return response.data;
-  }
-
-  async findUserLegacyWithoutPassword(payload: SignInDto) {
-    const url = `${this.configService.externalApis.urlLegacy}/public/api/v1/public/auth/login-pass`;
-
-    try {
-      const response = await lastValueFrom(this.httpService.post(url, payload));
-      return response.data;
-    } catch (error) {
-      console.error('Error finding user legacy:', error);
-      return null;
-    }
-
-    // return response.data;
   }
 
   async createUserLegacy(payload: SignUpExternalDto) {

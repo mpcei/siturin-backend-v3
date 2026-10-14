@@ -33,6 +33,14 @@ export const envConfig = registerAs('envConfig', () => {
       username: process.env.DB_USER,
     },
 
+    databaseLegacy: {
+      database: process.env.DB_NAME_LEGACY,
+      host: process.env.DB_HOST_LEGACY,
+      password: process.env.DB_PASSWORD_LEGACY,
+      port: parseInt(process.env.DB_PORT_LEGACY!, 10),
+      username: process.env.DB_USER_LEGACY,
+    },
+
     redis: {
       host: process.env.REDIS_HOST,
       port: parseInt(process.env.REDIS_PORT!, 10),

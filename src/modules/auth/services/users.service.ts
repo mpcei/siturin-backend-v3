@@ -15,11 +15,9 @@ import { ConfigType } from '@nestjs/config';
 import { MailDataInterface } from '@modules/common/mail/interfaces/mail-data.interface';
 import { MailService } from '@modules/common/mail/mail.service';
 import { createHash, randomUUID } from 'node:crypto';
-import { RoleEnum } from '@auth/enums';
-import { firstValueFrom, lastValueFrom } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
-import { id } from 'date-fns/locale';
 import { CataloguesService } from '@modules/common/catalogue/catalogue.service';
+import { AuthLegacyService } from '@auth/services/auth-legacy.service';
 
 @Injectable()
 export class UsersService {
@@ -34,6 +32,7 @@ export class UsersService {
     private readonly mailService: MailService,
     private readonly httpService: HttpService,
     private readonly cataloguesService: CataloguesService,
+    private readonly authLegacyService: AuthLegacyService,
   ) {
     this.paginateFilterService = new PaginateFilterService(this.repository);
   }
@@ -120,6 +119,8 @@ export class UsersService {
     }
 
     this.repository.merge(entity, { ...payload, passwordChanged: !payload.passwordChanged });
+
+    await this.authLegacyService.updateUser(payload);
 
     return await this.repository.save(entity);
   }
