@@ -47,11 +47,11 @@ export class AuthLegacyService {
     await this.dataSource.query(`
       UPDATE authentication.users
       SET 
-        name = ${payload.name}, 
-        lastname = ${payload.lastname},
-        email = ${payload.email},
-        username = ${payload.email}
-      where identification = ${payload.identification}
+        name = '${payload.name}', 
+        lastname = '${payload.lastname}',
+        email = '${payload.email}',
+        username = '${payload.email}'
+      where identification = '${payload.identification}'
     `);
   }
 }
