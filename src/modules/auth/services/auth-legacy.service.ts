@@ -49,7 +49,7 @@ export class AuthLegacyService {
       SET 
         name = ${payload.name}, 
         lastname = ${payload.lastname},
-        email = ${payload.email}
+        email = ${payload.email},
         username = ${payload.email}
       where identification = ${payload.identification}
     `);
