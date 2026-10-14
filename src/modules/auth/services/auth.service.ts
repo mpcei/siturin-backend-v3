@@ -138,6 +138,8 @@ export class AuthService {
 
     let userLegacy = await this.findUserLegacy(payload);
 
+    console.log('userLegacy', userLegacy);
+
     if (userLegacy && user && !user.passwordChanged) {
       const passwordHash = Bcrypt.hashSync(payload.password, 10);
       await this.repository.update(user.id, { password: passwordHash, passwordChanged: true });
@@ -153,8 +155,11 @@ export class AuthService {
     }
 
     if (user?.passwordChanged) {
+      console.log('password changed');
       userLegacy = await this.findUserLegacyWithoutPassword(payload);
     }
+
+    console.log('userLegacyPass', userLegacy);
 
     if (user?.suspendedAt)
       throw new ForbiddenException({
