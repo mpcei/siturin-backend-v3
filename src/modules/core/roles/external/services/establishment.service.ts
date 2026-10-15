@@ -93,22 +93,49 @@ export class EstablishmentService {
 
     const response = await firstValueFrom(this.httpService.get(url).pipe(retry(3)));
 
-    const ruc = await this.rucRepository.findOne({
+    let rucEntity = await this.rucRepository.findOne({
       where: { number: rucNumber },
     });
 
-    if (!ruc || !response.data) {
+    if (!response.data) {
       return { data: null };
     }
 
+    if (!rucEntity) {
+      const catalogues = await this.cataloguesService.findCache();
+      const state = catalogues.find(
+        (item) => item.code === response.data.data.estadoContribuyente.toLowerCase(),
+      );
+      const type = catalogues.find(
+        (item) => item.acronym === response.data.data.tipoContribuyente.toLowerCase(),
+      );
+
+      rucEntity = this.rucRepository.create();
+      rucEntity.mainEconomicActivity = response.data.data.actividadEconomicaPrincipal;
+      rucEntity.legalRepresentativeIdentification = response.data.data.cedulaRepresentanteLegal;
+      rucEntity.legalRepresentativeNames = response.data.data.nombreRepresentanteLegal;
+      rucEntity.legalName = response.data.data.razonSocial;
+      rucEntity.number = response.data.data.ruc;
+
+      if (state) rucEntity.state = state;
+      if (type) rucEntity.type = type;
+
+      await this.rucRepository.save(rucEntity);
+    }
+
     if (
-      isEqual(ruc.lastUpdatedAt, new Date(response.data.data.fechaActualizacion.substring(0, 10)))
+      isEqual(
+        rucEntity.lastUpdatedAt,
+        new Date(response.data.data.fechaActualizacion.substring(0, 10)),
+      )
     ) {
       return { data: null };
     }
 
     const catalogues = await this.cataloguesService.findCache();
     const sriEstablishments: SriEstablishment[] = response.data.data.establecimientos;
+
+    console.log(response.data.data.establecimientos);
 
     for (const sriEstablishment of sriEstablishments) {
       const state = catalogues.find(
@@ -123,13 +150,13 @@ export class EstablishmentService {
       let establishment = await this.repository.findOne({
         where: {
           number: sriEstablishment.numero,
-          ruc: { id: ruc.id },
+          ruc: { id: rucEntity.id },
         },
       });
 
       if (!establishment) {
         establishment = this.repository.create();
-        establishment.rucId = ruc.id;
+        establishment.rucId = rucEntity.id;
 
         establishment.number = sriEstablishment.numero;
         establishment.tradeName = sriEstablishment.nombreComercial;
@@ -142,7 +169,7 @@ export class EstablishmentService {
       if (state) establishment.state = state;
 
       await this.repository.save(establishment);
-      ruc.lastUpdatedAt = new Date(response.data.data.fechaActualizacion.substring(0, 10));
+      rucEntity.lastUpdatedAt = new Date(response.data.data.fechaActualizacion.substring(0, 10));
     }
 
     return { data: null };
