@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -8,7 +9,7 @@ import {
   Patch,
   Post,
   Query,
-  UploadedFile,
+  UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -21,13 +22,11 @@ import {
 import { UserEntity } from '@auth/entities';
 import { ResponseHttpInterface } from '@utils/interfaces';
 import { UsersService } from '../services/users.service';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
-import { join } from 'path';
-import { getFileName, imageFilter } from '@utils/helpers';
+import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { PaginationDto } from '@utils/pagination';
-import { Auth } from '@auth/decorators';
+import { Auth, User } from '@auth/decorators';
 import { RoleEnum } from '@auth/enums';
+import { ParseMultipartInterceptor } from '@utils/interceptors';
 
 @ApiTags('Users')
 @Controller('auth/users')
@@ -148,21 +147,19 @@ export class UsersController {
   }
 
   @ApiOperation({ summary: 'Upload Avatar' })
+  @Auth(RoleEnum.EXTERNAL)
   @Post(':id/avatar')
-  @UseInterceptors(
-    FileInterceptor('avatar', {
-      storage: diskStorage({
-        destination: join(process.cwd(), 'public/assets/avatars'),
-        filename: getFileName,
-      }),
-      fileFilter: imageFilter,
-      limits: { fieldSize: 1 },
-    }),
-  )
+  @UseInterceptors(AnyFilesInterceptor(), ParseMultipartInterceptor)
   async uploadAvatar(
-    @UploadedFile() avatar: Express.Multer.File,
+    @UploadedFiles() files: Express.Multer.File[],
     @Param('id', ParseUUIDPipe) id: string,
   ): Promise<ResponseHttpInterface> {
+    const avatar = files.find((file) => file.fieldname === 'avatar');
+
+    if (!avatar) {
+      throw new BadRequestException('No se recibió el archivo');
+    }
+
     const serviceResponse = await this.service.uploadAvatar(avatar, id);
 
     return {

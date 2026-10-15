@@ -1,5 +1,5 @@
 import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { IsNull, Repository } from 'typeorm';
 import {
   CreateUserDto,
   UpdateAdditionalInformationDto,
@@ -18,6 +18,9 @@ import { createHash, randomUUID } from 'node:crypto';
 import { HttpService } from '@nestjs/axios';
 import { CataloguesService } from '@modules/common/catalogue/catalogue.service';
 import { AuthLegacyService } from '@auth/services/auth-legacy.service';
+import { BucketService } from '@modules/common/bucket/bucket.service';
+import path from 'path';
+import { format } from 'date-fns';
 
 @Injectable()
 export class UsersService {
@@ -33,6 +36,7 @@ export class UsersService {
     private readonly httpService: HttpService,
     private readonly cataloguesService: CataloguesService,
     private readonly authLegacyService: AuthLegacyService,
+    private readonly bucketService: BucketService,
   ) {
     this.paginateFilterService = new PaginateFilterService(this.repository);
   }
@@ -234,21 +238,32 @@ export class UsersService {
   }
 
   async uploadAvatar(file: Express.Multer.File, id: string): Promise<UserEntity> {
-    const entity = await this.repository.findOne({
+    const user = await this.repository.findOne({
       select: {
         id: true,
         avatar: true,
       },
-      where: { id },
+      where: { id, avatar: IsNull(), ruc: { establishments: { isCadastre: true } } },
     });
 
-    if (!entity) {
-      throw new NotFoundException('Usuario no encontrado');
-    }
+    if (!user)
+      throw new BadRequestException({
+        error: 'No tiene permisos para cambiar la foto',
+        message: 'Ya cuenta con una foto o tiene un trámite pendiente',
+      });
 
-    entity.avatar = `avatars/${file.filename}`;
+    const fileName = `${Date.now()}${path.extname(file.originalname)}`;
+    const filePath = `avatars/${fileName}`;
 
-    return await this.repository.save(entity);
+    user.avatar = filePath;
+
+    await this.bucketService.uploadFile({
+      filePath,
+      buffer: file.buffer,
+      mimetype: file.mimetype,
+    });
+
+    return await this.repository.save(user);
   }
 
   private generateEmailVerificationToken() {
