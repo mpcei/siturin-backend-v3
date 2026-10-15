@@ -158,9 +158,11 @@ export class ProcessGuideService {
       establishment.referenceStreet = establishmentLoad.referenceStreet;
       establishment.latitude = establishmentLoad.latitude;
       establishment.longitude = establishmentLoad.longitude;
-
-      await establishmentRepository.save(establishment);
     }
+
+    establishment.phone = user.phone;
+    establishment.phone = user.email;
+    await establishmentRepository.save(establishment);
 
     const establishmentAddress = establishmentAddressRepository.create();
     establishmentAddress.establishmentId = establishmentLoad.id;
