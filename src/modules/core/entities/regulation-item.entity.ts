@@ -67,6 +67,22 @@ export class RegulationItemEntity {
 
   /** Columns **/
   @Column({
+    name: 'downloadable',
+    type: 'boolean',
+    default: false,
+    comment: '',
+  })
+  downloadable: boolean;
+
+  @Column({
+    name: 'downloadable_code',
+    type: 'boolean',
+    nullable: true,
+    comment: '',
+  })
+  downloadableCode: string;
+
+  @Column({
     name: 'name',
     type: 'text',
     comment: 'Nombre del item de la normativa',
