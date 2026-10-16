@@ -91,6 +91,7 @@ export class InternalPdfSql {
         process: {
           establishment: {
             ruc: { user: true, type: true },
+            province: { zone: true },
             credentials: { classification: true },
             protectedAreas: true,
             adventureModalities: true,
@@ -104,6 +105,7 @@ export class InternalPdfSql {
 
     return {
       cadastre,
+      zone: cadastre?.process.establishment.province.zone,
       user: cadastre?.process.establishment.ruc.user,
       credentials: cadastre?.process.establishment.credentials,
       protectedAreas: cadastre?.process.establishment.protectedAreas

@@ -76,7 +76,7 @@ export class RegulationItemEntity {
 
   @Column({
     name: 'downloadable_code',
-    type: 'boolean',
+    type: 'varchar',
     nullable: true,
     comment: '',
   })

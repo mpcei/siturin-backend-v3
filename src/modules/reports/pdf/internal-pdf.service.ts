@@ -59,6 +59,7 @@ export class InternalPdfService {
     cadastreId: string;
   }): Promise<PDFKit.PDFDocument | Buffer> {
     const data: any = await this.internalPdfSql.findRegistrationCertificateGuide(cadastreId);
+    console.log(data);
 
     try {
       const avatar = data?.user?.avatar;
@@ -70,7 +71,11 @@ export class InternalPdfService {
 
       avatarDataUri = `data:${contentType};base64,${buffer.toString('base64')}`;
 
-      const report = registrationCertificateGuideReport(data, avatarDataUri, this.configService.externalUrl.documentValidator);
+      const report = registrationCertificateGuideReport(
+        data,
+        avatarDataUri,
+        this.configService.externalUrl.documentValidator,
+      );
 
       if (type === 'buffer') return this.printerService.createPdfBuffer(report);
       else return this.printerService.createPdf(report);

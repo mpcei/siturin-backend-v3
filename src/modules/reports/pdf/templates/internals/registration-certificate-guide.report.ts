@@ -290,7 +290,7 @@ const buildImportant = (): Content => ({
 const buildSignature = (data: any): Content => ({
   stack: [
     {
-      image: `./storage/resources/reports/signatures/DZI.png`,
+      image: `./storage/resources/reports/signatures/DZ${data.zone.code}.png`,
       fit: [45, 25], // Firma reducida
       style: 'signature',
       margin: [0, 15, 0, 2],
@@ -301,13 +301,13 @@ const buildSignature = (data: any): Content => ({
       margin: [0, 2, 0, 2],
     },
     {
-      text: `DIRECTOR/A ZONAL 6 - DZ6`,
+      text: `DIRECTOR/A ZONAL - ${data.zone.acronym}`,
       style: 'signature',
       bold: true,
       margin: [0, 2, 0, 1],
     },
     {
-      text: `DAVID GUSTAVO ESTRELLA SALAZAR`,
+      text: data.zone.director,
       style: 'signature',
       bold: true,
       margin: [0, 1, 0, 2],
