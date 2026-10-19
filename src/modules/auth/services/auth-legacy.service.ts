@@ -97,8 +97,8 @@ export class AuthLegacyService {
 
         if (modelHasRoles.length === 0) {
           await this.dataSource.query(`
-          INSERT INTO authentication.model_has_roles(model_id, role_id)
-          VALUES (${user?.id}, ${code})
+          INSERT INTO authentication.model_has_roles(model_id, role_id,model_type)
+          VALUES (${user?.id}, ${code},'App\\Models\\Authentication\\User')
         `);
         }
       }
