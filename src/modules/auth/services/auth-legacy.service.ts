@@ -54,12 +54,9 @@ export class AuthLegacyService {
       where identification = '${payload.identification}'
     `);
 
-    console.log('payload', payload);
-    console.log('user identification', payload.identification);
     const users = await this.dataSource.query(
       `select id from authentication.users where identification = '${payload.identification}'`,
     );
-    console.log('user', users[0]);
 
     if (users.length > 0) await this.updateRoles(payload, users[0]);
   }
@@ -68,7 +65,6 @@ export class AuthLegacyService {
     const users = await this.dataSource.query(
       `select id from authentication.users where identification = '${payload.identification}'`,
     );
-
 
     if (users.length > 0) {
       await this.dataSource.query(`
@@ -92,15 +88,14 @@ export class AuthLegacyService {
 
   async updateRoles(payload: CreateUserDto | UpdateUserDto, user: any) {
     for (const role of payload.roles) {
-      console.log('roleCode', role?.code);
       const code = this.getRole(role?.code);
 
       if (code) {
-        const modelHasRole = await this.dataSource.query(
+        const modelHasRoles = await this.dataSource.query(
           `select model_id from authentication.model_has_roles where model_id = ${user?.id} and role_id = ${code}`,
         );
 
-        if (!modelHasRole) {
+        if (modelHasRoles.length === 0) {
           await this.dataSource.query(`
           INSERT INTO authentication.model_has_roles(model_id, role_id)
           VALUES (${user?.id}, ${code})
