@@ -92,7 +92,7 @@ export class AuthLegacyService {
       const code = this.getRole(role?.code);
 
       const modelHasRole = await this.dataSource.query(
-        `select id from authentication.model_has_roles where model_id = ${user?.id} and role_id = ${code}`,
+        `select model_id from authentication.model_has_roles where model_id = ${user?.id} and role_id = ${code}`,
       );
 
       if (!modelHasRole) {
