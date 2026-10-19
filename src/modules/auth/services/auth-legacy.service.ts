@@ -89,6 +89,7 @@ export class AuthLegacyService {
 
   async updateRoles(payload: CreateUserDto | UpdateUserDto, user: any) {
     for (const role of payload.roles) {
+      console.log('roleCode', role?.code);
       const code = this.getRole(role?.code);
 
       const modelHasRole = await this.dataSource.query(
