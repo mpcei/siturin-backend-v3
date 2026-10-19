@@ -54,6 +54,8 @@ export class AuthLegacyService {
       where identification = '${payload.identification}'
     `);
 
+    console.log('payload', payload);
+    console.log('user identification', payload.identification);
     const user = await this.dataSource.query(
       `select id from authentication.users where identification = '${payload.identification}'`,
     );
