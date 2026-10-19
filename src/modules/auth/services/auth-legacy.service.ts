@@ -47,23 +47,74 @@ export class AuthLegacyService {
     await this.dataSource.query(`
       UPDATE authentication.users
       SET 
-        name = '${payload.name}', 
-        lastname = '${payload.lastname}',
+        name = ' ${payload.lastname} ${payload.name}', 
+        lastname = '${payload.lastname} ${payload.name}',
         email = '${payload.email}',
         username = '${payload.email}'
       where identification = '${payload.identification}'
     `);
+
+    const user = await this.dataSource.query(
+      `select id from authentication.users where identification = '${payload.identification}'`,
+    );
+    await this.updateRoles(payload, user);
   }
 
   async createUser(payload: CreateUserDto) {
-    await this.dataSource.query(`
-      INSERT INTO authentication.users(name, lastname, email, username)
+    const user = await this.dataSource.query(
+      `select id from authentication.users where identification = '${payload.identification}'`,
+    );
+
+    console.log('user update', user);
+
+    if (user) {
+      await this.dataSource.query(`
+      UPDATE authentication.users
       SET 
-        name = '${payload.name}', 
-        lastname = '${payload.lastname}',
+        name = ' ${payload.lastname} ${payload.name}', 
+        lastname = '${payload.lastname} ${payload.name}',
         email = '${payload.email}',
         username = '${payload.email}'
       where identification = '${payload.identification}'
     `);
+    } else {
+      await this.dataSource.query(`
+      INSERT INTO authentication.users(name, lastname, email, username)
+      VALUES ('${payload.lastname} ${payload.name}', '${payload.lastname} ${payload.name}', '${payload.email}','${payload.email}')
+    `);
+    }
+
+    await this.updateRoles(payload, user);
+  }
+
+  async updateRoles(payload: CreateUserDto | UpdateUserDto, user: any) {
+    for (const role of payload.roles) {
+      const code = this.getRole(role?.code);
+
+      const modelHasRole = await this.dataSource.query(
+        `select id from authentication.model_has_roles where model_id = ${user?.id} and role_id = ${code}`,
+      );
+
+      if (!modelHasRole) {
+        await this.dataSource.query(`
+          INSERT INTO authentication.model_has_roles(model_id, role_id)
+          VALUES (${user?.id}, ${code})
+        `);
+      }
+    }
+  }
+  getRole(code: string) {
+    switch (code) {
+      case 'external':
+        return 1;
+      case 'gad':
+        return 2;
+      case 'technician':
+        return 3;
+      case 'specialist':
+        return 4;
+      case 'dac':
+        return 5;
+    }
   }
 }

@@ -64,6 +64,8 @@ export class UsersService {
 
     const userCreated = await this.repository.save(entity);
 
+    // await this.authLegacyService.createUser(payload);
+
     const { token, hashedToken, expiresAt } = this.generateEmailVerificationToken();
 
     await this.emailVerificationRepository.save({
