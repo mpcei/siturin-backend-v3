@@ -92,15 +92,17 @@ export class AuthLegacyService {
       console.log('roleCode', role?.code);
       const code = this.getRole(role?.code);
 
-      const modelHasRole = await this.dataSource.query(
-        `select model_id from authentication.model_has_roles where model_id = ${user?.id} and role_id = ${code}`,
-      );
+      if (code) {
+        const modelHasRole = await this.dataSource.query(
+          `select model_id from authentication.model_has_roles where model_id = ${user?.id} and role_id = ${code}`,
+        );
 
-      if (!modelHasRole) {
-        await this.dataSource.query(`
+        if (!modelHasRole) {
+          await this.dataSource.query(`
           INSERT INTO authentication.model_has_roles(model_id, role_id)
           VALUES (${user?.id}, ${code})
         `);
+        }
       }
     }
   }
