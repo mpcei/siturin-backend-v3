@@ -59,19 +59,18 @@ export class AuthLegacyService {
     const users = await this.dataSource.query(
       `select id from authentication.users where identification = '${payload.identification}'`,
     );
-    console.log('user', users[0].id);
+    console.log('user', users[0]);
 
-    if (users.length > 0) await this.updateRoles(payload, users[0].id);
+    if (users.length > 0) await this.updateRoles(payload, users[0]);
   }
 
   async createUser(payload: CreateUserDto) {
-    const user = await this.dataSource.query(
+    const users = await this.dataSource.query(
       `select id from authentication.users where identification = '${payload.identification}'`,
     );
 
-    console.log('user update', user);
 
-    if (user) {
+    if (users.length > 0) {
       await this.dataSource.query(`
       UPDATE authentication.users
       SET 
@@ -88,7 +87,7 @@ export class AuthLegacyService {
     `);
     }
 
-    await this.updateRoles(payload, user);
+    await this.updateRoles(payload, users[0]);
   }
 
   async updateRoles(payload: CreateUserDto | UpdateUserDto, user: any) {
