@@ -59,10 +59,11 @@ export class AuthLegacyService {
     );
 
     if (users.length > 0) await this.updateRoles(payload, users[0]);
+    else await this.createUser(payload);
   }
 
-  async createUser(payload: CreateUserDto) {
-    const users = await this.dataSource.query(
+  async createUser(payload: CreateUserDto | UpdateUserDto) {
+    let users = await this.dataSource.query(
       `select id from authentication.users where identification = '${payload.identification}'`,
     );
 
@@ -81,6 +82,10 @@ export class AuthLegacyService {
       INSERT INTO authentication.users(name, lastname, email, username)
       VALUES ('${payload.lastname} ${payload.name}', '${payload.lastname} ${payload.name}', '${payload.email}','${payload.email}')
     `);
+
+      users = await this.dataSource.query(
+        `select id from authentication.users where identification = '${payload.identification}'`,
+      );
     }
 
     await this.updateRoles(payload, users[0]);
@@ -91,6 +96,9 @@ export class AuthLegacyService {
       const code = this.getRole(role?.code);
 
       if (code) {
+        if (code === 1) await this.updateExternalUsers(user);
+        if (code != 1) await this.updateInternalUsers(user);
+
         const modelHasRoles = await this.dataSource.query(
           `select model_id from authentication.model_has_roles where model_id = ${user?.id} and role_id = ${code}`,
         );
@@ -104,6 +112,33 @@ export class AuthLegacyService {
       }
     }
   }
+
+  async updateExternalUsers(user: any) {
+    const usuarioExternos = await this.dataSource.query(
+      `select id from siturin.usuario_externos where user_id = ${user?.id}`,
+    );
+
+    if (usuarioExternos.length === 0) {
+      await this.dataSource.query(`
+        INSERT INTO siturin.usuario_externos(user_id)
+        VALUES (${user?.id})
+      `);
+    }
+  }
+
+  async updateInternalUsers(user: any) {
+    const usuarioInternos = await this.dataSource.query(
+      `select id from siturin.usuario_internos where user_id = ${user?.id}`,
+    );
+
+    if (usuarioInternos.length === 0) {
+      await this.dataSource.query(`
+          INSERT INTO siturin.usuario_internos(user_id, es_disponible)
+          VALUES (${user?.id}, false)
+      `);
+    }
+  }
+
   getRole(code: string) {
     switch (code) {
       case 'external':
