@@ -140,7 +140,7 @@ export class AuthService {
     });
 
     let userLegacy = await this.authLegacyService.findUserLegacy(payload);
-    console.log('0');
+    console.log('pasoooooooooo 0');
     if (userLegacy && user && !user.passwordChanged) {
       const passwordHash = Bcrypt.hashSync(payload.password, 10);
       await this.repository.update(user.id, { password: passwordHash, passwordChanged: true });
@@ -148,13 +148,14 @@ export class AuthService {
       user.passwordChanged = true;
     }
 
-    console.log('1')
+    console.log('pasoooooooooo 1');
     if (user?.passwordChanged) {
       userLegacy = await this.authLegacyService.findUserLegacyWithoutPassword(payload);
     }
 
-    console.log('2');
+    console.log('pasoooooooooo 2');
     if (user && !userLegacy) {
+      console.log('pasoooooooooo 2.1');
       await this.authLegacyService.createUserSignIn(user);
 
       const passwordHash = Bcrypt.hashSync(payload.password, 10);
@@ -162,7 +163,7 @@ export class AuthService {
       user.passwordChanged = true;
     }
 
-    console.log('3');
+    console.log('pasoooooooooo 3');
     if ((!user && !userLegacy) || !userLegacy) {
       throw new UnauthorizedException({
         error: ErrorCodeEnum.INVALID_USER,
@@ -170,7 +171,7 @@ export class AuthService {
       });
     }
 
-    console.log('4');
+    console.log('pasoooooooooo 4');
     if (user?.suspendedAt)
       throw new ForbiddenException({
         error: ErrorCodeEnum.ACCOUNT_SUSPENDED,
