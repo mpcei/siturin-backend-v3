@@ -100,11 +100,11 @@ export class AuthLegacyService {
   async createUserSignIn(payload: UserEntity) {
     console.log('payload createUserSignIn', payload);
     const password = Bcrypt.hashSync('Siturin.26', 10);
-    await this.dataSource.query(`
+    const insert = await this.dataSource.query(`
       INSERT INTO authentication.users(name, lastname, email, username,password)
       VALUES ('${payload.lastname} ${payload.name}', '${payload.lastname} ${payload.name}', '${payload.email}','${payload.email}','${password}')
     `);
-
+    console.log('insert', insert);
     const users = await this.dataSource.query(
       `select id from authentication.users where identification = '${payload.identification}'`,
     );
