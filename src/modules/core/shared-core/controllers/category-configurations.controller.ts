@@ -1,10 +1,12 @@
 import { CategoryConfigurationsService } from '../services/category-configurations.service';
 import { Controller, Get, Param } from '@nestjs/common';
+import { PublicRoute } from '@auth/decorators';
 
 @Controller('core/shared/category-configurations')
 export class CategoryConfigurationsController {
   constructor(private readonly categoryConfigurationsService: CategoryConfigurationsService) {}
 
+  @PublicRoute()
   @Get(':classificationId')
   async findByClassificationId(@Param('classificationId') classificationId: string) {
     const serviceResponse =
