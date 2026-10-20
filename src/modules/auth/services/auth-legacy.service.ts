@@ -6,6 +6,7 @@ import { lastValueFrom } from 'rxjs';
 import { envConfig } from '@config';
 import { ConfigType } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
+import * as Bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthLegacyService {
@@ -81,9 +82,10 @@ export class AuthLegacyService {
       where identification = '${payload.identification}'
     `);
     } else {
+      const password = Bcrypt.hashSync('Siturin.26', 10);
       await this.dataSource.query(`
-      INSERT INTO authentication.users(name, lastname, email, username)
-      VALUES ('${payload.lastname} ${payload.name}', '${payload.lastname} ${payload.name}', '${payload.email}','${payload.email}')
+      INSERT INTO authentication.users(name, lastname, email, username,password)
+      VALUES ('${payload.lastname} ${payload.name}', '${payload.lastname} ${payload.name}', '${payload.email}','${payload.email}','${password}')
     `);
 
       users = await this.dataSource.query(
