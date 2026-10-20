@@ -121,6 +121,7 @@ export class AuthService {
         password: true,
         suspendedAt: true,
         emailVerifiedAt: true,
+        email: true,
         username: true,
         birthdate: true,
         securityQuestionAcceptedAt: true,
