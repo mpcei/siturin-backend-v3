@@ -7,6 +7,7 @@ import { envConfig } from '@config';
 import { ConfigType } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
 import * as Bcrypt from 'bcrypt';
+import { UserEntity } from '@auth/entities';
 
 @Injectable()
 export class AuthLegacyService {
@@ -92,6 +93,20 @@ export class AuthLegacyService {
         `select id from authentication.users where identification = '${payload.identification}'`,
       );
     }
+
+    await this.updateRoles(payload, users[0]);
+  }
+
+  async createUserSignIn(payload: UserEntity) {
+    const password = Bcrypt.hashSync('Siturin.26', 10);
+    await this.dataSource.query(`
+      INSERT INTO authentication.users(name, lastname, email, username,password)
+      VALUES ('${payload.lastname} ${payload.name}', '${payload.lastname} ${payload.name}', '${payload.email}','${payload.email}','${password}')
+    `);
+
+    const users = await this.dataSource.query(
+      `select id from authentication.users where identification = '${payload.identification}'`,
+    );
 
     await this.updateRoles(payload, users[0]);
   }

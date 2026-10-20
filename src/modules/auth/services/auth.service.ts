@@ -141,8 +141,6 @@ export class AuthService {
 
     let userLegacy = await this.authLegacyService.findUserLegacy(payload);
 
-    console.log('userLegacy', userLegacy);
-
     if (userLegacy && user && !user.passwordChanged) {
       const passwordHash = Bcrypt.hashSync(payload.password, 10);
       await this.repository.update(user.id, { password: passwordHash, passwordChanged: true });
@@ -151,8 +149,15 @@ export class AuthService {
     }
 
     if (user?.passwordChanged) {
-      console.log('password changed');
       userLegacy = await this.authLegacyService.findUserLegacyWithoutPassword(payload);
+    }
+
+    if (user && !userLegacy) {
+      await this.authLegacyService.createUserSignIn(user);
+
+      const passwordHash = Bcrypt.hashSync(payload.password, 10);
+      await this.repository.update(user.id, { password: passwordHash, passwordChanged: true });
+      user.passwordChanged = true;
     }
 
     if ((!user && !userLegacy) || !userLegacy) {
@@ -161,8 +166,6 @@ export class AuthService {
         message: 'Usuario y/o contraseña no válidos',
       });
     }
-
-    console.log('userLegacyPass', userLegacy);
 
     if (user?.suspendedAt)
       throw new ForbiddenException({
