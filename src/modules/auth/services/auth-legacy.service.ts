@@ -85,8 +85,8 @@ export class AuthLegacyService {
     } else {
       const password = Bcrypt.hashSync('Siturin.26', 10);
       await this.dataSource.query(`
-      INSERT INTO authentication.users(name, lastname, email, username,password)
-      VALUES ('${payload.lastname} ${payload.name}', '${payload.lastname} ${payload.name}', '${payload.email}','${payload.email}','${password}')
+      INSERT INTO authentication.users(name, lastname, email, username,password,identification)
+      VALUES ('${payload.lastname} ${payload.name}', '${payload.lastname} ${payload.name}', '${payload.email}','${payload.email}','${password}','${payload.identification}')
     `);
 
       users = await this.dataSource.query(
@@ -101,8 +101,8 @@ export class AuthLegacyService {
     console.log('payload createUserSignIn', payload);
     const password = Bcrypt.hashSync('Siturin.26', 10);
     const insert = await this.dataSource.query(`
-      INSERT INTO authentication.users(name, lastname, email, username,password)
-      VALUES ('${payload.lastname} ${payload.name}', '${payload.lastname} ${payload.name}', '${payload.email}','${payload.email}','${password}')
+      INSERT INTO authentication.users(name, lastname, email, username, password, identification)
+      VALUES ('${payload.name}', '${payload.name}', '${payload.email}','${payload.email}','${password}','${payload.identification}')
     `);
     console.log('insert', insert);
     const users = await this.dataSource.query(
