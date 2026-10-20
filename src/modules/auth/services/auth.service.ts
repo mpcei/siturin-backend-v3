@@ -162,6 +162,8 @@ export class AuthService {
       const passwordHash = Bcrypt.hashSync(payload.password, 10);
       await this.repository.update(user.id, { password: passwordHash, passwordChanged: true });
       user.passwordChanged = true;
+
+      userLegacy = await this.authLegacyService.findUserLegacyWithoutPassword(payload);
     }
 
     console.log('pasoooooooooo 3');
