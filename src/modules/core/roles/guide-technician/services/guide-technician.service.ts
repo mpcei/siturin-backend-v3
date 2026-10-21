@@ -123,7 +123,9 @@ export class GuideTechnicianService {
       where.process = { type: { name: ILike(`%${processType}%`) } };
     }
     if (cadastreState) {
-      where.process = { cadastre: { state: { name: ILike(`%${cadastreState}%`) } } };
+      where.process = {
+        establishment: { cadastre: { state: { name: ILike(`%${cadastreState}%`) } } },
+      };
     }
     if (startedAt && endedAt) {
       const startedAtParse = parseISO(startedAt);
@@ -143,7 +145,6 @@ export class GuideTechnicianService {
       },
       relations: {
         process: {
-          cadastre: { state: true },
           type: true,
           state: true,
           establishmentAddress: {
@@ -154,6 +155,7 @@ export class GuideTechnicianService {
           establishmentContactPerson: true,
           establishment: {
             ruc: true,
+            cadastre: { state: true },
             credentials: { classification: true },
           },
           credentials: { classification: true },
@@ -947,6 +949,7 @@ export class GuideTechnicianService {
 
     const cadastre = cadastreRepository.create();
     cadastre.processId = process.id;
+    cadastre.establishmentId = process.establishment.id;
     cadastre.registerNumber = registerNumber;
     cadastre.registeredAt = registeredAt;
     cadastre.systemOrigin = OriginSystemEnum.siturin;

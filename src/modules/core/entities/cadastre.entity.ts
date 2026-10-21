@@ -12,7 +12,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { CadastreStateEntity, ProcessEntity } from '@modules/core/entities';
+import { CadastreStateEntity, EstablishmentEntity, ProcessEntity } from '@modules/core/entities';
 import { CatalogueEntity } from '@modules/common/catalogue/catalogue.entity';
 
 @Entity('cadastres', { schema: 'core' })
@@ -59,7 +59,18 @@ export class CadastreEntity {
   @OneToOne(() => CadastreStateEntity, (entity) => entity.cadastre)
   cadastreState: CadastreStateEntity;
 
-  /** Inverse Relationship **/
+  /** Foreign keys **/
+  @ManyToOne(() => EstablishmentEntity, { nullable: true })
+  @JoinColumn({ name: 'establishment_id' })
+  establishment: EstablishmentEntity;
+  @Column({
+    type: 'uuid',
+    name: 'establishment_id',
+    nullable: true,
+    comment: '',
+  })
+  establishmentId: string;
+
   @OneToOne(() => ProcessEntity, { nullable: true })
   @JoinColumn({ name: 'process_id' })
   process: ProcessEntity;

@@ -20,6 +20,7 @@ import { LanguageEntity } from '@modules/core/entities/language.entity';
 import { AdventureModalityEntity } from '@modules/core/entities/adventure-modality.entity';
 import { EstablishmentContactPersonEntity } from '@modules/core/entities/establishment-contact-person.entity';
 import { ProtectedAreaEntity } from '@modules/core/entities/protected-area.entity';
+import { CadastreEntity } from '@modules/core/entities/cadastre.entity';
 
 @Entity('establishments', { schema: 'core' })
 export class EstablishmentEntity {
@@ -67,6 +68,9 @@ export class EstablishmentEntity {
 
   @OneToOne(() => EstablishmentAddressEntity, (entity) => entity.establishment)
   establishmentAddress: EstablishmentAddressEntity;
+
+  @OneToOne(() => CadastreEntity, (entity) => entity.establishment)
+  cadastre: CadastreEntity;
 
   @OneToOne(() => EstablishmentContactPersonEntity, (entity) => entity.establishment)
   establishmentContactPerson: EstablishmentContactPersonEntity;
