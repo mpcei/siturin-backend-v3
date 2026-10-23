@@ -4,10 +4,11 @@ import { coreProviders } from '@modules/core/core.provider';
 import { SharedCoreModule } from '@modules/core/shared-core/shared-core.module';
 import { ExternalModule } from '@modules/core/roles/external/external.module';
 import { GuideTechnicianModule } from '@modules/core/roles/guide-technician/guide-technician.module';
+import { internalModule } from './roles/internal/internal.module';
 
 @Global()
 @Module({
-  imports: [SharedCoreModule, DacModule, ExternalModule, GuideTechnicianModule],
+  imports: [SharedCoreModule, DacModule, ExternalModule, GuideTechnicianModule, internalModule],
   providers: [...coreProviders],
 })
 export class CoreModule {}
