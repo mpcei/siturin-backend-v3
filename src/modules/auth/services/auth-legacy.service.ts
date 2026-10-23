@@ -98,19 +98,23 @@ export class AuthLegacyService {
   }
 
   async createUserSignIn(payload: UserEntity) {
-    const password = Bcrypt.hashSync('Siturin.26', 10);
-    await this.dataSource.query(`
-      INSERT INTO authentication.users(name, lastname, email, username, password, identification)
-      VALUES ('${payload.name}', '${payload.name}', '${payload.email}','${payload.email}','${password}','${payload.identification}')
-    `);
-
     const users = await this.dataSource.query(
       `select id from authentication.users where identification = '${payload.identification}'`,
     );
 
-    await this.updateRoles(payload, users[0]);
+    if (users.length == 0) {
+      const password = Bcrypt.hashSync('Siturin.26', 10);
+      await this.dataSource.query(`
+      INSERT INTO authentication.users(name, lastname, email, username, password, identification)
+      VALUES ('${payload.name}', '${payload.name}', '${payload.email}','${payload.email}','${password}','${payload.identification}')
+    `);
 
-    return users[0];
+      const users = await this.dataSource.query(
+        `select id from authentication.users where identification = '${payload.identification}'`,
+      );
+
+      await this.updateRoles(payload, users[0]);
+    }
   }
 
   async updateRoles(payload: CreateUserDto | UpdateUserDto, user: any) {
