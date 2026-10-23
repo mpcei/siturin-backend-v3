@@ -48,114 +48,41 @@ export class InternalLegacyService {
       );
     }
   }
-  // async updateUser(payload: UpdateUserDto) {
-  //   await this.dataSource.query(`
-  //     UPDATE authentication.users
-  //     SET
-  //       name = ' ${payload.lastname} ${payload.name}',
-  //       lastname = '${payload.lastname} ${payload.name}',
-  //       email = '${payload.email}',
-  //       username = '${payload.email}'
-  //     where identification = '${payload.identification}'
-  //   `);
+  async updateInspectionDate(
+    nuevaFecha: string | Date,
+    nombreComercial: string,
+    actividadNombre: string,
+    categoriaNombre: string,
+  ) {
+    const query = `
+      WITH tramites_filtrados AS (
+          SELECT p.id
+          FROM siturin.tramites AS p
+          LEFT JOIN siturin.establecimientos AS e ON e.id = p.establecimiento_id
+          LEFT JOIN siturin.actividades AS a ON a.id = p.actividad_id
+          LEFT JOIN siturin.categorias AS c ON c.id = p.categoria_id
+          WHERE p.deleted_at IS NULL
+            AND e.nombre_comercial = $2
+            AND a.nombre = $3
+            AND c.nombre = $4
+      ),
+      update_tramites AS (
+          UPDATE siturin.tramites
+          SET fecha_limite_inspeccion = $1
+          WHERE id IN (SELECT id FROM tramites_filtrados)
+          RETURNING id
+      )
+      UPDATE siturin.inspecciones
+      SET fecha_limite = $1
+      WHERE es_actual = true
+        AND tramite_id IN (SELECT id FROM update_tramites);
+    `;
 
-  //   const users = await this.dataSource.query(
-  //     `select id from authentication.users where identification = '${payload.identification}'`,
-  //   );
-
-  //   if (users.length > 0) await this.updateRoles(payload, users[0]);
-  //   else await this.createUser(payload);
-  // }
-
-  // async createUser(payload: CreateUserDto | UpdateUserDto) {
-  //   let users = await this.dataSource.query(
-  //     `select id from authentication.users where identification = '${payload.identification}'`,
-  //   );
-
-  //   if (users.length > 0) {
-  //     await this.dataSource.query(`
-  //     UPDATE authentication.users
-  //     SET
-  //       name = ' ${payload.lastname} ${payload.name}',
-  //       lastname = '${payload.lastname} ${payload.name}',
-  //       email = '${payload.email}',
-  //       username = '${payload.email}'
-  //     where identification = '${payload.identification}'
-  //   `);
-  //   } else {
-  //     await this.dataSource.query(`
-  //     INSERT INTO authentication.users(name, lastname, email, username)
-  //     VALUES ('${payload.lastname} ${payload.name}', '${payload.lastname} ${payload.name}', '${payload.email}','${payload.email}')
-  //   `);
-
-  //     users = await this.dataSource.query(
-  //       `select id from authentication.users where identification = '${payload.identification}'`,
-  //     );
-  //   }
-
-  //   await this.updateRoles(payload, users[0]);
-  // }
-
-  // async updateRoles(payload: CreateUserDto | UpdateUserDto, user: any) {
-  //   for (const role of payload.roles) {
-  //     const code = this.getRole(role?.code);
-
-  //     if (code) {
-  //       if (code === 1) await this.updateExternalUsers(user);
-  //       if (code != 1) await this.updateInternalUsers(user);
-
-  //       const modelHasRoles = await this.dataSource.query(
-  //         `select model_id from authentication.model_has_roles where model_id = ${user?.id} and role_id = ${code}`,
-  //       );
-
-  //       if (modelHasRoles.length === 0) {
-  //         await this.dataSource.query(`
-  //         INSERT INTO authentication.model_has_roles(model_id, role_id,model_type)
-  //         VALUES (${user?.id}, ${code},'App\\Models\\Authentication\\User')
-  //       `);
-  //       }
-  //     }
-  //   }
-  // }
-
-  // async updateExternalUsers(user: any) {
-  //   const usuarioExternos = await this.dataSource.query(
-  //     `select id from siturin.usuario_externos where user_id = ${user?.id}`,
-  //   );
-
-  //   if (usuarioExternos.length === 0) {
-  //     await this.dataSource.query(`
-  //       INSERT INTO siturin.usuario_externos(user_id)
-  //       VALUES (${user?.id})
-  //     `);
-  //   }
-  // }
-
-  // async updateInternalUsers(user: any) {
-  //   const usuarioInternos = await this.dataSource.query(
-  //     `select id from siturin.usuario_internos where user_id = ${user?.id}`,
-  //   );
-
-  //   if (usuarioInternos.length === 0) {
-  //     await this.dataSource.query(`
-  //         INSERT INTO siturin.usuario_internos(user_id, es_disponible)
-  //         VALUES (${user?.id}, false)
-  //     `);
-  //   }
-  // }
-
-  // getRole(code: string) {
-  //   switch (code) {
-  //     case 'external':
-  //       return 1;
-  //     case 'gad':
-  //       return 2;
-  //     case 'technician':
-  //       return 3;
-  //     case 'specialist':
-  //       return 4;
-  //     case 'dac':
-  //       return 5;
-  //   }
-  // }
+    await this.dataSource.query(query, [
+      nuevaFecha,
+      nombreComercial,
+      actividadNombre,
+      categoriaNombre,
+    ]);
+  }
 }

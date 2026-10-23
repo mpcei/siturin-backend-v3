@@ -12,20 +12,9 @@ import { InternalLegacyService } from './internal-legacy.service';
 import { AuthRepositoryEnum } from '@utils/enums';
 import { UserEntity } from '@auth/entities';
 import { RoleEnum } from '@auth/enums';
-export interface InternalUserDto {
-  id: string;
-  isAvailable?: boolean;
-  enabled?: boolean;
-}
-
-export interface DpaInternalUserDto {
-  internalUserId: string;
-  dpaId: string;
-}
-export interface UpdateProcessDto {
-  id: string;
-  inspectionDate: string;
-}
+import { InternalUserDto } from '../dto/internal-user.dto';
+import { DpaInternalUserDto } from '../dto/dpa-internal-user.dto';
+import { UpdateProcessDto } from '../dto/update-process.dto';
 
 @Injectable()
 export class InternalService {
@@ -211,6 +200,11 @@ export class InternalService {
     return await this.processRepository.manager.transaction(async (transactionalEntityManager) => {
       const process = await transactionalEntityManager.findOne(ProcessEntity, {
         where: { id: payload.id },
+        relations: {
+          establishment: true, // Ajusta estos nombres según las propiedades de tu ProcessEntity
+          activity: true,
+          category: true,
+        },
       });
 
       if (!process) {
@@ -231,6 +225,22 @@ export class InternalService {
       if (inspection) {
         inspection.inspectionAt = new Date(payload.inspectionDate);
         await transactionalEntityManager.save(inspection);
+      }
+      const tradeName = process.establishment?.tradeName;
+      const nameActivity = process.activity?.name;
+      const nameCategory = process.category?.name;
+
+      if (tradeName && nameActivity && nameCategory) {
+        await this.internalLegacyService.updateInspectionDate(
+          payload.inspectionDate,
+          tradeName,
+          nameActivity,
+          nameCategory,
+        );
+      } else {
+        console.warn(
+          `No se pudo actualizar legacy: Faltan datos de relaciones para el trámite ${process.id}`,
+        );
       }
 
       return updatedProcess;

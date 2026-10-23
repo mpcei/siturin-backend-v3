@@ -13,12 +13,10 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Auth } from '@auth/decorators';
 import { ResponseHttpInterface } from '@utils/interfaces';
 import { PaginationDto } from '@utils/pagination';
-import {
-  DpaInternalUserDto,
-  InternalService,
-  InternalUserDto,
-  UpdateProcessDto,
-} from '../services/internal.service';
+import { InternalService } from '../services/internal.service';
+import { InternalUserDto } from '../dto/internal-user.dto';
+import { DpaInternalUserDto } from '../dto/dpa-internal-user.dto';
+import { UpdateProcessDto } from '../dto/update-process.dto';
 
 @ApiTags('internal Users ')
 @Auth()
