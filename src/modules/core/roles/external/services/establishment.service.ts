@@ -82,8 +82,18 @@ export class EstablishmentService {
       .take(params.limit)
       .getManyAndCount();
 
+    const excludedStatuses = ['approved', 'rejected', 'document_rejected'];
+
+    const establishments = data.map((establishment) => ({
+      ...establishment,
+      process:
+        establishment.process && excludedStatuses.includes(establishment.process.state.code)
+          ? null
+          : establishment.process,
+    }));
+
     return {
-      data,
+      data: establishments,
       pagination: { totalItems, limit: params.limit },
     };
   }
