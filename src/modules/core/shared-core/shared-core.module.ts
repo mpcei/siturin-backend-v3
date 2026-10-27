@@ -12,6 +12,7 @@ import { RoomTypeService } from '@modules/core/shared-core/services/room-type.se
 import { CategoryConfigurationsService } from '@modules/core/shared-core/services/category-configurations.service';
 import { GuideService } from './services/guide.service';
 import { HttpModule } from '@nestjs/axios';
+import { SearchCadastreService } from '@modules/core/shared-core/services/search-cadastre.service';
 
 @Global()
 @Module({
@@ -28,6 +29,7 @@ import { HttpModule } from '@nestjs/axios';
     RoomTypeService,
     CategoryConfigurationsService,
     GuideService,
+    SearchCadastreService,
   ],
   exports: [ProcessService, EmailService],
 })
