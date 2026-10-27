@@ -70,6 +70,7 @@ export class EstablishmentService {
       .leftJoinAndSelect('e.parish', 'parishes')
       .leftJoinAndSelect('e.process', 'process')
       .leftJoinAndSelect('e.state', 'establishmentState')
+      .leftJoinAndSelect('process.state', 'processState')
       .leftJoinAndSelect('process.cadastre', 'cadastre')
       .leftJoinAndSelect('process.activity', 'activities')
       .leftJoinAndSelect('process.classification', 'classifications')
@@ -82,6 +83,7 @@ export class EstablishmentService {
       .take(params.limit)
       .getManyAndCount();
 
+    console.log(data)
     const excludedStatuses = ['approved', 'rejected', 'document_rejected'];
 
     const establishments = data.map((establishment) => ({
