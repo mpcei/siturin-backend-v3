@@ -5,6 +5,7 @@ import { RegulationSectionController } from '@modules/core/shared-core/controlle
 import { RoomTypeController } from '@modules/core/shared-core/controllers/room-type.controller';
 import { CategoryConfigurationsController } from '@modules/core/shared-core/controllers/category-configurations.controller';
 import { GuideController } from '@modules/core/shared-core/controllers/guide.controller';
+import { SearchCadastreController } from '@modules/core/shared-core/controllers/search-cadastre.controller';
 
 export const controllers = [
   ActivityController,
@@ -14,4 +15,5 @@ export const controllers = [
   RoomTypeController,
   CategoryConfigurationsController,
   GuideController,
+  SearchCadastreController,
 ];
