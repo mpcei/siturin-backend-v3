@@ -1,5 +1,5 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import {
   CatalogueEstablishmentsStateEnum,
   CatalogueProcessesStateEnum,
@@ -250,11 +250,17 @@ export class EstablishmentService {
         item.type === CoreCatalogueTypeEnum.processes_state,
     );
 
+    const completed = (await this.cataloguesService.findCache()).find(
+      (item) =>
+        item.code === CatalogueProcessesStateEnum.completed &&
+        item.type === CoreCatalogueTypeEnum.processes_state,
+    );
+
     const cadastre = await this.repository.findOne({
       where: {
         id: establishmentId,
         credentials: { enabled: true },
-        process: { stateId: approved?.id },
+        process: { stateId: In([approved?.id, completed?.id]) },
       },
       relations: {
         establishmentContactPerson: true,
