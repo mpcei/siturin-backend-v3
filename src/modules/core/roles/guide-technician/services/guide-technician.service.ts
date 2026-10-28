@@ -934,8 +934,7 @@ export class GuideTechnicianService {
             CatalogueActivitiesCodeEnum.guide_galapagos,
           ],
         })
-        .orderBy('processes.id', 'ASC')
-        .addOrderBy('SUBSTRING(cadastres.register_number, 21)', 'DESC')
+        .orderBy('SUBSTRING(cadastres.register_number, 21)', 'DESC')
         .getOne();
 
       const init = '10';
