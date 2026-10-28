@@ -59,7 +59,6 @@ export class InternalPdfService {
     cadastreId: string;
   }): Promise<PDFKit.PDFDocument | Buffer> {
     const data: any = await this.internalPdfSql.findRegistrationCertificateGuide(cadastreId);
-    console.log(data);
 
     try {
       const avatar = data?.user?.avatar;
@@ -95,8 +94,14 @@ export class InternalPdfService {
     const data: any = await this.internalPdfSql.findRegisterInactivation(cadastreId);
 
     try {
-      if (type === 'buffer') return this.printerService.createPdfBuffer(guideInactivation(data));
-      else return this.printerService.createPdf(guideInactivation(data));
+      if (type === 'buffer')
+        return this.printerService.createPdfBuffer(
+          guideInactivation(data, this.configService.externalUrl.documentValidator!),
+        );
+      else
+        return this.printerService.createPdf(
+          guideInactivation(data, this.configService.externalUrl.documentValidator!),
+        );
     } catch (error) {
       console.log(error);
       throw new Error();
