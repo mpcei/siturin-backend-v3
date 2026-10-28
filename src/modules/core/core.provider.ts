@@ -1,5 +1,5 @@
 import { DataSource } from 'typeorm';
-import { ConfigEnum, GuideRepositoryEnum } from '@utils/enums';
+import { ConfigEnum, GuideRepositoryEnum, PublicRepositoryEnum } from '@utils/enums';
 import { CoreRepositoryEnum } from '@modules/core/utils/enums';
 import {
   ActivityEntity,
@@ -52,6 +52,7 @@ import { KitchenTypeEntity } from '@modules/core/entities/kitchen-type.entity';
 import { ServiceTypeEntity } from '@modules/core/entities/service-type.entity';
 import { RequirementConfigurationEntity } from '@modules/core/entities/requirement-configuration.entity';
 import { ProfessionalTitleEntity } from '@modules/core/entities/professional-title.entity';
+import { ConsultaCatastroEntity } from '@modules/core/entities/consulta-catastro.entity';
 
 export const coreProviders = [
   {
@@ -301,6 +302,11 @@ export const coreProviders = [
     provide: GuideRepositoryEnum.REQUIREMENT_CONFIGURATION_REPOSITORY,
     useFactory: (dataSource: DataSource) =>
       dataSource.getRepository(RequirementConfigurationEntity),
+    inject: [ConfigEnum.PG_DATA_SOURCE],
+  },
+  {
+    provide: PublicRepositoryEnum.CONSULTA_CATASTRO,
+    useFactory: (dataSource: DataSource) => dataSource.getRepository(ConsultaCatastroEntity),
     inject: [ConfigEnum.PG_DATA_SOURCE],
   },
 ];
