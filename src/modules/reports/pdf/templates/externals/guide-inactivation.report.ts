@@ -148,6 +148,7 @@ export const guideInactivation = (data: any, documentValidatorUrl: string): TDoc
       },
       {
         image: `./storage/resources/reports/signatures/DZ${data.zone.code}.png`,
+        width: 200,
         alignment: 'center',
         marginBottom: 10,
       },
