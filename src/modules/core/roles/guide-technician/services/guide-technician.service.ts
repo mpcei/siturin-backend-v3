@@ -49,7 +49,7 @@ import { FindProcessesDto } from '@modules/core/roles/guide-technician/dto/guide
 import { LanguageEntity } from '@modules/core/entities/language.entity';
 import { AdventureModalityEntity } from '@modules/core/entities/adventure-modality.entity';
 import { ProtectedAreaEntity } from '@modules/core/entities/protected-area.entity';
-import { endOfDay, parseISO, startOfDay } from 'date-fns';
+import { endOfDay, isBefore, parseISO, startOfDay } from 'date-fns';
 
 interface InternalUserRole {
   availableInternalUser: InternalUserEntity | null;
@@ -804,10 +804,17 @@ export class GuideTechnicianService {
           }
           case CatalogueProcessesTypeEnum.registration: {
             if (['MINTUR', 'SIETE', 'MAE'].includes(credential.origin)) {
-              credentialNew.startedAt = credential.startedAt;
-              credentialNew.endedAt = credential.endedAt;
-              credentialNew.stateCode = credential.stateCode;
-              credentialNew.stateName = credential.stateName;
+              if (credentials.every((item) => isBefore(item.endedAt, currentDate))) {
+                credentialNew.startedAt = currentDate;
+                credentialNew.endedAt = expirationDate;
+                credentialNew.stateCode = credentialStateCurrent.code;
+                credentialNew.stateName = credentialStateCurrent.name;
+              } else {
+                credentialNew.startedAt = credential.startedAt;
+                credentialNew.endedAt = credential.endedAt;
+                credentialNew.stateCode = credential.stateCode;
+                credentialNew.stateName = credential.stateName;
+              }
             } else {
               credentialNew.startedAt = currentDate;
               credentialNew.endedAt = expirationDate;

@@ -1198,7 +1198,8 @@ export class ProcessGuideService {
             const cadastre = cadastreRepository.create();
             cadastre.processId = processNewSave.id;
             cadastre.registerNumber = cadastreOld.register_number;
-            cadastre.registeredAt = today;
+            cadastre.registeredAt = cadastreOld.registered_at;
+            cadastre.establishmentId = cadastreOld.establishment_id;
             cadastre.systemOrigin = cadastreOld.system_origin;
             if (cadastreStateCatalogue) {
               cadastre.stateId = cadastreStateCatalogue.id;
