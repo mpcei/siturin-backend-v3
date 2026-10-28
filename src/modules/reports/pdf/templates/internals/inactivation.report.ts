@@ -2,8 +2,8 @@ import { TDocumentDefinitions } from 'pdfmake/interfaces';
 import { customLayout, defaultDate, defaultFooter, defaultHeader } from '../layouts/layout_4';
 import { format } from 'date-fns/format';
 
-export const registerInactivation = (data: any): TDocumentDefinitions => {
-  const qrData = `http://localhost:3000/api/v1/enrollment-reports/certificate`;
+export const registerInactivation = (data: any, documentValidatorUrl:string): TDocumentDefinitions => {
+  const qrData = `${documentValidatorUrl}${data.cadastre.registerNumber}`;
 
   const legalName =
     data.ruc.type?.code === 'natural' ? data.ruc.legalName : data.ruc.legalRepresentativeName;
@@ -149,7 +149,7 @@ export const registerInactivation = (data: any): TDocumentDefinitions => {
         marginBottom: 10,
       },
       {
-        image: `./storage/resources/reports/signatures/${data.zone.code}.png`,
+        image: `./storage/resources/reports/signatures/DZ${data.zone.code}.png`,
         alignment: 'center',
         marginBottom: 10,
       },
