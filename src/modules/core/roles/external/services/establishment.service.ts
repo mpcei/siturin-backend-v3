@@ -1,5 +1,5 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import {
   CatalogueEstablishmentsStateEnum,
   CatalogueProcessesStateEnum,
@@ -70,6 +70,7 @@ export class EstablishmentService {
       .leftJoinAndSelect('e.parish', 'parishes')
       .leftJoinAndSelect('e.process', 'process')
       .leftJoinAndSelect('e.state', 'establishmentState')
+      .leftJoinAndSelect('process.state', 'processState')
       .leftJoinAndSelect('process.cadastre', 'cadastre')
       .leftJoinAndSelect('process.activity', 'activities')
       .leftJoinAndSelect('process.classification', 'classifications')
@@ -82,6 +83,7 @@ export class EstablishmentService {
       .take(params.limit)
       .getManyAndCount();
 
+    console.log(data)
     const excludedStatuses = ['approved', 'rejected', 'document_rejected'];
 
     const establishments = data.map((establishment) => ({
@@ -248,11 +250,17 @@ export class EstablishmentService {
         item.type === CoreCatalogueTypeEnum.processes_state,
     );
 
+    const completed = (await this.cataloguesService.findCache()).find(
+      (item) =>
+        item.code === CatalogueProcessesStateEnum.completed &&
+        item.type === CoreCatalogueTypeEnum.processes_state,
+    );
+
     const cadastre = await this.repository.findOne({
       where: {
         id: establishmentId,
         credentials: { enabled: true },
-        process: { stateId: approved?.id },
+        process: { stateId: In([approved?.id, completed?.id]) },
       },
       relations: {
         establishmentContactPerson: true,

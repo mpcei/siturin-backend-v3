@@ -6,7 +6,7 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { DataSource, Not, Repository } from 'typeorm';
+import { DataSource, EntityManager, Not, Repository } from 'typeorm';
 import * as Bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { add, addMinutes, differenceInSeconds, isBefore } from 'date-fns';
@@ -141,7 +141,7 @@ export class AuthService {
     });
 
     let userLegacy = await this.authLegacyService.findUserLegacy(payload);
-    console.log('pasoooooooooo 0');
+
     if (userLegacy && user && !user.passwordChanged) {
       const passwordHash = Bcrypt.hashSync(payload.password, 10);
       await this.repository.update(user.id, { password: passwordHash, passwordChanged: true });
@@ -149,14 +149,11 @@ export class AuthService {
       user.passwordChanged = true;
     }
 
-    console.log('pasoooooooooo 1');
     if (user?.passwordChanged) {
       userLegacy = await this.authLegacyService.findUserLegacyWithoutPassword(payload);
     }
 
-    console.log('pasoooooooooo 2');
     if (user && !userLegacy) {
-      console.log('pasoooooooooo 2.1');
       await this.authLegacyService.createUserSignIn(user);
 
       const passwordHash = Bcrypt.hashSync(payload.password, 10);
@@ -166,7 +163,6 @@ export class AuthService {
       userLegacy = await this.authLegacyService.findUserLegacyWithoutPassword(payload);
     }
 
-    console.log('pasoooooooooo 3');
     if ((!user && !userLegacy) || !userLegacy) {
       throw new UnauthorizedException({
         error: ErrorCodeEnum.INVALID_USER,
@@ -174,7 +170,6 @@ export class AuthService {
       });
     }
 
-    console.log('pasoooooooooo 4');
     if (user?.suspendedAt)
       throw new ForbiddenException({
         error: ErrorCodeEnum.ACCOUNT_SUSPENDED,
@@ -252,62 +247,68 @@ export class AuthService {
   }
 
   async signUpExternal(payload: SignUpExternalDto): Promise<UserEntity> {
-    const user = await this.repository.findOne({
-      where: [{ identification: payload.identification }, { email: payload.email }],
+    return this.dataSource.transaction(async (manager) => {
+      const userRepository = manager.getRepository(UserEntity);
+      const roleRepository = manager.getRepository(RoleEntity);
+      const securityQuestionRepository = manager.getRepository(SecurityQuestionEntity);
+
+      const user = await userRepository.findOne({
+        where: [{ identification: payload.identification }, { email: payload.email }],
+      });
+
+      if (user && user.identification === payload.identification) {
+        throw new BadRequestException({
+          error: 'El usuario ya existe',
+          message: 'Por favor ingrese otro RUC',
+        });
+      }
+
+      if (user && user.email === payload.email) {
+        throw new BadRequestException({
+          error: 'El correo ya se encuentra en uso',
+          message: 'Por favor ingrese otro correo',
+        });
+      }
+
+      const role = await roleRepository.findOneBy({ code: RoleEnum.EXTERNAL });
+
+      if (payload.password !== payload.passwordConfirm) {
+        throw new BadRequestException({
+          error: 'Las contraseñas no coinciden',
+          message: 'Por favor, asegúrate de escribir la misma contraseña en ambos campos',
+        });
+      }
+      const securityQuestions = payload.securityQuestions.map((q) =>
+        securityQuestionRepository.create({
+          code: q.code,
+          question: q.question,
+          answer: q.answer,
+        }),
+      );
+
+      const identificationType = (await this.cataloguesService.findCache()).find(
+        (item) =>
+          item.code === CatalogueUsersIdentificationTypeEnum.ruc &&
+          item.type === CatalogueTypeEnum.users_identification_type,
+      );
+
+      const entity = userRepository.create({
+        ...payload,
+        passwordChanged: true,
+        emailVerifiedAt: new Date(),
+        termsAcceptedAt: new Date(),
+        securityQuestionAcceptedAt: new Date(),
+        roles: [role!],
+        identificationTypeId: identificationType?.id,
+        securityQuestions,
+      });
+
+      const userSaved = await userRepository.save(entity);
+
+      await this.createRuc(manager, payload.ruc, userSaved);
+
+      return userSaved;
     });
-
-    if (user && user.identification === payload.identification) {
-      throw new BadRequestException({
-        error: 'El usuario ya existe',
-        message: 'Por favor ingrese otro RUC',
-      });
-    }
-
-    if (user && user.email === payload.email) {
-      throw new BadRequestException({
-        error: 'El correo ya se encuentra en uso',
-        message: 'Por favor ingrese otro correo',
-      });
-    }
-
-    const role = await this.roleRepository.findOneBy({ code: RoleEnum.EXTERNAL });
-
-    if (payload.password !== payload.passwordConfirm) {
-      throw new BadRequestException({
-        error: 'Las contraseñas no coinciden',
-        message: 'Por favor, asegúrate de escribir la misma contraseña en ambos campos',
-      });
-    }
-    const securityQuestions = payload.securityQuestions.map((q) =>
-      this.securityQuestionRepository.create({
-        code: q.code,
-        question: q.question,
-        answer: q.answer,
-      }),
-    );
-
-    const identificationType = (await this.cataloguesService.findCache()).find(
-      (item) =>
-        item.code === CatalogueUsersIdentificationTypeEnum.ruc &&
-        item.type === CatalogueTypeEnum.users_identification_type,
-    );
-
-    const entity = this.repository.create({
-      ...payload,
-      passwordChanged: true,
-      emailVerifiedAt: new Date(),
-      termsAcceptedAt: new Date(),
-      securityQuestionAcceptedAt: new Date(),
-      roles: [role!],
-      identificationTypeId: identificationType?.id,
-      securityQuestions,
-    });
-
-    const userSaved = await this.repository.save(entity);
-
-    await this.createRuc(payload.ruc, userSaved);
-
-    return userSaved;
   }
 
   async acceptTerms(id: string, payload: TermsDto): Promise<boolean> {
@@ -327,12 +328,20 @@ export class AuthService {
     return true;
   }
 
-  async createRuc(ruc: CreateRucDto, user: UserEntity): Promise<RucEntity> {
-    const catalogues = await this.cataloguesService.findCache();
-    const state = catalogues.find((item) => item.code === ruc.estadoContribuyente.toLowerCase());
-    const type = catalogues.find((item) => item.acronym === ruc.tipoContribuyente.toLowerCase());
+  async createRuc(manager: EntityManager, ruc: CreateRucDto, user: UserEntity): Promise<RucEntity> {
+    const rucRepository = manager.getRepository(RucEntity);
+    const catalogues = (await this.cataloguesService.findCache()).filter(
+      (item) => item.type === 'rucs_types',
+    );
 
-    const rucEntity = this.rucRepository.create();
+    const state = catalogues.find(
+      (item) => item.code.toLowerCase() === ruc.estadoContribuyente.toLowerCase(),
+    );
+    const type = catalogues.find(
+      (item) => item.acronym.toLowerCase() === ruc.tipoContribuyente.toLowerCase(),
+    );
+
+    const rucEntity = rucRepository.create();
     rucEntity.mainEconomicActivity = ruc.actividadEconomicaPrincipal;
     rucEntity.legalRepresentativeIdentification = ruc.cedulaRepresentanteLegal;
     rucEntity.legalRepresentativeNames = ruc.nombreRepresentanteLegal;
@@ -342,7 +351,7 @@ export class AuthService {
     if (state) rucEntity.state = state;
     if (type) rucEntity.type = type;
 
-    return this.rucRepository.save(rucEntity);
+    return rucRepository.save(rucEntity);
   }
 
   async refreshToken(user: UserEntity): Promise<TokenInterface> {

@@ -23,8 +23,14 @@ export class ExternalPdfService {
     const data: any = await this.externalPdfSql.findRegisterInactivation(cadastreId);
 
     try {
-      if (type === 'buffer') return this.printerService.createPdfBuffer(guideInactivation(data));
-      else return this.printerService.createPdf(guideInactivation(data));
+      if (type === 'buffer')
+        return this.printerService.createPdfBuffer(
+          guideInactivation(data, this.configService.externalUrl.documentValidator!),
+        );
+      else
+        return this.printerService.createPdf(
+          guideInactivation(data, this.configService.externalUrl.documentValidator!),
+        );
     } catch (error) {
       console.log(error);
       throw new Error();
