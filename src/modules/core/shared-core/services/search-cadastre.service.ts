@@ -1,11 +1,11 @@
-import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import * as XLSX from 'xlsx';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
-import { CacheEnum, ConfigEnum, PublicRepositoryEnum } from '@utils/enums';
+import { ConfigEnum, PublicRepositoryEnum } from '@utils/enums';
 import { DataSource, FindOptionsWhere, ILike, Repository } from 'typeorm';
 import { ConsultaCatastroEntity } from '@modules/core/entities/consulta-catastro.entity';
-import { ServiceResponseHttpInterface } from '@utils/interfaces';
+import { ResponseHttpInterface, ServiceResponseHttpInterface } from '@utils/interfaces';
 import { FindCadastresDto } from '@modules/core/shared-core/dto/search-cadastre/find-cadastres.dto';
 
 interface ErrorFila {
@@ -210,25 +210,18 @@ export class SearchCadastreService {
       pagination: { limit: params.limit, totalItems: response[1] },
     };
   }
-/*
-  async findCadastreByRuc(params: any): Promise<CadastreInterface[]> {
-    console.log(params);
-    if (Object.keys(params).length === 0) {
-      const cadastres = await this.cacheManager.get<CadastreInterface[]>(CacheEnum.SEARCH_CADASTRE);
 
-      return cadastres ? cadastres : [];
-    }
-    const ruc = params.ruc;
-    const rucBuscado = String(ruc ?? '').trim();
+  async findCadastreByRuc(ruc: string): Promise<ResponseHttpInterface> {
+    const response = await this.consultaCatastroRepository.find({
+      where: { ruc: ruc },
+    });
 
-    if (!/^\d{13}$/.test(rucBuscado)) {
-      throw new NotFoundException('El RUC debe contener exactamente 13 dígitos numéricos.');
-    }
-
-    const cadastres = await this.findCadastre();
-
-    return cadastres.filter((item) => item.ruc === rucBuscado);
-  }*/
+    return {
+      data: response.length > 0,
+      title: 'Busqueda exitosa',
+      message: '',
+    };
+  }
 
   /**
    * Limpia y normaliza los valores de texto.

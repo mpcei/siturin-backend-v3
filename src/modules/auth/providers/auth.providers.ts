@@ -9,6 +9,7 @@ import {
 } from '@auth/entities';
 import { ConfigEnum, AuthRepositoryEnum } from '@utils/enums';
 import { SecurityQuestionEntity } from '@auth/entities/security-question.entity';
+import { ApiClientEntity } from '@auth/entities/api-client.entity';
 
 export const authProviders = [
   {
@@ -44,6 +45,11 @@ export const authProviders = [
   {
     provide: AuthRepositoryEnum.EMAIL_VERIFICATION_REPOSITORY,
     useFactory: (dataSource: DataSource) => dataSource.getRepository(EmailVerificationsEntity),
+    inject: [ConfigEnum.PG_DATA_SOURCE],
+  },
+  {
+    provide: AuthRepositoryEnum.API_CLIENT_REPOSITORY,
+    useFactory: (dataSource: DataSource) => dataSource.getRepository(ApiClientEntity),
     inject: [ConfigEnum.PG_DATA_SOURCE],
   },
 ];

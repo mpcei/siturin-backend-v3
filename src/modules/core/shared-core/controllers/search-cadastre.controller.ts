@@ -1,10 +1,19 @@
-import { Controller, Get, Post, Query, UploadedFile, UseInterceptors } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Query,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { SearchCadastreService } from '@modules/core/shared-core/services/search-cadastre.service';
 import { PublicRoute } from '@auth/decorators';
 import { memoryStorage } from 'multer';
 import { ApiOperation } from '@nestjs/swagger';
 import { FindCadastresDto } from '@modules/core/shared-core/dto/search-cadastre/find-cadastres.dto';
+import { ApiKeyGuard } from '@auth/guards/api-key.guard';
 
 @Controller('core/shared/search-cadastres')
 export class SearchCadastreController {
@@ -34,15 +43,11 @@ export class SearchCadastreController {
       title: 'Consulta',
     };
   }
-  /*
+
   @PublicRoute()
+  @UseGuards(ApiKeyGuard)
   @Get()
-  async findByRuc(@Query() params: any) {
-    const response = await this.searchCadastreService.findCadastreByRuc(params);
-    return {
-      data: response,
-      message: 'cadastres found',
-      title: 'find',
-    };
-  }*/
+  async findByRuc(@Query('ruc') ruc: string) {
+    return await this.service.findCadastreByRuc(ruc);
+  }
 }
