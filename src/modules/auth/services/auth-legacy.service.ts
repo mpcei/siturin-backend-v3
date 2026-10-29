@@ -85,8 +85,8 @@ export class AuthLegacyService {
     } else {
       const password = Bcrypt.hashSync('Siturin.26', 10);
       await this.dataSource.query(`
-      INSERT INTO authentication.users(name, lastname, email, username,password,identification)
-      VALUES ('${payload.lastname} ${payload.name}', '${payload.lastname} ${payload.name}', '${payload.email}','${payload.email}','${password}','${payload.identification}')
+      INSERT INTO authentication.users(name, lastname, email, username,password,identification,password_changed)
+      VALUES ('${payload.lastname} ${payload.name}', '${payload.lastname} ${payload.name}', '${payload.email}','${payload.email}','${password}','${payload.identification}',true)
     `);
 
       users = await this.dataSource.query(
