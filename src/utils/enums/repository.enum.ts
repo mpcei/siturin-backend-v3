@@ -25,6 +25,7 @@ export enum GuideRepositoryEnum {
 
 export enum PublicRepositoryEnum {
   CONSULTA_CATASTRO = 'CONSULTA_CATASTRO',
+  DOCUMENTO_CATASTRO = 'DOCUMENTO_CATASTRO',
 }
 
 export enum CoreRepositoryEnum {
@@ -45,5 +46,4 @@ export enum CoreRepositoryEnum {
   INVOICE_REPOSITORY = 'INVOICE_REPOSITORY',
   INVOICE_ITEM_REPOSITORY = 'INVOICE_ITEM_REPOSITORY',
   PAYMENT_REPOSITORY = 'PAYMENT_REPOSITORY',
-
 }

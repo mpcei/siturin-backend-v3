@@ -3,7 +3,7 @@ import { PaginationDto } from '@utils/pagination';
 import { IsOptional, IsString } from 'class-validator';
 import { isStringValidationOptions } from '@utils/dto-validation';
 
-export class FindCadastresDto extends PickType(PaginationDto, ['page', 'limit', 'search']) {
+export class FindCadastreDto extends PickType(PaginationDto, ['page', 'limit', 'search']) {
   @IsOptional()
   @IsString(isStringValidationOptions())
   ruc: string;

@@ -6,7 +6,11 @@ import { ConfigEnum, PublicRepositoryEnum } from '@utils/enums';
 import { DataSource, FindOptionsWhere, ILike, Repository } from 'typeorm';
 import { ConsultaCatastroEntity } from '@modules/core/entities/consulta-catastro.entity';
 import { ResponseHttpInterface, ServiceResponseHttpInterface } from '@utils/interfaces';
-import { FindCadastresDto } from '@modules/core/shared-core/dto/search-cadastre/find-cadastres.dto';
+import { FindCadastreDto } from '@modules/core/shared-core/dto/search-cadastre/find-cadastre.dto';
+import { UserEntity } from '@auth/entities';
+import { DocumentCadastreDto } from '@modules/core/shared-core/dto/search-cadastre/document-cadastre.dto';
+import { DocumentoCatastroEntity } from '@modules/core/entities/documento-catastro.entity';
+import { FileService } from '@modules/common/file/file.service';
 
 interface ErrorFila {
   row: number;
@@ -46,11 +50,18 @@ export class SearchCadastreService {
     private readonly cacheManager: Cache,
     @Inject(ConfigEnum.PG_DATA_SOURCE)
     private readonly dataSourceV3: DataSource,
+    private readonly fileService: FileService,
     @Inject(PublicRepositoryEnum.CONSULTA_CATASTRO)
     private readonly consultaCatastroRepository: Repository<ConsultaCatastroEntity>,
+    @Inject(PublicRepositoryEnum.DOCUMENTO_CATASTRO)
+    private readonly documentoCatastroRepository: Repository<DocumentoCatastroEntity>,
   ) {}
 
-  async saveExcelCadastre(file: Express.Multer.File) {
+  async saveExcelCadastre(
+    payload: DocumentCadastreDto,
+    user: UserEntity,
+    file: Express.Multer.File,
+  ) {
     if (!file?.buffer) {
       throw new BadRequestException({
         message: 'No se ha proporcionado un archivo Excel válido.',
@@ -176,6 +187,22 @@ export class SearchCadastreService {
     // Segunda etapa: reemplazar la carga anterior de forma atómica.
     return this.dataSourceV3.transaction(async (manager) => {
       const repository = manager.getRepository(ConsultaCatastroEntity);
+      const repositoryDocumentCadastre = manager.getRepository(DocumentoCatastroEntity);
+
+      const documentCadastre = repositoryDocumentCadastre.create();
+      documentCadastre.userId = user.id;
+      documentCadastre.year = payload.year;
+      documentCadastre.month = payload.month;
+      documentCadastre.period = payload.period;
+      const documentCadastreSave = await repositoryDocumentCadastre.save(documentCadastre);
+
+      await this.fileService.uploadFile({
+        file,
+        user,
+        modelId: documentCadastreSave.id,
+        folder: 'consulta-catastros',
+        manager,
+      });
 
       await repository.clear();
 
@@ -196,7 +223,7 @@ export class SearchCadastreService {
     });
   }
 
-  async findCadastres(params: FindCadastresDto): Promise<ServiceResponseHttpInterface> {
+  async findCadastres(params: FindCadastreDto): Promise<ServiceResponseHttpInterface> {
     const { ruc, tradeName, canton, activity } = params;
 
     const where: FindOptionsWhere<ConsultaCatastroEntity> = {};
@@ -226,6 +253,20 @@ export class SearchCadastreService {
     return {
       data: response[0],
       pagination: { limit: params.limit, totalItems: response[1] },
+    };
+  }
+
+  async findDocumentCadastre(): Promise<ResponseHttpInterface> {
+    const response = await this.documentoCatastroRepository.find({
+      //relations: { file: true },
+      take: 1,
+      order: { createdAt: 'DESC' },
+    });
+
+    return {
+      data: response,
+      title: 'Busqueda exitosa',
+      message: '',
     };
   }
 
