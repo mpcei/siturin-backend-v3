@@ -9,10 +9,10 @@ import { ResponseHttpInterface, ServiceResponseHttpInterface } from '@utils/inte
 import { FindCadastresDto } from '@modules/core/shared-core/dto/search-cadastre/find-cadastres.dto';
 
 interface ErrorFila {
-  fila: number;
+  row: number;
   ruc: string | null;
-  campo: string;
-  valorRecibido: unknown;
+  column: string;
+  value: unknown;
   error: string;
 }
 
@@ -83,7 +83,7 @@ export class SearchCadastreService {
         errores: [],
       });
     }
-    const errores: ErrorFila[] = [];
+    const errors: ErrorFila[] = [];
     const cadastres: Partial<ConsultaCatastroEntity>[] = [];
     const camposObligatorios = ['ruc', 'numero_establecimiento'];
     // Primera etapa: validar y preparar todas las filas.
@@ -95,70 +95,81 @@ export class SearchCadastreService {
       for (const campo of camposObligatorios) {
         const valor = item[campo];
         if (valor === null || valor === undefined || String(valor).trim() === '') {
-          errores.push({
-            fila: filaExcel,
+          errors.push({
+            row: filaExcel,
             ruc: ruc || null,
-            campo,
-            valorRecibido: valor,
+            column: campo,
+            value: valor,
             error: 'El campo es obligatorio.',
           });
         }
       }
       if (ruc && !/^\d{1,13}$/.test(ruc)) {
-        errores.push({
-          fila: filaExcel,
+        errors.push({
+          row: filaExcel,
           ruc,
-          campo: 'ruc',
-          valorRecibido: rucOriginal,
+          column: 'ruc',
+          value: rucOriginal,
           error: 'El RUC debe contener máximo 13 dígitos numéricos.',
         });
       }
       // No preparar entidades de filas con datos obligatorios faltantes o con un RUC inválido.
-      const filaTieneError = errores.some((error) => error.fila === filaExcel);
+      /*      const filaTieneError = errors.some((error) => error.row === filaExcel);
       if (filaTieneError) {
         continue;
-      }
+      }*/
       try {
-        cadastres.push({
-          ruc: this.format13Digits(ruc),
-          numberEstablishment: this.format3Digits(item['numero_establecimiento']),
-          tradeName: this.clearText(item['nombre_comercial']),
-          registerNumber: this.clearText(item['numero_registro']),
-          registeredAt: this.formatDate(item['fecha_registro']),
-          activity: this.clearText(item['actividad']),
-          classification: this.clearText(item['clasificacion']),
-          category: this.clearText(item['categoria']),
-          legalName: this.clearText(item['razon_social']),
-          legalRepresentative: this.clearText(item['representante_legal']),
-          province: this.clearText(item['provincia']),
-          canton: this.clearText(item['canton']),
-          parish: this.clearText(item['parroquia']),
-          typeParish: this.clearText(item['tipo_parroquia']),
-          address: this.clearText(item['direccion']),
-          referenceAddress: this.clearText(item['referencia_direccion']),
-          phone: this.clearText(item['telefono']),
-          email: this.clearText(item['correo']),
-          webPage: this.clearText(item['pagina_web']),
-          stateCadastre: this.clearText(item['estado_registro']),
-        });
+        //const cadastreExists = cadastres.find((c) => c.registerNumber === item['numero_registro']);
+        const index = cadastres.findIndex((c) => c.registerNumber === item['numero_registro']);
+        if (index === -1) {
+          cadastres.push({
+            ruc: this.format13Digits(ruc),
+            numberEstablishment: this.format3Digits(item['numero_establecimiento']),
+            tradeName: this.clearText(item['nombre_comercial']),
+            registerNumber: this.clearText(item['numero_registro']),
+            registeredAt: this.formatDate(item['fecha_registro']),
+            activity: this.clearText(item['actividad']),
+            classification: this.clearText(item['clasificacion']),
+            category: this.clearText(item['categoria']),
+            legalName: this.clearText(item['razon_social']),
+            legalRepresentative: this.clearText(item['representante_legal']),
+            province: this.clearText(item['provincia']),
+            canton: this.clearText(item['canton']),
+            parish: this.clearText(item['parroquia']),
+            typeParish: this.clearText(item['tipo_parroquia']),
+            address: this.clearText(item['direccion']),
+            referenceAddress: this.clearText(item['referencia_direccion']),
+            phone: this.clearText(item['telefono']),
+            email: this.clearText(item['correo']),
+            webPage: this.clearText(item['pagina_web']),
+            stateCadastre: this.clearText(item['estado_registro']),
+          });
+        } else {
+          errors.push({
+            row: filaExcel,
+            ruc: ruc || null,
+            column: 'numero_registro',
+            value: item['numero_registro'],
+            error: `Error en el numero registro. Ya se encuentra en la fila. ${index + 2}`,
+          });
+        }
       } catch (error) {
-        errores.push({
-          fila: filaExcel,
+        errors.push({
+          row: filaExcel,
           ruc: ruc || null,
-          campo: 'registro',
-          valorRecibido: null,
+          column: 'registro',
+          value: null,
           error: error instanceof Error ? error.message : 'Error al procesar la fila.',
         });
       }
     }
 
     // Si existe cualquier error, no tocar la base de datos.
-    if (errores.length > 0) {
+    if (errors.length > 0) {
       throw new BadRequestException({
         message: 'La carga fue cancelada. Corrija los errores del archivo e intente nuevamente.',
-        totalFilas: dataExcel.length,
-        totalErrores: errores.length,
-        errores,
+        title: 'Errores en la carga',
+        data: { totalRows: dataExcel.length, totalErrors: errors.length, errors },
       });
     }
 
@@ -175,18 +186,24 @@ export class SearchCadastreService {
 
       return {
         message: 'Catastro importado correctamente.',
-        totalFilas: dataExcel.length,
-        totalErrores: 0,
-        totalRegistrosCargados: cadastres.length,
+        title: 'Cargado correctamente',
+        data: {
+          totalRows: dataExcel.length,
+          totalErrors: 0,
+          totalLoaded: cadastres.length,
+        },
       };
     });
   }
 
   async findCadastres(params: FindCadastresDto): Promise<ServiceResponseHttpInterface> {
-    const { tradeName, canton, activity } = params;
+    const { ruc, tradeName, canton, activity } = params;
 
     const where: FindOptionsWhere<ConsultaCatastroEntity> = {};
 
+    if (ruc) {
+      where.ruc = ILike(`%${ruc.trim()}%`);
+    }
     if (tradeName) {
       where.tradeName = ILike(`%${tradeName.trim()}%`);
     }
@@ -199,6 +216,7 @@ export class SearchCadastreService {
 
     const response = await this.consultaCatastroRepository.findAndCount({
       where: {
+        stateCadastre: ILike(`%RATIFICADO%`),
         ...where,
       },
       skip: (params.page - 1) * params.limit,
