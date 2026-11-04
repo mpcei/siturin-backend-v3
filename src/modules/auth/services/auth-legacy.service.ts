@@ -54,8 +54,8 @@ export class AuthLegacyService {
       await this.dataSource.query(`
       UPDATE authentication.users
       SET 
-        name = ' ${payload.lastname} ${payload.name}', 
-        lastname = '${payload.lastname} ${payload.name}',
+        name = '${payload.name}', 
+        lastname = '${payload.lastname}',
         email = '${payload.email}',
         username = '${payload.email}'
       where identification = '${payload.identification}'

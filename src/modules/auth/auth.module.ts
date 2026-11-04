@@ -21,6 +21,9 @@ import { RefreshJwtStrategy } from '@auth/strategies/refresh-jwt.strategy';
 import { CataloguesService } from '@modules/common/catalogue/catalogue.service';
 import { CacheModule } from '@nestjs/cache-manager';
 import { AuthLegacyService } from '@auth/services/auth-legacy.service';
+import { ApiKeyGuard } from '@auth/guards/api-key.guard';
+import { ApiClientsService } from '@auth/services/api-clients.service';
+import { ApiClientsController } from '@auth/controllers/api-clients.controller';
 
 @Global()
 @Module({
@@ -42,7 +45,13 @@ import { AuthLegacyService } from '@auth/services/auth-legacy.service';
       },
     }),
   ],
-  controllers: [AuthController, MenusController, RolesController, UsersController],
+  controllers: [
+    AuthController,
+    MenusController,
+    RolesController,
+    UsersController,
+    ApiClientsController,
+  ],
   providers: [
     JwtStrategy,
     RefreshJwtStrategy,
@@ -62,7 +71,18 @@ import { AuthLegacyService } from '@auth/services/auth-legacy.service';
     UsersService,
     MenusService,
     CataloguesService,
+    ApiClientsService,
+    ApiKeyGuard,
   ],
-  exports: [...authProviders, UsersService, RolesService, MenusService, JwtModule, PassportModule],
+  exports: [
+    ...authProviders,
+    UsersService,
+    RolesService,
+    MenusService,
+    JwtModule,
+    PassportModule,
+    ApiClientsService,
+    ApiKeyGuard,
+  ],
 })
 export class AuthModule {}

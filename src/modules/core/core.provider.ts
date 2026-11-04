@@ -53,6 +53,7 @@ import { ServiceTypeEntity } from '@modules/core/entities/service-type.entity';
 import { RequirementConfigurationEntity } from '@modules/core/entities/requirement-configuration.entity';
 import { ProfessionalTitleEntity } from '@modules/core/entities/professional-title.entity';
 import { ConsultaCatastroEntity } from '@modules/core/entities/consulta-catastro.entity';
+import { DocumentoCatastroEntity } from '@modules/core/entities/documento-catastro.entity';
 
 export const coreProviders = [
   {
@@ -307,6 +308,11 @@ export const coreProviders = [
   {
     provide: PublicRepositoryEnum.CONSULTA_CATASTRO,
     useFactory: (dataSource: DataSource) => dataSource.getRepository(ConsultaCatastroEntity),
+    inject: [ConfigEnum.PG_DATA_SOURCE],
+  },
+  {
+    provide: PublicRepositoryEnum.DOCUMENTO_CATASTRO,
+    useFactory: (dataSource: DataSource) => dataSource.getRepository(DocumentoCatastroEntity),
     inject: [ConfigEnum.PG_DATA_SOURCE],
   },
 ];
