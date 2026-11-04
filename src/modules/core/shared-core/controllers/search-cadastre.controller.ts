@@ -16,9 +16,6 @@ import { ApiOperation } from '@nestjs/swagger';
 import { FindCadastreDto } from '@modules/core/shared-core/dto/search-cadastre/find-cadastre.dto';
 import { ApiKeyGuard } from '@auth/guards/api-key.guard';
 import { UserEntity } from '@auth/entities';
-import {
-  BaseWithOriginProcessGuideDto
-} from '@modules/core/roles/external/dto/process-guide/base-with-origin-process-guide.dto';
 import { DocumentCadastreDto } from '@modules/core/shared-core/dto/search-cadastre/document-cadastre.dto';
 
 @Controller('core/shared/search-cadastres')
@@ -34,10 +31,12 @@ export class SearchCadastreController {
   async uploadExcel(
     @UploadedFile() file: Express.Multer.File,
     @User() user: UserEntity,
-    @Body('payload') payload: any,
+    @Body('payload') payload: string,
   ) {
-    console.log('payload', payload);
-    return this.service.saveExcelCadastre(payload, user, file);
+    const documentCadastreDto: DocumentCadastreDto =
+      typeof payload === 'string' ? JSON.parse(payload) : payload;
+
+    return this.service.saveExcelCadastre(documentCadastreDto, user, file);
   }
 
   @PublicRoute()

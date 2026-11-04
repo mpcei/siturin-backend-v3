@@ -11,6 +11,7 @@ import { UserEntity } from '@auth/entities';
 import { DocumentCadastreDto } from '@modules/core/shared-core/dto/search-cadastre/document-cadastre.dto';
 import { DocumentoCatastroEntity } from '@modules/core/entities/documento-catastro.entity';
 import { FileService } from '@modules/common/file/file.service';
+import { FileEntity } from '@modules/common/file/file.entity';
 
 interface ErrorFila {
   row: number;
@@ -257,11 +258,18 @@ export class SearchCadastreService {
   }
 
   async findDocumentCadastre(): Promise<ResponseHttpInterface> {
-    const response = await this.documentoCatastroRepository.find({
-      //relations: { file: true },
-      take: 1,
-      order: { createdAt: 'DESC' },
-    });
+    const response = await this.documentoCatastroRepository
+      .createQueryBuilder('documentoCatastro')
+
+      // Archivo polimórfico
+      .leftJoinAndMapOne(
+        'documentoCatastro.file',
+        FileEntity,
+        'file',
+        'file.modelId = documentoCatastro.id',
+      )
+      .orderBy('documentoCatastro.createdAt', 'DESC')
+      .getOne();
 
     return {
       data: response,
