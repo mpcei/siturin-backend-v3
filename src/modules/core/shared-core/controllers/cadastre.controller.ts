@@ -1,12 +1,4 @@
-import {
-  Body,
-  Controller,
-  Param,
-  ParseUUIDPipe,
-  Post,
-  UploadedFiles,
-  UseInterceptors,
-} from '@nestjs/common';
+import { Body, Controller, Post } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Auth, User } from '@auth/decorators';
 import { ResponseHttpInterface } from '@utils/interfaces';
@@ -20,10 +12,6 @@ import {
 import { CadastreService } from '@modules/core/shared-core/services/cadastre.service';
 import { UserEntity } from '@auth/entities';
 import { CreateTemporarySuspensionInspectionStatusDto } from '@modules/core/shared-core/dto/cadastre/create-temporary-suspension-inspection-status.dto';
-import { FilesInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
-import { join } from 'path';
-import { fileFilter, getFileName } from '@utils/helpers';
 
 @ApiTags('Cadastre')
 @Auth()

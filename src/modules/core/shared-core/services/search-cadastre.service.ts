@@ -1,8 +1,8 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import * as XLSX from 'xlsx';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
-import { ConfigEnum, PublicRepositoryEnum } from '@utils/enums';
+import { CommonRepositoryEnum, ConfigEnum, PublicRepositoryEnum } from '@utils/enums';
 import { DataSource, FindOptionsWhere, ILike, Repository } from 'typeorm';
 import { ConsultaCatastroEntity } from '@modules/core/entities/consulta-catastro.entity';
 import { ResponseHttpInterface, ServiceResponseHttpInterface } from '@utils/interfaces';
@@ -11,6 +11,11 @@ import { UserEntity } from '@auth/entities';
 import { DocumentCadastreDto } from '@modules/core/shared-core/dto/search-cadastre/document-cadastre.dto';
 import { DocumentoCatastroEntity } from '@modules/core/entities/documento-catastro.entity';
 import { FileService } from '@modules/common/file/file.service';
+import { FileEntity } from '@modules/common/file/file.entity';
+import { Response } from 'express';
+import { BucketService } from '@modules/common/bucket/bucket.service';
+import { FileDownloadLogEntity } from '@modules/common/file/file-download-log.entity';
+import * as path from 'path';
 
 interface ErrorFila {
   row: number;
@@ -50,11 +55,17 @@ export class SearchCadastreService {
     private readonly cacheManager: Cache,
     @Inject(ConfigEnum.PG_DATA_SOURCE)
     private readonly dataSourceV3: DataSource,
-    private readonly fileService: FileService,
+    @Inject(CommonRepositoryEnum.FILE_REPOSITORY)
+    private fileRepository: Repository<FileEntity>,
+    @Inject(CommonRepositoryEnum.FILE_DOWNLOAD_LOG_REPOSITORY)
+    private fileDownloadLogRepository: Repository<FileDownloadLogEntity>,
     @Inject(PublicRepositoryEnum.CONSULTA_CATASTRO)
     private readonly consultaCatastroRepository: Repository<ConsultaCatastroEntity>,
     @Inject(PublicRepositoryEnum.DOCUMENTO_CATASTRO)
     private readonly documentoCatastroRepository: Repository<DocumentoCatastroEntity>,
+
+    private readonly fileService: FileService,
+    private readonly bucketService: BucketService,
   ) {}
 
   async saveExcelCadastre(
@@ -196,6 +207,9 @@ export class SearchCadastreService {
       documentCadastre.period = payload.period;
       const documentCadastreSave = await repositoryDocumentCadastre.save(documentCadastre);
 
+      const ext = path.extname(file.originalname);
+      file.originalname = `Catastro_${payload.year}_${payload.month}_${payload.period}${ext}`;
+
       await this.fileService.uploadFile({
         file,
         user,
@@ -221,6 +235,34 @@ export class SearchCadastreService {
         },
       };
     });
+  }
+
+  async download(id: number, res: Response) {
+    const file = await this.findOne(id);
+
+    if (!file) {
+      throw new NotFoundException();
+    }
+
+    const stream: any = await this.bucketService.getObject(file.path);
+
+    res.set({
+      'Content-Type': file.mimeType,
+      'Content-Disposition': `attachment; filename="${file.originalName}"`,
+      'Cache-Control': 'no-store',
+    });
+
+    stream.pipe(res);
+  }
+
+  async findOne(id: number): Promise<FileEntity> {
+    const entity = await this.fileRepository.findOneBy({ id });
+
+    if (!entity) {
+      throw new NotFoundException('El perfil no existe');
+    }
+
+    return entity;
   }
 
   async findCadastres(params: FindCadastreDto): Promise<ServiceResponseHttpInterface> {
@@ -257,11 +299,18 @@ export class SearchCadastreService {
   }
 
   async findDocumentCadastre(): Promise<ResponseHttpInterface> {
-    const response = await this.documentoCatastroRepository.find({
-      //relations: { file: true },
-      take: 1,
-      order: { createdAt: 'DESC' },
-    });
+    const response = await this.documentoCatastroRepository
+      .createQueryBuilder('documentoCatastro')
+
+      // Archivo polimórfico
+      .leftJoinAndMapOne(
+        'documentoCatastro.file',
+        FileEntity,
+        'file',
+        'file.modelId = documentoCatastro.id',
+      )
+      .orderBy('documentoCatastro.createdAt', 'DESC')
+      .getOne();
 
     return {
       data: response,

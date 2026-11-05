@@ -2,8 +2,11 @@ import {
   Body,
   Controller,
   Get,
+  Param,
   Post,
   Query,
+  Req,
+  Res,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -16,10 +19,8 @@ import { ApiOperation } from '@nestjs/swagger';
 import { FindCadastreDto } from '@modules/core/shared-core/dto/search-cadastre/find-cadastre.dto';
 import { ApiKeyGuard } from '@auth/guards/api-key.guard';
 import { UserEntity } from '@auth/entities';
-import {
-  BaseWithOriginProcessGuideDto
-} from '@modules/core/roles/external/dto/process-guide/base-with-origin-process-guide.dto';
 import { DocumentCadastreDto } from '@modules/core/shared-core/dto/search-cadastre/document-cadastre.dto';
+import { Request, Response } from 'express';
 
 @Controller('core/shared/search-cadastres')
 export class SearchCadastreController {
@@ -34,10 +35,19 @@ export class SearchCadastreController {
   async uploadExcel(
     @UploadedFile() file: Express.Multer.File,
     @User() user: UserEntity,
-    @Body('payload') payload: any,
+    @Body('payload') payload: string,
   ) {
-    console.log('payload', payload);
-    return this.service.saveExcelCadastre(payload, user, file);
+    const documentCadastreDto: DocumentCadastreDto =
+      typeof payload === 'string' ? JSON.parse(payload) : payload;
+
+    return this.service.saveExcelCadastre(documentCadastreDto, user, file);
+  }
+
+  @PublicRoute()
+  @ApiOperation({ summary: 'Download File' })
+  @Get(':id/download')
+  async download(@Param('id') id: number, @Res() res: Response): Promise<void> {
+    return this.service.download(id, res);
   }
 
   @PublicRoute()
