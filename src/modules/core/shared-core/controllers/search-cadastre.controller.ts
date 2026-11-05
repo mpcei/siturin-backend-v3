@@ -1,9 +1,9 @@
 import {
   Body,
   Controller,
-  Get,
+  Get, Param,
   Post,
-  Query,
+  Query, Req, Res,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -17,6 +17,7 @@ import { FindCadastreDto } from '@modules/core/shared-core/dto/search-cadastre/f
 import { ApiKeyGuard } from '@auth/guards/api-key.guard';
 import { UserEntity } from '@auth/entities';
 import { DocumentCadastreDto } from '@modules/core/shared-core/dto/search-cadastre/document-cadastre.dto';
+import { Request, Response } from 'express';
 
 @Controller('core/shared/search-cadastres')
 export class SearchCadastreController {
@@ -37,6 +38,18 @@ export class SearchCadastreController {
       typeof payload === 'string' ? JSON.parse(payload) : payload;
 
     return this.service.saveExcelCadastre(documentCadastreDto, user, file);
+  }
+
+  @PublicRoute()
+  @ApiOperation({ summary: 'Download File' })
+  @Get(':id/download')
+  async download(
+    @Param('id') id: number,
+    @User() user: UserEntity,
+    @Req() req: Request,
+    @Res() res: Response,
+  ): Promise<void> {
+    return this.service.download(id, user, req, res);
   }
 
   @PublicRoute()
