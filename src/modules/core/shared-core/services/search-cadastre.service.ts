@@ -205,6 +205,9 @@ export class SearchCadastreService {
       documentCadastre.year = payload.year;
       documentCadastre.month = payload.month;
       documentCadastre.period = payload.period;
+
+      console.log('[CADASTRE] Iniciando carga de documento');
+
       const documentCadastreSave = await repositoryDocumentCadastre.save(documentCadastre);
 
       const ext = path.extname(file.originalname);
@@ -218,12 +221,18 @@ export class SearchCadastreService {
         manager,
       });
 
+      console.log('[CADASTRE] Archivo almacenado');
+
       await repository.clear();
+
+      console.log('[CADASTRE] Registros anteriores eliminados');
 
       await repository.save(
         cadastres.map((item) => repository.create(item)),
         { chunk: 500 },
       );
+
+      console.log('[CADASTRE] Importación finalizada');
 
       return {
         message: 'Catastro importado correctamente.',
