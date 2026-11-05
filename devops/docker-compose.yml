@@ -12,8 +12,8 @@ services:
       - ../.env
 
     networks:
-      - qa_network
+      - npm_network
 
 networks:
-  qa_network:
+  npm_network:
     external: true
