@@ -266,15 +266,18 @@ export class SearchCadastreService {
   }
 
   async findCadastres(params: FindCadastreDto): Promise<ServiceResponseHttpInterface> {
-    const { ruc, tradeName, canton, activity } = params;
+    const { ruc, tradeName, legalName, canton, activity } = params;
 
     const where: FindOptionsWhere<ConsultaCatastroEntity> = {};
 
     if (ruc) {
-      where.ruc = ILike(`%${ruc.trim()}%`);
+      where.ruc = ruc.trim();
     }
     if (tradeName) {
       where.tradeName = ILike(`%${tradeName.trim()}%`);
+    }
+    if (legalName) {
+      where.legalName = ILike(`%${legalName.trim()}%`);
     }
     if (canton) {
       where.canton = ILike(`%${canton.trim()}%`);
