@@ -6,6 +6,7 @@ export class UpdateUserDto extends PickType(UserDto, [
   'identification',
   'lastname',
   'name',
+  'password',
   'passwordChanged',
   'roles',
   'username',
