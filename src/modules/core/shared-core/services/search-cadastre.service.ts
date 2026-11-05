@@ -12,9 +12,10 @@ import { DocumentCadastreDto } from '@modules/core/shared-core/dto/search-cadast
 import { DocumentoCatastroEntity } from '@modules/core/entities/documento-catastro.entity';
 import { FileService } from '@modules/common/file/file.service';
 import { FileEntity } from '@modules/common/file/file.entity';
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { BucketService } from '@modules/common/bucket/bucket.service';
 import { FileDownloadLogEntity } from '@modules/common/file/file-download-log.entity';
+import * as path from 'path';
 
 interface ErrorFila {
   row: number;
@@ -206,6 +207,9 @@ export class SearchCadastreService {
       documentCadastre.period = payload.period;
       const documentCadastreSave = await repositoryDocumentCadastre.save(documentCadastre);
 
+      const ext = path.extname(file.originalname);
+      file.originalname = `Catastro_${payload.year}_${payload.month}_${payload.period}${ext}`;
+
       await this.fileService.uploadFile({
         file,
         user,
@@ -233,7 +237,7 @@ export class SearchCadastreService {
     });
   }
 
-  async download(id: number, user: UserEntity, req: Request, res: Response) {
+  async download(id: number, res: Response) {
     const file = await this.findOne(id);
 
     if (!file) {
@@ -246,16 +250,6 @@ export class SearchCadastreService {
       'Content-Type': file.mimeType,
       'Content-Disposition': `attachment; filename="${file.originalName}"`,
       'Cache-Control': 'no-store',
-    });
-
-    const rawIp = (req.headers['x-forwarded-for'] as string) || req.socket.remoteAddress || '';
-    const cleanIp = rawIp.includes('::ffff:') ? rawIp.split('::ffff:')[1] : rawIp;
-
-    await this.fileDownloadLogRepository.save({
-      file,
-      user,
-      ipAddress: cleanIp === '::1' ? '127.0.0.1' : cleanIp,
-      userAgent: req.headers['user-agent'],
     });
 
     stream.pipe(res);

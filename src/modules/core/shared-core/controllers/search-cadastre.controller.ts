@@ -1,9 +1,12 @@
 import {
   Body,
   Controller,
-  Get, Param,
+  Get,
+  Param,
   Post,
-  Query, Req, Res,
+  Query,
+  Req,
+  Res,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -43,13 +46,8 @@ export class SearchCadastreController {
   @PublicRoute()
   @ApiOperation({ summary: 'Download File' })
   @Get(':id/download')
-  async download(
-    @Param('id') id: number,
-    @User() user: UserEntity,
-    @Req() req: Request,
-    @Res() res: Response,
-  ): Promise<void> {
-    return this.service.download(id, user, req, res);
+  async download(@Param('id') id: number, @Res() res: Response): Promise<void> {
+    return this.service.download(id, res);
   }
 
   @PublicRoute()
