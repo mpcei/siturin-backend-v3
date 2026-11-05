@@ -1,8 +1,8 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import * as XLSX from 'xlsx';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
-import { ConfigEnum, PublicRepositoryEnum } from '@utils/enums';
+import { CommonRepositoryEnum, ConfigEnum, PublicRepositoryEnum } from '@utils/enums';
 import { DataSource, FindOptionsWhere, ILike, Repository } from 'typeorm';
 import { ConsultaCatastroEntity } from '@modules/core/entities/consulta-catastro.entity';
 import { ResponseHttpInterface, ServiceResponseHttpInterface } from '@utils/interfaces';
@@ -12,6 +12,9 @@ import { DocumentCadastreDto } from '@modules/core/shared-core/dto/search-cadast
 import { DocumentoCatastroEntity } from '@modules/core/entities/documento-catastro.entity';
 import { FileService } from '@modules/common/file/file.service';
 import { FileEntity } from '@modules/common/file/file.entity';
+import { Request, Response } from 'express';
+import { BucketService } from '@modules/common/bucket/bucket.service';
+import { FileDownloadLogEntity } from '@modules/common/file/file-download-log.entity';
 
 interface ErrorFila {
   row: number;
@@ -51,11 +54,17 @@ export class SearchCadastreService {
     private readonly cacheManager: Cache,
     @Inject(ConfigEnum.PG_DATA_SOURCE)
     private readonly dataSourceV3: DataSource,
-    private readonly fileService: FileService,
+    @Inject(CommonRepositoryEnum.FILE_REPOSITORY)
+    private fileRepository: Repository<FileEntity>,
+    @Inject(CommonRepositoryEnum.FILE_DOWNLOAD_LOG_REPOSITORY)
+    private fileDownloadLogRepository: Repository<FileDownloadLogEntity>,
     @Inject(PublicRepositoryEnum.CONSULTA_CATASTRO)
     private readonly consultaCatastroRepository: Repository<ConsultaCatastroEntity>,
     @Inject(PublicRepositoryEnum.DOCUMENTO_CATASTRO)
     private readonly documentoCatastroRepository: Repository<DocumentoCatastroEntity>,
+
+    private readonly fileService: FileService,
+    private readonly bucketService: BucketService,
   ) {}
 
   async saveExcelCadastre(
@@ -222,6 +231,44 @@ export class SearchCadastreService {
         },
       };
     });
+  }
+
+  async download(id: number, user: UserEntity, req: Request, res: Response) {
+    const file = await this.findOne(id);
+
+    if (!file) {
+      throw new NotFoundException();
+    }
+
+    const stream: any = await this.bucketService.getObject(file.path);
+
+    res.set({
+      'Content-Type': file.mimeType,
+      'Content-Disposition': `attachment; filename="${file.originalName}"`,
+      'Cache-Control': 'no-store',
+    });
+
+    const rawIp = (req.headers['x-forwarded-for'] as string) || req.socket.remoteAddress || '';
+    const cleanIp = rawIp.includes('::ffff:') ? rawIp.split('::ffff:')[1] : rawIp;
+
+    await this.fileDownloadLogRepository.save({
+      file,
+      user,
+      ipAddress: cleanIp === '::1' ? '127.0.0.1' : cleanIp,
+      userAgent: req.headers['user-agent'],
+    });
+
+    stream.pipe(res);
+  }
+
+  async findOne(id: number): Promise<FileEntity> {
+    const entity = await this.fileRepository.findOneBy({ id });
+
+    if (!entity) {
+      throw new NotFoundException('El perfil no existe');
+    }
+
+    return entity;
   }
 
   async findCadastres(params: FindCadastreDto): Promise<ServiceResponseHttpInterface> {
