@@ -1,4 +1,4 @@
-export const guideCadastreReport = (data: any) => {
+export const guideCadastresReport = (data: any) => {
   return data.map((item) => ({
     RUC: item.ruc,
     'Código de Establecimiento RUC': item.numero_establecimiento,

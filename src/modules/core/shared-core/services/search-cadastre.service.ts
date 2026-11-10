@@ -289,7 +289,7 @@ export class SearchCadastreService {
       where.legalName = ILike(`%${legalName.trim()}%`);
     }
     if (canton) {
-      where.canton = ILike(`%${canton.trim()}%`);
+      where.canton = canton.trim();
     }
     if (activity) {
       where.activity = ILike(`%${activity.trim()}%`);
