@@ -1,7 +1,7 @@
 import { Controller, Get, Header, Query, Res } from '@nestjs/common';
 import { Response } from 'express';
 import { ApiTags } from '@nestjs/swagger';
-import { User } from '@auth/decorators';
+import { PublicRoute, User } from '@auth/decorators';
 import { InternalExcelService } from '@modules/reports/excel/internal-excel.service';
 import { UserEntity } from '@auth/entities';
 import { FindCadastreDto } from '@modules/core/shared-core/dto/search-cadastre/find-cadastre.dto';
@@ -32,6 +32,7 @@ export class InternalExcelController {
     response.send(excelBuffer);
   }
 
+  @PublicRoute()
   @Header('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
   @Header('Content-Disposition', 'attachment; filename="catastro.xlsx"')
   @Get('search-cadastres')
