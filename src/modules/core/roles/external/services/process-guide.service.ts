@@ -233,6 +233,7 @@ export class ProcessGuideService {
     processNew.activityId = process.activity.id;
     processNew.establishmentId = establishmentId;
     processNew.typeId = process.type.id;
+    processNew.professionalTitleId = process.professionalTitle.id;
     processNew.registeredAt = new Date();
     processNew.startedAt = process.startedAt;
     processNew.endedAt = process.endedAt;

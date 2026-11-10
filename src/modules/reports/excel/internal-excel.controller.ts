@@ -22,4 +22,12 @@ export class InternalExcelController {
     const excelBuffer = await this.service.generateProcesses(user.id, rolCode, isCurrent);
     response.send(excelBuffer);
   }
+
+  @Header('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+  @Header('Content-Disposition', 'attachment; filename="catastro_guias.xlsx"')
+  @Get('guide-cadastres')
+  async generateGuideCadastresByRol(@Res() response: Response, @Query('rolCode') rolCode: string) {
+    const excelBuffer = await this.service.generateCadastres(rolCode);
+    response.send(excelBuffer);
+  }
 }

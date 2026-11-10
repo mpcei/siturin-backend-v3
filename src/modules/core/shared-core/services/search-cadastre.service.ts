@@ -352,8 +352,6 @@ export class SearchCadastreService {
     }
     return String(valor)
       .replace(/[\x00-\x1F\x7F]/g, '')
-      .replace(/;/g, '')
-      .replace(/,/g, '')
       .replace(/'/g, '-')
       .replace(/"/g, '')
       .replace(/\n/g, '...')
