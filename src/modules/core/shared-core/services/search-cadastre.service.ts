@@ -275,7 +275,7 @@ export class SearchCadastreService {
   }
 
   async findCadastres(params: FindCadastreDto): Promise<ServiceResponseHttpInterface> {
-    const { ruc, tradeName, legalName, canton, activity } = params;
+    const { ruc, tradeName, legalName, province, canton, activity } = params;
 
     const where: FindOptionsWhere<ConsultaCatastroEntity> = {};
 
@@ -287,6 +287,9 @@ export class SearchCadastreService {
     }
     if (legalName) {
       where.legalName = ILike(`%${legalName.trim()}%`);
+    }
+    if (province) {
+      where.province = province.trim();
     }
     if (canton) {
       where.canton = canton.trim();

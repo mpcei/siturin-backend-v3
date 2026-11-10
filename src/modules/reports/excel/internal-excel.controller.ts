@@ -34,7 +34,7 @@ export class InternalExcelController {
 
   @Header('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
   @Header('Content-Disposition', 'attachment; filename="catastro.xlsx"')
-  @Get('cadastres')
+  @Get('search-cadastres')
   async generateCadastres(@Res() response: Response, @Query() params: FindCadastreDto) {
     const excelBuffer = await this.service.generateCadastres(params);
     response.send(excelBuffer);

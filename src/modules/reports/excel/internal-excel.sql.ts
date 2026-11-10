@@ -51,7 +51,7 @@ export class InternalExcelSql {
   }
 
   async findCadastres(params: FindCadastreDto): Promise<ConsultaCatastroEntity[]> {
-    const { ruc, tradeName, legalName, canton, activity } = params;
+    const { ruc, tradeName, legalName, province, canton, activity } = params;
 
     const where: FindOptionsWhere<ConsultaCatastroEntity> = {};
 
@@ -63,6 +63,9 @@ export class InternalExcelSql {
     }
     if (legalName) {
       where.legalName = ILike(`%${legalName.trim()}%`);
+    }
+    if (province) {
+      where.province = province.trim();
     }
     if (canton) {
       where.canton = canton.trim();
