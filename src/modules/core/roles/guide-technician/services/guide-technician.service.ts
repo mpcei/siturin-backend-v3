@@ -755,7 +755,7 @@ export class GuideTechnicianService {
       const processGuide = await processGuideRepository.findOne({
         where: { processId: process.id, requirement: { code: photo } },
       });
-      if (!processGuide) {
+      if (!processGuide && process.type.code != CatalogueProcessesTypeEnum.update) {
         throw new NotFoundException('No existe requisito de foto');
       }
       const file = await fileRepository.findOne({ where: { modelId: processGuide.id } });

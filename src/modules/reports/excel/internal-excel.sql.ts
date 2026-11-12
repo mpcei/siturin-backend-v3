@@ -1,9 +1,11 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, FindOptionsWhere, ILike, Repository } from 'typeorm';
 import { CatalogueActivitiesCodeEnum, CoreRepositoryEnum } from '@modules/core/utils/enums';
 import { AssignmentEntity } from '@modules/core/entities';
-import { ConfigEnum } from '@utils/enums';
+import { ConfigEnum, PublicRepositoryEnum } from '@utils/enums';
 import { RoleEnum } from '@auth/enums';
+import { ConsultaCatastroEntity } from '@modules/core/entities/consulta-catastro.entity';
+import { FindCadastreDto } from '@modules/core/shared-core/dto/search-cadastre/find-cadastre.dto';
 
 @Injectable()
 export class InternalExcelSql {
@@ -12,6 +14,8 @@ export class InternalExcelSql {
     private readonly processRepository: Repository<ProcessEntity>,*/
     @Inject(CoreRepositoryEnum.ASSIGNMENT_REPOSITORY)
     private readonly assignmentRepository: Repository<AssignmentEntity>,
+    @Inject(PublicRepositoryEnum.CONSULTA_CATASTRO)
+    private readonly consultaCatastroRepository: Repository<ConsultaCatastroEntity>,
     @Inject(ConfigEnum.PG_DATA_SOURCE) private readonly dataSource: DataSource,
   ) {}
 
@@ -42,6 +46,38 @@ export class InternalExcelSql {
           },
           credentials: { classification: true },
         },
+      },
+    });
+  }
+
+  async findCadastres(params: FindCadastreDto): Promise<ConsultaCatastroEntity[]> {
+    const { ruc, tradeName, legalName, province, canton, activity } = params;
+
+    const where: FindOptionsWhere<ConsultaCatastroEntity> = {};
+
+    if (ruc) {
+      where.ruc = ruc.trim();
+    }
+    if (tradeName) {
+      where.tradeName = ILike(`%${tradeName.trim()}%`);
+    }
+    if (legalName) {
+      where.legalName = ILike(`%${legalName.trim()}%`);
+    }
+    if (province) {
+      where.province = province.trim();
+    }
+    if (canton) {
+      where.canton = canton.trim();
+    }
+    if (activity) {
+      where.activity = ILike(`%${activity.trim()}%`);
+    }
+
+    return await this.consultaCatastroRepository.find({
+      where: {
+        stateCadastre: ILike(`%RATIFICADO%`),
+        ...where,
       },
     });
   }
