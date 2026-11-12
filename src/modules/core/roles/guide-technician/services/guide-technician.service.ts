@@ -750,7 +750,7 @@ export class GuideTechnicianService {
 
       await establishmentRepository.save(establishment);
 
-      if (process.type.code != CatalogueProcessesTypeEnum.update) {
+      if (process.type.code != CatalogueProcessesTypeEnum.general_data_update) {
         //Save photo user
         const photo = CatalogueProcessGuidesCodeEnum.photo;
         const processGuide = await processGuideRepository.findOne({
