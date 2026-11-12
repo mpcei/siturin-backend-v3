@@ -750,21 +750,24 @@ export class GuideTechnicianService {
 
       await establishmentRepository.save(establishment);
 
-      //Save photo user
-      const photo = CatalogueProcessGuidesCodeEnum.photo;
-      const processGuide = await processGuideRepository.findOne({
-        where: { processId: process.id, requirement: { code: photo } },
-      });
-      if (!processGuide && process.type.code != CatalogueProcessesTypeEnum.update) {
-        throw new NotFoundException('No existe requisito de foto');
+      if (process.type.code != CatalogueProcessesTypeEnum.update) {
+        //Save photo user
+        const photo = CatalogueProcessGuidesCodeEnum.photo;
+        const processGuide = await processGuideRepository.findOne({
+          where: { processId: process.id, requirement: { code: photo } },
+        });
+
+        if (!processGuide) {
+          throw new NotFoundException('No existe requisito de foto');
+        }
+        const file = await fileRepository.findOne({ where: { modelId: processGuide.id } });
+        if (!file) {
+          throw new NotFoundException('No existe el file de foto');
+        }
+        const userExternal = establishment.ruc.user;
+        userExternal.avatar = file.path;
+        await userRepository.save(userExternal);
       }
-      const file = await fileRepository.findOne({ where: { modelId: processGuide.id } });
-      if (!file) {
-        throw new NotFoundException('No existe el file de foto');
-      }
-      const userExternal = establishment.ruc.user;
-      userExternal.avatar = file.path;
-      await userRepository.save(userExternal);
 
       for (const language of languages) {
         language.enabled = true;
