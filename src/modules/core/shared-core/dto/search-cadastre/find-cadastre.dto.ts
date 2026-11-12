@@ -18,6 +18,10 @@ export class FindCadastreDto extends PickType(PaginationDto, ['page', 'limit', '
 
   @IsOptional()
   @IsString(isStringValidationOptions())
+  province: string;
+
+  @IsOptional()
+  @IsString(isStringValidationOptions())
   canton: string;
 
   @IsOptional()
