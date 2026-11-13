@@ -18,7 +18,7 @@ export class AuthLegacyService {
   ) {}
 
   async findUserLegacy(payload: SignInDto) {
-    const url = `${this.configService.externalApis.urlLegacy}/public/api/v1/public/auth/login`;
+    const url = `${this.configService.externalApis.urlLegacy}/api/v1/public/auth/login`;
 
     try {
       const response = await lastValueFrom(this.httpService.post(url, payload));
@@ -32,7 +32,7 @@ export class AuthLegacyService {
   }
 
   async findUserLegacyWithoutPassword(payload: SignInDto) {
-    const url = `${this.configService.externalApis.urlLegacy}/public/api/v1/public/auth/login-pass`;
+    const url = `${this.configService.externalApis.urlLegacy}/api/v1/public/auth/login-pass`;
 
     try {
       const response = await lastValueFrom(this.httpService.post(url, payload));

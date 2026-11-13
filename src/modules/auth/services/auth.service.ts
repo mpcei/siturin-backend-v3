@@ -142,6 +142,8 @@ export class AuthService {
 
     let userLegacy = await this.authLegacyService.findUserLegacy(payload);
 
+    console.log('userlegacy', userLegacy);
+
     if (userLegacy && user && !user.passwordChanged) {
       const passwordHash = Bcrypt.hashSync(payload.password, 10);
       await this.repository.update(user.id, { password: passwordHash, passwordChanged: true });
@@ -225,7 +227,7 @@ export class AuthService {
   }
 
   async createUserLegacy(payload: SignUpExternalDto) {
-    const url = `${this.configService.externalApis.urlLegacy}/public/api/v1/public/auth/register-external-user`;
+    const url = `${this.configService.externalApis.urlLegacy}/api/v1/public/auth/register-external-user`;
 
     const payloadLegacy = {
       username: payload.email,
