@@ -78,6 +78,7 @@ export const guideCadastresReport = (data: any) => {
     'Año Vehículo': item.anio_vehiculo,
     'Tipo de licencia de conducir': item.tipo_licencia_conducir,
     Edad: item.edad,
+    Sexo: item.sexo,
     Nacionalidad: item.nacionalidad,
     'Título académico': item.titulo_academico,
     Idiomas: item.idiomas,
