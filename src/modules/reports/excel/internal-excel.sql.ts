@@ -33,13 +33,13 @@ export class InternalExcelSql {
       },
       relations: {
         process: {
-          cadastre: { state: true },
           type: true,
           state: true,
           establishment: {
             ruc: true,
             establishmentContactPerson: true,
             credentials: { classification: true },
+            cadastre: { state: true },
             province: true,
             canton: true,
             parish: true,
