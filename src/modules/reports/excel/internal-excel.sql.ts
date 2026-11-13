@@ -168,6 +168,7 @@ export class InternalExcelSql {
                 vehiculo.anio_vehiculo as "anio_vehiculo",
                 licencia_conducir.name as "tipo_licencia_conducir",
                 EXTRACT(YEAR FROM AGE(usuario.birthdate)) as "edad",
+                sexo.name as "sexo",
                 nacionalidad.name as "nacionalidad",
                 profesion.name as "titulo_academico",
                 idioma.idioma as "idiomas",
@@ -211,6 +212,7 @@ export class InternalExcelSql {
                   left join core.classifications clasificacion on proceso.classification_id = clasificacion.id
                   left join core.categories categoria on proceso.category_id = categoria.id
                   left join common.catalogues tipo_persona on ruc.type_id = tipo_persona.id
+                  left join common.catalogues sexo on usuario.sex_id = sexo.id
                   left join common.catalogues licencia_conducir on proceso.driver_license_id = licencia_conducir.id
                   left join common.dpa provincia on establecimiento.province_id = provincia.id
                   left join common.dpa canton on establecimiento.canton_id = canton.id
